@@ -7,7 +7,16 @@ Four tools, two for each architectural pattern:
 - ``spike_deploy``, ``spike_run``, and ``test_eval`` form the
   evaluator-optimizer loop, with the SPIKE Prime hub as the evaluator.
 
-All tools are stubs as of Week 1.
+Status (v0.1):
+
+- ``sysml_validate`` — implemented for the ``lego`` subset.
+- ``spike_deploy``, ``spike_run`` — implemented over Bluetooth via
+  ``pybricksdev``.
+- ``test_eval`` — implemented for the v0.1 pass_criteria operator grammar
+  (``<=``, ``>=``, ``<``, ``>``, ``==``, ``!=``, ``in_range``, ``reaches``).
+
+The hub-to-host wire format and the requirements model schema are defined
+in ``docs/wire_contract.md``.
 """
 
 from .sysml_validate import sysml_validate

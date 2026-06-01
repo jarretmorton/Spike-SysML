@@ -1,0 +1,33 @@
+{
+  "requirements": [
+    {
+      "id": "CN-003",
+      "type": "constraint",
+      "text": "Rover cruise speed shall not exceed 0.5 m/s during operation.",
+      "pass_criteria": {
+        "sensor": "speed_mps",
+        "op": "in_range",
+        "min": 0.0,
+        "max": 0.5,
+        "unit": "m/s"
+      },
+      "source": "rover_test_v1.txt: 'the rover must not move faster than 0.5 m/s'"
+    },
+    {
+      "id": "CN-007",
+      "type": "constraint",
+      "text": "Contact force on the front bumper shall not exceed 1.0 N.",
+      "pass_criteria": {
+        "sensor": "force_n",
+        "op": "<=",
+        "value": 1.0,
+        "unit": "N"
+      },
+      "source": "rover_test_v1.txt: 'do not push obstacles harder than 1 N'"
+    }
+  ],
+  "metadata": {
+    "source_spec": "rover_test_v1.txt",
+    "generated_at": "2026-05-31T00:00:00Z"
+  }
+}

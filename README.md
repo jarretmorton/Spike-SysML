@@ -17,18 +17,35 @@ Built around two patterns from [*Building Effective Agents*](https://www.anthrop
 - **Orchestrator-workers** for requirements decomposition. A planning agent reads the spec and dispatches structured-output sub-agents to extract functional, behavioral, interface, and constraint requirements in parallel, emitted as SysML v2.
 - **Evaluator-optimizer** for code generation, with the hardware as the evaluator. A draft agent generates MicroPython for the SPIKE hub; the code runs on the robot; telemetry and pass/fail signals come back; the loop iterates until tests pass or a budget is hit.
 
-Tool surface (planned):
+Tool surface (v0.1):
 
-- `sysml_validate` — schema-check structured requirements against SysML v2.
-- `spike_deploy` — push generated code to the SPIKE Prime hub.
-- `spike_run` — execute a test program and stream sensor telemetry.
+- `sysml_validate` — schema-check structured requirements against the `lego` subset of SysML v2.
+- `spike_deploy` — push generated MicroPython to the SPIKE Prime hub over Bluetooth.
+- `spike_run` — execute a deployed program and stream sensor telemetry.
 - `test_eval` — score a run against the requirement it implements.
 
-See [`docs/architecture.md`](docs/architecture.md) for the current sketch.
+See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [`docs/wire_contract.md`](docs/wire_contract.md) for the telemetry wire format and requirements model schema.
+
+## Quickstart
+
+```bash
+# validate a requirements model
+python spiketelem.py validate examples/requirements_example.json
+
+# run the full pipeline against a real hub (Pybricks firmware required)
+python spiketelem.py run examples/hub_program_example.py \
+                        examples/requirements_example.json \
+                        --log run.jsonl
+
+# or synthesize telemetry without hardware to exercise the pipeline
+python spiketelem.py demo examples/requirements_example.json --seconds 8
+```
+
+`spiketelem.py` is a developer cockpit on top of the tool surface; the orchestrator and draft agent call the `tools/` functions directly.
 
 ## Status
 
-Pre-v0.1. README and architecture sketch only.
+v0.1. Tool surface implemented; evaluator-optimizer right-half runs end-to-end against hardware via `spiketelem.py`. Orchestrator-workers left-half is in prompts only.
 
 ## License
 
