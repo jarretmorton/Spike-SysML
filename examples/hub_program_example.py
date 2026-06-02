@@ -15,17 +15,19 @@
 # host side parses with full CPython json.loads.
 
 from pybricks.hubs import PrimeHub
-from pybricks.pupdevices import Motor, ForceSensor
+from pybricks.pupdevices import Motor, UltrasonicSensor, ColorSensor
 from pybricks.parameters import Port
 from pybricks.tools import StopWatch, wait
 from usys import stdout
 
-
 # --- physical configuration (edit to match your build) ---
 hub   = PrimeHub()
-left  = Motor(Port.B)
-right = Motor(Port.A)
-force = ForceSensor(Port.C)
+left_wheel  = Motor(Port.C)
+right_wheel = Motor(Port.D)
+right_eye = UltrasonicSensor(Port.B)
+left_eye = UltrasonicSensor(Port.A)
+back_eye = UltrasonicSensor(Port.E)
+edge_sensor = ColorSensor(Port.F)
 WHEEL_CIRC_M = 0.055 * 3.1416 * 2          # 55 mm radius wheel
 
 clock = StopWatch()
@@ -40,28 +42,32 @@ def emit(sensor, value):
 
 
 # --- commands ---
-left.run(-180)                              # 180 deg/s forward (signs depend on chassis)
-right.run(180)
+left_wheel.run(-80)                              # 180 deg/s forward (signs depend on chassis)
+right_wheel.run(80)
 
 # --- measurement loop ---
 try:
     motors_stopped = False
-    while clock.time() < 8000:
-        deg_per_s = (left.speed() + right.speed()) / 2
+    while True:
+        deg_per_s = (left_wheel.speed() + right_wheel.speed()) / 2
         speed_mps = abs(deg_per_s / 360.0 * WHEEL_CIRC_M)
-        force_n = force.force()
+        distance_on_the_right = right_eye.distance()
+        distance_on_the_left = left_eye.distance()
+        reflection = edge_sensor.reflection()
 
         emit("speed_mps", speed_mps)
-        emit("force_n", force_n)
+        emit("distance_on_the_right", distance_on_the_right)
+        emit("distance_on_the_left", distance_on_the_left)
+        emit("reflection", reflection)
 
-        # behavioural rule wired into the program: stop on first contact
-        if force_n > 0 and not motors_stopped:
-            left.stop()
-            right.stop()
+        # behavioural rule wired into the program: stop if too close
+        if (distance_on_the_left < 100 or distance_on_the_right < 100 or reflection < 20) and not motors_stopped:
+            left_wheel.stop()
+            right_wheel.stop()
             motors_stopped = True
 
         wait(50)                            # 20 Hz; keep this off any critical control path
 finally:
-    left.stop()
-    right.stop()
+    left_wheel.stop()
+    right_wheel.stop()
     stdout.write('{"event":"end"}\n')       # flush sentinel

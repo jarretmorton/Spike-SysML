@@ -189,6 +189,7 @@ class LivePlot:
         self._fig = None
         self._axes: dict[str, Any] = {}
         self._lines: dict[str, Any] = {}
+        self._bandspans: dict[str, Any] = {}
 
     def on_event(self, ev: dict) -> None:
         sensor = ev.get("sensor")
@@ -215,15 +216,14 @@ class LivePlot:
             ax.set_ylabel(f"{sensor}" + (f" ({unit})" if unit else ""))
             ax.grid(True, alpha=0.3)
             lo, hi = self._bands.get(sensor, (None, None))
-            if lo is not None or hi is not None:
-                ylo = lo if lo is not None else ax.get_ylim()[0]
-                yhi = hi if hi is not None else ax.get_ylim()[1]
-                ax.axhspan(ylo, yhi, color="tab:green", alpha=0.12, zorder=0,
-                           label=f"{self._labels[sensor]} band")
-                if lo is not None:
-                    ax.axhline(lo, color="tab:green", lw=0.8, ls="--", alpha=0.6)
-                if hi is not None:
-                    ax.axhline(hi, color="tab:green", lw=0.8, ls="--", alpha=0.6)
+            # The dashed threshold lines sit at fixed values, so draw them once.
+            # The filled span's open edge must follow the live y-limits, so it is
+            # (re)drawn each frame in _redraw rather than frozen here against the
+            # still-empty axes default of (0, 1).
+            if lo is not None:
+                ax.axhline(lo, color="tab:green", lw=0.8, ls="--", alpha=0.6)
+            if hi is not None:
+                ax.axhline(hi, color="tab:green", lw=0.8, ls="--", alpha=0.6)
             (line,) = ax.plot([], [], lw=1.4, color="tab:blue")
             self._axes[sensor] = ax
             self._lines[sensor] = line
@@ -236,7 +236,14 @@ class LivePlot:
             ys = [p[1] for p in self.data[sensor]]
             self._lines[sensor].set_data(xs, ys)
             ax = self._axes[sensor]
+            # Drop last frame's band before relim so the fill (whose open edge
+            # equals the padded y-limit) can't feed back into autoscale and walk
+            # the axis off toward infinity. Autoscale sees line data only.
+            old = self._bandspans.pop(sensor, None)
+            if old is not None:
+                old.remove()
             ax.relim(); ax.autoscale_view()
+            self._draw_band(sensor, ax)
             if ys:
                 v = ys[-1]
                 lo, hi = self._bands.get(sensor, (None, None))
@@ -244,6 +251,20 @@ class LivePlot:
                 ax.set_title(f"{sensor} = {v:.3g}   {'PASS' if ok else 'OUT OF BAND'}",
                              color=("tab:green" if ok else "tab:red"),
                              fontsize=10, loc="left")
+
+    def _draw_band(self, sensor: str, ax) -> None:
+        """(Re)draw the green pass band for ``sensor`` against the axes' current
+        y-limits, so an open-ended requirement fills the live visible range and
+        flips sides when the operator flips. Called every frame after autoscale."""
+        lo, hi = self._bands.get(sensor, (None, None))
+        if lo is None and hi is None:
+            return
+        y0, y1 = ax.get_ylim()
+        ylo = lo if lo is not None else y0
+        yhi = hi if hi is not None else y1
+        self._bandspans[sensor] = ax.axhspan(
+            ylo, yhi, color="tab:green", alpha=0.12, zorder=0,
+            label=f"{self._labels[sensor]} band")
 
     async def render_until(self, task: asyncio.Task):
         import matplotlib.pyplot as plt

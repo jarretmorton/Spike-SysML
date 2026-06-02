@@ -1,29 +1,40 @@
 {
   "requirements": [
     {
-      "id": "CN-003",
+      "id": "CN-001",
       "type": "constraint",
-      "text": "Rover cruise speed shall not exceed 0.5 m/s during operation.",
+      "text": "Rover shall not get within 100mm on the right",
       "pass_criteria": {
-        "sensor": "speed_mps",
-        "op": "in_range",
-        "min": 0.0,
-        "max": 0.5,
-        "unit": "m/s"
+        "sensor": "distance_on_the_right",
+        "op": ">",
+        "value": 100.0,
+        "unit": "mm"
       },
-      "source": "rover_test_v1.txt: 'the rover must not move faster than 0.5 m/s'"
+      "source": "rover_test_v1.txt: 'the rover must not get closer than 100mm'"
     },
     {
-      "id": "CN-007",
+      "id": "CN-002",
       "type": "constraint",
-      "text": "Contact force on the front bumper shall not exceed 1.0 N.",
+      "text": "Rover shall not get within 100mm on the left",
       "pass_criteria": {
-        "sensor": "force_n",
-        "op": "<=",
-        "value": 1.0,
-        "unit": "N"
+        "sensor": "distance_on_the_left",
+        "op": ">",
+        "value": 100.0,
+        "unit": "mm"
       },
-      "source": "rover_test_v1.txt: 'do not push obstacles harder than 1 N'"
+      "source": "rover_test_v1.txt: 'the rover must not get closer than 100mm'"
+    },
+       {
+      "id": "CN-003",
+      "type": "constraint",
+      "text": "Rover shall not drive over an edge",
+      "pass_criteria": {
+        "sensor": "reflection",
+        "op": ">",
+        "value": 20,
+        "unit": "%"
+      },
+      "source": "rover_test_v1.txt: 'the rover must not keep driving if the reflection is less than 20%'"
     }
   ],
   "metadata": {
