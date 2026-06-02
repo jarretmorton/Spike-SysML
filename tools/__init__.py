@@ -1,6 +1,6 @@
 """Spike SysML tool surface.
 
-Four tools, two for each architectural pattern:
+Four tools across the two architectural patterns:
 
 - ``sysml_validate`` supports the orchestrator-workers pattern by
   schema-checking the merged requirements model.

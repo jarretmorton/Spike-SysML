@@ -7,26 +7,27 @@ the input/output of the v0.1 prototype.
 ## Files
 
 - **`requirements_example.json`** — a small requirements model in the
-  schema defined by `docs/wire_contract.md`. Two constraint requirements
-  (CN-003 and CN-007) sourced from a fictional rover spec. This is the
-  shape the orchestrator-workers pipeline merges to and that
+  schema defined by `docs/wire_contract.md`. Three constraint
+  requirements (CN-001, CN-002, CN-003) from a fictional rover spec
+  (`rover_test_v1.txt`): stay clear of obstacles on the right and left
+  (distance > 100 mm) and stop at a table edge (reflection > 20%). This
+  is the shape the orchestrator-workers pipeline merges to and that
   `sysml_validate` checks.
 
 - **`hub_program_example.py`** — a hand-written stand-in for the draft
-  agent's output. Drives two motors, reads a force sensor, emits speed
-  and force telemetry at 20 Hz in the canonical wire format, and stops
-  the motors on first contact. Runs on the SPIKE Prime hub under
-  Pybricks firmware.
+  agent's output. Drives two wheel motors, reads left/right ultrasonic
+  distance sensors and a color (reflection) sensor, and emits speed, both
+  distances, and reflection at 20 Hz in the canonical wire format. It
+  stops the motors when an obstacle comes within 100 mm or the edge
+  sensor drops below 20%. Runs on the SPIKE Prime hub under Pybricks
+  firmware.
 
-- **`runs/press_run.jsonl`** and **`runs/run_example.jsonl`** — two
-  captured telemetry traces from running `hub_program_example.py` on
-  hardware. Each line is one event per the wire contract. The traces
-  differ in the physical event the rover encountered:
-  - `press_run.jsonl` — hard contact, peak ~8.3 N (well outside CN-007's
-    1 N ceiling).
-  - `run_example.jsonl` — gentler contact, peak ~1.9 N (still outside
-    CN-007).
-  Both are useful inputs for re-grading offline via `test_eval` as the
+- **`runs/run.jsonl`** — a captured telemetry trace (~16 s) from running
+  `hub_program_example.py` on hardware. Each line is one event per the
+  wire contract. In this run both distance sensors stay above the 100 mm
+  floor (CN-001 and CN-002 pass) while the reflection sensor reads
+  near-zero through the second half (CN-003 fails — the rover reached an
+  edge). A useful input for re-grading offline via `test_eval` as the
   pass_criteria grammar evolves.
 
 ## Quickstart against these examples

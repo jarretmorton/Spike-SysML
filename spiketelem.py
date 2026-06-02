@@ -72,22 +72,51 @@ async def _real_run(program_path: str, hub_id, model: dict,
             except Exception: pass
 
 
+def _synth_sample(t: int, end: int) -> dict:
+    """One synthetic telemetry sample for the demo path, keyed by sensor.
+
+    Emits the sensors named in ``examples/requirements_example.json``
+    (``distance_on_the_right``, ``distance_on_the_left``, ``reflection``,
+    plus ``speed_mps`` for fidelity with the hub program), shaped to stay
+    inside their pass_criteria bands — distances above the 100 mm floor and
+    reflection above the 20% floor — so a hardware-free demo shows a passing
+    run with the live plots populated.
+
+    ``t`` and ``end`` are milliseconds on the hub clock.
+    """
+    span = max(1, end)
+    frac = t / span
+    # gentle forward speed that eases in and tapers off (not gated by any req)
+    speed = max(0.0, round(0.4 * math.sin(math.pi * frac) + random.uniform(-0.01, 0.01), 4))
+    # right obstacle: closest approach mid-run, dips toward ~160 mm, never <100
+    sig_r = max(1.0, span * 0.18)
+    right = 600 - 440 * math.exp(-((t - span * 0.5) ** 2) / (2 * sig_r ** 2))
+    right = round(max(120.0, right + random.uniform(-8, 8)), 1)
+    # left obstacle: a later, shallower approach
+    sig_l = max(1.0, span * 0.15)
+    left = 700 - 380 * math.exp(-((t - span * 0.7) ** 2) / (2 * sig_l ** 2))
+    left = round(max(140.0, left + random.uniform(-8, 8)), 1)
+    # edge reflection: hovers ~45%, mild texture, stays above the 20% floor
+    reflection = max(25.0, round(45 + 8 * math.sin(t / 700.0) + random.uniform(-2, 2), 1))
+    return {
+        "speed_mps": speed,
+        "distance_on_the_right": right,
+        "distance_on_the_left": left,
+        "reflection": reflection,
+    }
+
+
 async def _demo_run(framer: StdoutFramer, bus: TelemetryBus,
                     plot: LivePlot | None, seconds: float) -> dict:
-    """Synthesize a plausible (force + speed) telemetry trace through the
-    same framer/bus path so the full pipeline is exercised without hardware."""
+    """Synthesize a plausible rover telemetry trace (two distances, reflection,
+    and speed) through the same framer/bus path so the full pipeline is
+    exercised without hardware."""
     capture = next(s for s in bus._sinks if isinstance(s, CaptureBuffer))
 
     async def feeder():
         t, dt, end = 0, 50, int(seconds * 1000)
         while t <= end:
-            base = 0.5 * (1 - math.exp(-t / 1500))
-            over = 0.12 * math.exp(-((t - end / 2) ** 2) / (2 * 250 ** 2))
-            speed = round(base + over + random.uniform(-0.01, 0.01), 4)
-            # force rises only after the rover has been moving for a bit
-            force_base = 0.0 if t < end * 0.45 else 0.7 + 0.4 * math.sin(t / 200)
-            force = round(max(0.0, force_base + random.uniform(-0.05, 0.05)), 4)
-            for sensor, value in (("speed_mps", speed), ("force_n", force)):
+            for sensor, value in _synth_sample(t, end).items():
                 line = json.dumps({"timestamp_ms": t, "sensor": sensor, "value": value})
                 framer.feed((line + "\n").encode())
             t += dt
@@ -209,12 +238,7 @@ def main(argv=None) -> int:
             # synchronous synthetic feed for headless render
             t, dt, end = 0, 50, int(args.seconds * 1000)
             while t <= end:
-                base = 0.5 * (1 - math.exp(-t / 1500))
-                over = 0.12 * math.exp(-((t - end / 2) ** 2) / (2 * 250 ** 2))
-                speed = round(base + over + random.uniform(-0.01, 0.01), 4)
-                force_base = 0.0 if t < end * 0.45 else 0.7 + 0.4 * math.sin(t / 200)
-                force = round(max(0.0, force_base + random.uniform(-0.05, 0.05)), 4)
-                for sensor, value in (("speed_mps", speed), ("force_n", force)):
+                for sensor, value in _synth_sample(t, end).items():
                     framer.feed((json.dumps({"timestamp_ms": t, "sensor": sensor,
                                               "value": value}) + "\n").encode())
                 t += dt

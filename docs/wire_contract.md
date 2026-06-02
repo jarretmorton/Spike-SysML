@@ -112,8 +112,8 @@ is not used by `test_eval`.
 Examples (drawn from `examples/requirements_example.json`):
 
 ```json
-{"sensor": "speed_mps", "op": "in_range", "min": 0.0, "max": 0.5, "unit": "m/s"}
-{"sensor": "force_n",   "op": "<=",       "value": 1.0,            "unit": "N"}
+{"sensor": "distance_on_the_right", "op": ">", "value": 100.0, "unit": "mm"}
+{"sensor": "reflection",            "op": ">", "value": 20,    "unit": "%"}
 ```
 
 Operators beyond this set (time-windowed in-band, derived/cross-signal,
@@ -147,4 +147,4 @@ Until then, the convention is:
 `spiketelem` CLI also persists each run to a `.jsonl` file when `--log` is
 passed. The file format is one telemetry event per line, in the same
 schema as §1, without the `{"event":"end"}` sentinel (it's implicit in
-end-of-file). See `examples/runs/` for two captured traces.
+end-of-file). See `examples/runs/run.jsonl` for a captured trace.
