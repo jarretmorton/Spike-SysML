@@ -17,11 +17,13 @@ def test_eval(
 ) -> dict:
     """Decide whether a run satisfies the requirement it was built to test.
 
-    This tool is the critic in the evaluator-optimizer loop. It is the only
-    place where a pass/fail verdict is produced; no other tool should infer
-    success from telemetry. If the verdict is ``passed=False`` and the
-    iteration budget is not exhausted, the loop returns to the draft agent
-    with the reasoning attached.
+    This tool is the critic in the *integration* evaluator-optimizer loop
+    (stage 6). It is the only place a requirement pass/fail verdict is produced;
+    no other tool should infer success from telemetry. It scores *requirement
+    satisfaction* — distinct from calibration (stage 5), which fits parameters
+    deterministically and does not use this tool. If ``passed=False`` and the
+    iteration budget is not exhausted, the loop returns to the code step with
+    the reasoning attached.
 
     Args:
         run_result: The full dict returned by :func:`spike_run`. Must

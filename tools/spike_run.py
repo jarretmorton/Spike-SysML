@@ -22,7 +22,10 @@ def spike_run(
 
     Use this tool after a successful :func:`spike_deploy`. The tool blocks
     until the program completes, the timeout expires, or the hub
-    disconnects. Telemetry is captured for the entire run window.
+    disconnects. Telemetry is captured for the entire run window. Used in
+    both hardware loops — calibration tests (whose telemetry feeds the
+    deterministic constant-fitter) and integration tests (whose telemetry
+    feeds test_eval)
 
     Args:
         slot: Program slot to execute. Defaults to ``0``, which matches

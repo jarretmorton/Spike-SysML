@@ -2,10 +2,12 @@
 
 Four tools across the two architectural patterns:
 
-- ``sysml_validate`` supports the orchestrator-workers pattern by
-  schema-checking the merged requirements model.
-- ``spike_deploy``, ``spike_run``, and ``test_eval`` form the
-  evaluator-optimizer loop, with the SPIKE Prime hub as the evaluator.
+- ``sysml_validate`` schema-checks the composed SysML v2 model before
+  the code step.
+- ``spike_deploy`` and ``spike_run`` drive the hardware in both the
+  calibration loop (stage 5) and the integration loop (stage 6);
+  ``test_eval`` is the critic for the integration loop, with the SPIKE
+  Prime hub as the evaluator.
 
 Status (v0.1):
 

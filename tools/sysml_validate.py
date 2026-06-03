@@ -25,10 +25,13 @@ def sysml_validate(
 ) -> dict:
     """Validate a structured requirements model against the SysML v2 schema.
 
-    Use this tool after the orchestrator has merged worker outputs into a
-    single requirements model, and before passing the model to the draft
-    agent. A model that fails validation should be returned to the
-    orchestrator with the error list, not passed downstream.
+    Use this tool on the *composed* SysML v2 model — after requirements have
+    been used to select and connect unit models from the registry, and before
+    the code step. Validate the composed model, not just the merged
+    requirements: composition (the interconnections and bound parameters) is
+    where invalidity is introduced even when unit models are individually
+    valid. A model that fails validation returns to the composition step with
+    the error list, not downstream.
 
     Args:
         model: The requirements model as a dict. Expected top-level keys:

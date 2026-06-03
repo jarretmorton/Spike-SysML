@@ -14,13 +14,14 @@ def spike_deploy(
 ) -> dict:
     """Push generated MicroPython source to the SPIKE Prime hub.
 
-    Use this tool to upload code produced by the draft agent. The code is
-    not executed by this tool — call :func:`spike_run` after a successful
-    deploy.
+    Use this tool to upload code produced by the code step (templated hardware
+    primitives plus generated mission orchestration). The code is not executed
+    here — call :func:`spike_run` after a successful deploy. Used in both
+    hardware loops: calibration (stage 5) and integration (stage 6).
 
     Args:
         code: MicroPython source to deploy. Must be syntactically valid for
-            the SPIKE Prime hub's MicroPython runtime. The draft agent is
+            the SPIKE Prime hub's MicroPython runtime. The code generator is
             responsible for syntactic correctness; this tool does not lint
             or transform the source.
         hub_id: Optional hub identifier (the BLE advertised name) when more
