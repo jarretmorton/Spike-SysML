@@ -14,23 +14,27 @@
 # size-constrained and a json module is not guaranteed to be present. The
 # host side parses with full CPython json.loads.
 
+# Pybricks device classes. These resolve only on the hub firmware; importing
+# them on a desktop CPython will fail, which is why this script is run on-hub.
 from pybricks.hubs import PrimeHub
 from pybricks.pupdevices import Motor, UltrasonicSensor, ColorSensor
 from pybricks.parameters import Port
 from pybricks.tools import StopWatch, wait
-from usys import stdout
+from usys import stdout                     # MicroPython's sys; stdout is the BLE pipe
 
 # --- physical configuration (edit to match your build) ---
+# Each device is bound to the physical port it's plugged into. The names below
+# describe the robot's chassis layout, not the Pybricks defaults.
 hub   = PrimeHub()
 left_wheel  = Motor(Port.C)
 right_wheel = Motor(Port.D)
-right_eye = UltrasonicSensor(Port.B)
-left_eye = UltrasonicSensor(Port.A)
-back_eye = UltrasonicSensor(Port.E)
-edge_sensor = ColorSensor(Port.F)
-WHEEL_CIRC_M = 0.055 * 3.1416 * 2          # 55 mm radius wheel
+right_eye = UltrasonicSensor(Port.B)       # forward-right distance sensor
+left_eye = UltrasonicSensor(Port.A)        # forward-left distance sensor
+back_eye = UltrasonicSensor(Port.E)        # rear distance sensor (declared, unused here)
+edge_sensor = ColorSensor(Port.F)          # downward sensor; reflection() finds table edges/lines
+WHEEL_CIRC_M = 0.055 * 3.1416 * 2          # wheel circumference in metres (55 mm radius)
 
-clock = StopWatch()
+clock = StopWatch()                        # hub-local millisecond clock, started at import
 
 
 def emit(sensor, value):
@@ -42,25 +46,37 @@ def emit(sensor, value):
 
 
 # --- commands ---
+# Start both wheels spinning. run() takes a speed in degrees/second and is
+# non-blocking, so execution falls straight through to the loop below. The
+# opposite signs reflect the motors being mounted as mirror images.
 left_wheel.run(-80)                              # 180 deg/s forward (signs depend on chassis)
 right_wheel.run(80)
 
 # --- measurement loop ---
+# Runs forever, sampling sensors and emitting telemetry. The try/finally
+# guarantees the motors stop and an end sentinel is sent even if the program
+# is interrupted (e.g. the user hits stop on the hub).
 try:
-    motors_stopped = False
+    motors_stopped = False                  # latch so we only issue stop() once
     while True:
+        # Average the two wheel speeds (deg/s), convert to a linear ground
+        # speed in m/s, and take the magnitude so direction doesn't matter.
         deg_per_s = (left_wheel.speed() + right_wheel.speed()) / 2
         speed_mps = abs(deg_per_s / 360.0 * WHEEL_CIRC_M)
-        distance_on_the_right = right_eye.distance()
-        distance_on_the_left = left_eye.distance()
-        reflection = edge_sensor.reflection()
+        distance_on_the_right = right_eye.distance()   # mm to nearest obstacle
+        distance_on_the_left = left_eye.distance()     # mm to nearest obstacle
+        reflection = edge_sensor.reflection()          # 0-100% surface reflectivity
 
+        # Stream one telemetry line per reading in the canonical wire format.
         emit("speed_mps", speed_mps)
         emit("distance_on_the_right", distance_on_the_right)
         emit("distance_on_the_left", distance_on_the_left)
         emit("reflection", reflection)
 
         # behavioural rule wired into the program: stop if too close
+        # Trip on either side getting within 100 mm, or the floor going dark
+        # (reflection < 20, i.e. an edge or black line). Guarded by the latch
+        # so the motors are commanded to stop exactly once.
         if (distance_on_the_left < 100 or distance_on_the_right < 100 or reflection < 20) and not motors_stopped:
             left_wheel.stop()
             right_wheel.stop()
@@ -68,6 +84,7 @@ try:
 
         wait(50)                            # 20 Hz; keep this off any critical control path
 finally:
+    # Always leave the hardware safe and signal the host that the run is over.
     left_wheel.stop()
     right_wheel.stop()
     stdout.write('{"event":"end"}\n')       # flush sentinel
