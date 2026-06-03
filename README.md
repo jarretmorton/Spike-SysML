@@ -14,8 +14,9 @@ Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE
 
 Built around two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents):
 
-- **Orchestrator-workers** for requirements decomposition. A planning agent reads the spec and dispatches structured-output sub-agents to extract functional, behavioral, interface, and constraint requirements in parallel, emitted as SysML v2.
+- **Orchestrator-workers** for requirements decomposition. A planning agent reads the spec and dispatches structured-output sub-agents to extract functional, behavioral, interface, and constraint requirements to extract functional, behavioral, interface, and constraint requirements in parallel; a selection-and-composition step then assembles these into a SysML v2 model from a fixed unit-model registry.
 - **Evaluator-optimizer** for code generation, with the hardware as the evaluator. A draft agent generates MicroPython for the SPIKE hub; the code runs on the robot; telemetry and pass/fail signals come back; the loop iterates until tests pass or a budget is hit.
+- **Parameter calibration and a human gate.** Before the integrated test,   unit-level constants are calibrated against the hardware and a human signs off on sufficiency — the one expensive step is gated behind cheap   verification.
 
 Tool surface (v0.1):
 
