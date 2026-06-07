@@ -3,26 +3,26 @@
     {
       "id": "CN-001",
       "type": "constraint",
-      "text": "Rover shall not get within 100mm on the right",
+      "text": "Rover shall not get within 50mm on the right",
       "pass_criteria": {
         "sensor": "distance_on_the_right",
         "op": ">",
-        "value": 100.0,
+        "value": 50.0,
         "unit": "mm"
       },
-      "source": "rover_test_v1.txt: 'the rover must not get closer than 100mm'"
+      "source": "rover_test_v1.txt: 'the rover must not get closer than 50mm'"
     },
     {
       "id": "CN-002",
       "type": "constraint",
-      "text": "Rover shall not get within 100mm on the left",
+      "text": "Rover shall not get within 50mm on the left",
       "pass_criteria": {
         "sensor": "distance_on_the_left",
         "op": ">",
-        "value": 100.0,
+        "value": 50.0,
         "unit": "mm"
       },
-      "source": "rover_test_v1.txt: 'the rover must not get closer than 100mm'"
+      "source": "rover_test_v1.txt: 'the rover must not get closer than 50mm'"
     },
        {
       "id": "CN-003",

@@ -78,7 +78,7 @@ def _synth_sample(t: int, end: int) -> dict:
     Emits the sensors named in ``examples/requirements_example.json``
     (``distance_on_the_right``, ``distance_on_the_left``, ``reflection``,
     plus ``speed_mps`` for fidelity with the hub program), shaped to stay
-    inside their pass_criteria bands — distances above the 100 mm floor and
+    inside their pass_criteria bands — distances above the 50 mm floor and
     reflection above the 20% floor — so a hardware-free demo shows a passing
     run with the live plots populated.
 
@@ -88,7 +88,7 @@ def _synth_sample(t: int, end: int) -> dict:
     frac = t / span
     # gentle forward speed that eases in and tapers off (not gated by any req)
     speed = max(0.0, round(0.4 * math.sin(math.pi * frac) + random.uniform(-0.01, 0.01), 4))
-    # right obstacle: closest approach mid-run, dips toward ~160 mm, never <100
+    # right obstacle: closest approach mid-run, dips toward ~160 mm, never <50
     sig_r = max(1.0, span * 0.18)
     right = 600 - 440 * math.exp(-((t - span * 0.5) ** 2) / (2 * sig_r ** 2))
     right = round(max(120.0, right + random.uniform(-8, 8)), 1)

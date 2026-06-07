@@ -112,7 +112,7 @@ is not used by `test_eval`.
 Examples (drawn from `examples/requirements_example.json`):
 
 ```json
-{"sensor": "distance_on_the_right", "op": ">", "value": 100.0, "unit": "mm"}
+{"sensor": "distance_on_the_right", "op": ">", "value": 50.0, "unit": "mm"}
 {"sensor": "reflection",            "op": ">", "value": 20,    "unit": "%"}
 ```
 

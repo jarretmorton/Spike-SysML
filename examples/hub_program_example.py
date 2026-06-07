@@ -74,10 +74,10 @@ try:
         emit("reflection", reflection)
 
         # behavioural rule wired into the program: stop if too close
-        # Trip on either side getting within 100 mm, or the floor going dark
+        # Trip on either side getting within 50 mm, or the floor going dark
         # (reflection < 20, i.e. an edge or black line). Guarded by the latch
         # so the motors are commanded to stop exactly once.
-        if (distance_on_the_left < 100 or distance_on_the_right < 100 or reflection < 20) and not motors_stopped:
+        if (distance_on_the_left < 50 or distance_on_the_right < 50 or reflection < 20) and not motors_stopped:
             left_wheel.stop()
             right_wheel.stop()
             motors_stopped = True
