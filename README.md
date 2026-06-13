@@ -27,6 +27,21 @@ Tool surface (v0.1):
 
 See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [`docs/wire_contract.md`](docs/wire_contract.md) for the telemetry wire format and requirements model schema.
 
+## Setup
+
+Requires Python 3.10+, and for hardware runs a SPIKE Prime hub on Pybricks
+firmware. Install the dependencies:
+
+```bash
+pip install pybricksdev matplotlib mcp
+```
+
+- `pybricksdev` — BLE communication with the hub (deploy + run).
+- `matplotlib` — live telemetry plots in `spiketelem.py`. Required unless you
+  pass `--no-plot`.
+- `mcp` — only needed for the `spike_prime_mcp` server (see
+  [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md)).
+
 ## Quickstart
 
 ```bash
@@ -41,6 +56,10 @@ python spiketelem.py run examples/hub_program_example.py \
 # or synthesize telemetry without hardware to exercise the pipeline
 python spiketelem.py demo examples/requirements_example.json --seconds 8
 ```
+
+A live plot window opens during `run` and `demo`, one panel per sensor named in
+a requirement, with each requirement's pass band shaded. Add `--no-plot` to skip
+it (no matplotlib needed), or `--snapshot out.png` on `demo` to render headless.
 
 `spiketelem.py` is a developer cockpit on top of the tool surface; the orchestrator and draft agent call the `tools/` functions directly.
 
