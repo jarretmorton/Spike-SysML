@@ -32,6 +32,7 @@ Wire contract for traces: ``docs/wire_contract.md``.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import math
 import sys
@@ -68,6 +69,16 @@ DOWNSAMPLE_POINTS_PER_SENSOR = 100
 FULL_EVENT_CAP = 500
 STDOUT_TAIL_LINES = 20
 SUMMARY_DISTINCT_CAP = 5
+
+# Reliability budgets (v0.1.1). Every hardware tool call is wrapped in an
+# overall asyncio.wait_for so the server ALWAYS answers the MCP request —
+# pybricksdev's connect/download awaits have no timeouts of their own, and
+# an un-timeboxed BLE stall otherwise wedges the whole server (observed on
+# Windows after an aborted connection).
+FLASH_TIMEOUT_S = 45.0     # scan (with retry) + connect + compile/download
+RUN_GRACE_S = 30.0         # added to timeout_seconds for the whole run call
+SCAN_RETRY_DELAY_S = 2.0   # hubs re-advertise a beat after a disconnect
+CLEANUP_TIMEOUT_S = 5.0    # best-effort stop/disconnect must not hang either
 
 mcp = FastMCP("spike-prime")
 
@@ -256,6 +267,56 @@ def _run_envelope(run_id: str, meta: dict) -> dict:
 
 
 # --------------------------------------------------------------------------- #
+# Hardware-call reliability helpers (v0.1.1)                                   #
+# --------------------------------------------------------------------------- #
+class _HubHolder:
+    """Carries the live hub reference out of a wait_for-wrapped inner task so
+    the cleanup path can still reach it after a cancellation."""
+
+    def __init__(self) -> None:
+        self.hub = None
+
+
+async def _connect_with_retry(hub_id: Optional[str], holder: _HubHolder):
+    """connect_hub with one scan retry and an actionable no-hub message.
+
+    Hubs take a beat to resume advertising after a disconnect, and Windows
+    BLE is slow to notice — a single 10 s scan window can miss a hub that is
+    sitting right there. One retry after a short pause covers that gap."""
+    last: Optional[BaseException] = None
+    for attempt in (1, 2):
+        try:
+            hub, device = await connect_hub(hub_id=hub_id)
+            holder.hub = hub
+            return hub, device
+        except (asyncio.TimeoutError, TimeoutError) as e:
+            last = e
+            if attempt == 1:
+                await asyncio.sleep(SCAN_RETRY_DELAY_S)
+    raise RuntimeError(
+        "No Pybricks hub found after 2 scans. Check: hub powered on, running "
+        "Pybricks firmware, and not connected to another app (Pybricks "
+        "accepts one BLE client at a time)."
+    ) from last
+
+
+async def _safe_cleanup(holder: _HubHolder, stop_program: bool = False) -> None:
+    """Best-effort, time-boxed stop/disconnect. Never raises, never hangs."""
+    hub = holder.hub
+    if hub is None:
+        return
+    if stop_program:
+        try:
+            await asyncio.wait_for(hub.stop_user_program(), CLEANUP_TIMEOUT_S)
+        except Exception:
+            pass
+    try:
+        await asyncio.wait_for(hub.disconnect(), CLEANUP_TIMEOUT_S)
+    except Exception:
+        pass
+
+
+# --------------------------------------------------------------------------- #
 # MCP tools                                                                   #
 # --------------------------------------------------------------------------- #
 @mcp.tool()
@@ -277,6 +338,8 @@ async def flash_program(
     the last samples of a run can be lost to BLE buffering.
 
     Connects to the hub for this call only and disconnects afterwards. The
+    whole call is time-boxed (~45 s): a stalled BLE connect or transfer
+    returns a structured error instead of hanging. The scan retries once. The
     flashed program stays resident on the hub while it remains powered; if
     run_program later reports no program, the hub power-cycled — re-flash.
 
@@ -294,15 +357,30 @@ async def flash_program(
         is powered on, running Pybricks firmware, and not connected to
         another app (Pybricks allows one BLE client at a time), then retry.
     """
-    hub = None
-    try:
-        hub, device = await connect_hub(hub_id=hub_id)
+    holder = _HubHolder()
+
+    async def _do() -> dict:
+        hub, device = await _connect_with_retry(hub_id, holder)
         await deploy_program(hub, code, slot=slot)
         return {
             "deployed": True,
             "slot": slot,
             "hub_id": getattr(device, "name", None) or hub_id,
             "error": None,
+        }
+
+    try:
+        return await asyncio.wait_for(_do(), timeout=FLASH_TIMEOUT_S)
+    except asyncio.TimeoutError:
+        return {
+            "deployed": False,
+            "slot": slot,
+            "hub_id": hub_id,
+            "error": (
+                f"Hardware operation timed out after {FLASH_TIMEOUT_S:.0f} s — "
+                "the hub was likely found but the BLE connect or transfer "
+                "stalled. Power-cycle the hub and retry."
+            ),
         }
     except Exception as e:  # noqa: BLE001 — boundary tool, report don't raise
         return {
@@ -312,11 +390,7 @@ async def flash_program(
             "error": f"{type(e).__name__}: {e}",
         }
     finally:
-        if hub is not None:
-            try:
-                await hub.disconnect()
-            except Exception:
-                pass
+        await _safe_cleanup(holder)
 
 
 @mcp.tool()
@@ -355,66 +429,97 @@ async def run_program(
         trace_file (str, repo-relative), error (str | None — only for
         runs that failed to start).
     """
-    hub = None
+    holder = _HubHolder()
     bus = TelemetryBus()
     framer = StdoutFramer(bus)
     capture = bus.add(CaptureBuffer())
     bus.add(ConsoleSink())  # hub prints/tracebacks -> stderr -> CD server log
-    logger: Optional[JsonlLogger] = None
     run_id: Optional[str] = None
-    try:
-        hub, device = await connect_hub(hub_id=hub_id)
-        RUNS_DIR.mkdir(parents=True, exist_ok=True)
-        run_id = _new_run_id()
-        logger = bus.add(JsonlLogger(str(_trace_path(run_id))))
-        summary = await _rt_run_program(
-            hub, bus, framer, timeout_seconds=timeout_seconds, plot=None
-        )
-        counts: dict[str, int] = {}
+    ok = False
+
+    def _counts() -> dict[str, int]:
+        c: dict[str, int] = {}
         for ev in capture.events:
-            counts[ev["sensor"]] = counts.get(ev["sensor"], 0) + 1
+            c[ev["sensor"]] = c.get(ev["sensor"], 0) + 1
+        return c
+
+    def _write_meta(completed: bool, duration: float, hub_name) -> None:
+        if run_id is None:
+            return
         meta = {
             "run_id": run_id,
             "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
-            "completed": summary["completed"],
-            "duration_seconds": round(summary["duration_seconds"], 3),
+            "completed": completed,
+            "duration_seconds": round(duration, 3),
             "slot": slot,
-            "hub_id": getattr(device, "name", None) or hub_id,
-            "sensors": counts,
+            "hub_id": hub_name,
+            "sensors": _counts(),
             "total_events": len(capture.events),
             "end_sentinel_seen": capture.ended,
             "stdout_lines": capture.stdout_lines,
         }
-        _meta_path(run_id).write_text(
-            json.dumps(meta, indent=1), encoding="utf-8"
+        try:
+            _meta_path(run_id).write_text(json.dumps(meta, indent=1), encoding="utf-8")
+        except OSError:
+            pass
+
+    async def _do() -> dict:
+        nonlocal run_id
+        hub, device = await _connect_with_retry(hub_id, holder)
+        RUNS_DIR.mkdir(parents=True, exist_ok=True)
+        run_id = _new_run_id()
+        bus.add(JsonlLogger(str(_trace_path(run_id))))
+        summary = await _rt_run_program(
+            hub, bus, framer, timeout_seconds=timeout_seconds, plot=None
         )
+        hub_name = getattr(device, "name", None) or hub_id
+        _write_meta(summary["completed"], summary["duration_seconds"], hub_name)
         return {
             "run_id": run_id,
             "completed": summary["completed"],
             "duration_seconds": round(summary["duration_seconds"], 3),
-            "sensors": counts,
+            "sensors": _counts(),
             "total_events": len(capture.events),
             "stdout_tail": capture.stdout_lines[-STDOUT_TAIL_LINES:],
             "trace_file": f"runs/{run_id}.jsonl",
             "error": None,
+        }
+
+    try:
+        result = await asyncio.wait_for(_do(), timeout=timeout_seconds + RUN_GRACE_S)
+        ok = True
+        return result
+    except asyncio.TimeoutError:
+        _write_meta(False, timeout_seconds + RUN_GRACE_S, hub_id)
+        return {
+            "run_id": run_id,
+            "completed": False,
+            "duration_seconds": 0.0,
+            "sensors": _counts(),
+            "total_events": len(capture.events),
+            "stdout_tail": capture.stdout_lines[-STDOUT_TAIL_LINES:],
+            "trace_file": f"runs/{run_id}.jsonl" if run_id else None,
+            "error": (
+                f"Hardware call exceeded its overall budget "
+                f"({timeout_seconds:.0f} s run + {RUN_GRACE_S:.0f} s grace) — "
+                "a BLE operation stalled. The program was sent a stop; any "
+                "captured telemetry persisted. Power-cycle the hub if the "
+                "next call also fails."
+            ),
         }
     except Exception as e:  # noqa: BLE001
         return {
             "run_id": run_id,
             "completed": False,
             "duration_seconds": 0.0,
-            "sensors": {},
+            "sensors": _counts(),
             "total_events": len(capture.events),
             "stdout_tail": capture.stdout_lines[-STDOUT_TAIL_LINES:],
             "trace_file": f"runs/{run_id}.jsonl" if run_id else None,
             "error": f"{type(e).__name__}: {e}",
         }
     finally:
-        if hub is not None:
-            try:
-                await hub.disconnect()
-            except Exception:
-                pass
+        await _safe_cleanup(holder, stop_program=not ok)
 
 
 @mcp.tool()

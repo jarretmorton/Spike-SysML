@@ -48,8 +48,8 @@ then restart Claude Desktop:
 {
   "mcpServers": {
     "spike-prime": {
-      "command": "C:\Users\Jarret\Documents\GitHub\Spike-SysML\.venv\Scripts\python.exe",
-      "args": ["C:\Users\Jarret\Documents\GitHub\Spike-SysML\spike_prime_mcp\server.py"]
+      "command": "C:\\Users\\Jarret\\Documents\\GitHub\\Spike-SysML\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\Jarret\\Documents\\GitHub\\Spike-SysML\\spike_prime_mcp\\server.py"]
     }
   }
 }
