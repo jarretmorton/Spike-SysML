@@ -9,7 +9,8 @@ Three tools over stdio, for Claude Desktop or any MCP client:
 - ``get_telemetry``  — read a persisted trace back at ``summary`` (default),
   ``downsampled``, or ``full`` detail.
 
-Design notes (see ``docs/architecture.md``, pipeline step 7):
+Design notes (see ``docs/architecture.md`` — the deploy/run hardware seam of
+the calibration (stage 5) and integration (stage 6) loops):
 
 - The MCP surface is the *hardware seam only*. Host-side pipeline logic
   (``sysml_validate``, ``test_eval``) deliberately stays out of it.

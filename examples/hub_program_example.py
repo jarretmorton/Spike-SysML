@@ -49,7 +49,7 @@ def emit(sensor, value):
 # Start both wheels spinning. run() takes a speed in degrees/second and is
 # non-blocking, so execution falls straight through to the loop below. The
 # opposite signs reflect the motors being mounted as mirror images.
-left_wheel.run(-80)                              # 180 deg/s forward (signs depend on chassis)
+left_wheel.run(-80)                              # 80 deg/s forward (signs depend on chassis)
 right_wheel.run(80)
 
 # --- measurement loop ---

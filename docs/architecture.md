@@ -75,7 +75,7 @@ flowchart TD
 | `sysml_validate` | Validate a composed SysML v2 model against the `lego` grammar subset; returns the parse result and a list of violations, empty on success. Fails closed — an unparseable model blocks codegen. | v0.1, `lego` subset |
 | `spike_deploy` | Transfer a MicroPython program to the hub over BLE and confirm receipt; returns a deploy handle or a transport error. Does not execute. | v0.1, BLE via `pybricksdev` |
 | `spike_run` | Execute a deployed program and stream hub-emitted telemetry until the `{"event":"end"}` sentinel; returns the JSONL trace. Surfaces truncation via stop conditions rather than absorbing it. | v0.1, BLE via `pybricksdev` |
-| `test_eval` | Score a telemetry trace against the `pass_criteria` of the requirement it implements; returns per-criterion pass/fail and the joined evidence. Zero matching samples is a fail, not an error. | v0.1, grammar in `docs/wire_contract.md` 
+| `test_eval` | Score a telemetry trace against the `pass_criteria` of the requirement it implements; returns per-criterion pass/fail and the joined evidence. Zero matching samples is a fail, not an error. | v0.1, grammar in `docs/wire_contract.md` |
 
 > Calibration (stage 5) and the integration gate (stage 6) will add tool surface — a calibration-test selector, a deterministic constant-fitter, and a sufficiency-report builder for the human gate. These are unbuilt and deliberately kept out of the table above.
 

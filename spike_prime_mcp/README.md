@@ -1,8 +1,9 @@
 # spike-prime-mcp
 
 MCP server exposing the SPIKE Prime hardware seam of the Spike SysML
-pipeline — step 7 (code deployment) of [`docs/architecture.md`](../docs/architecture.md).
-Three tools over stdio:
+pipeline — the deploy-and-run hardware steps inside the calibration
+(stage 5) and integration (stage 6) loops of
+[`docs/architecture.md`](../docs/architecture.md). Three tools over stdio:
 
 | Tool | Purpose |
 |------|---------|

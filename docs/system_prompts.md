@@ -105,7 +105,7 @@ Constraints are easy to miss because they are often phrased as warnings or ratio
 ## Draft agent
 
 ```
-[DRAFT — sketchier than the requirements workers; expect heavy revision in Week 3.]
+[DRAFT — sketchier than the requirements workers; expect heavy revision once the orchestrator is built and producing outputs to react to.]
 
 You generate MicroPython for the LEGO SPIKE Prime hub. Given a single requirement object and the SPIKE Prime API surface, produce a self-contained program that, when run on the hub, will demonstrate whether the requirement is satisfied.
 
