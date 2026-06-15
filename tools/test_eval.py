@@ -115,8 +115,8 @@ def _eval_numeric(req_id: str, pc: dict, sensor: str,
                 ">=": fv >= target,
                 "<":  fv <  target,
                 ">":  fv >  target,
-                "==": fv == target,
-                "!=": fv != target,
+                "==": math.isclose(fv, target, rel_tol=1e-9, abs_tol=1e-12),
+                "!=": not math.isclose(fv, target, rel_tol=1e-9, abs_tol=1e-12),
             }[op]
             if not ok:
                 violations.append((i, fv))
@@ -176,13 +176,25 @@ def _eval_reaches(req_id: str, pc: dict, sensor: str,
     t0 = samples[0][0]  # index of first sample, not time — fetch event for time
     t0_ms = telemetry[t0]["timestamp_ms"]
     deadline_ms = t0_ms + int(within * 1000)
+    # "reaches" = the sensor ATTAINS the target value, not exactly-equals it.
+    # Exact float equality (fv == target) essentially never fires on measured
+    # data, so test attainment-or-crossing: a sample within float tolerance of
+    # the target, OR a sign change in (value - target) between consecutive
+    # samples (the sensor stepped across the target between samples).
+    # TODO: richer crossing semantics (interpolate the crossing time, honor
+    # approach direction) if a requirement ever needs sub-sample precision.
+    prev_fv = None
     for i, v in samples:
         ts = telemetry[i]["timestamp_ms"]
         try:
             fv = float(v)
         except (TypeError, ValueError):
             continue
-        if fv == target and ts <= deadline_ms:
+        reached = math.isclose(fv, target, rel_tol=1e-3, abs_tol=1e-6)
+        if not reached and prev_fv is not None:
+            reached = (prev_fv - target) * (fv - target) < 0  # crossed the target
+        prev_fv = fv
+        if reached and ts <= deadline_ms:
             return {
                 "passed": True,
                 "requirement_id": req_id,

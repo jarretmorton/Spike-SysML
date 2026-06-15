@@ -3,9 +3,10 @@
 > **Status:** v0.2 — this document now describes the full intended pipeline;
 > implementation is unchanged. The evaluator-optimizer right-half
 > (deploy → run → eval) runs end-to-end against real hardware via
-> `spiketelem.py`. The left-half model selection and composition, the
-> calibration stage, and the human integration gate are designed here but not
-> yet built.
+> `spiketelem.py` and via the `spike-prime-mcp` server. The left-half model
+> selection and composition, the calibration stage, and the human review gates
+> are designed here but not yet built. The seed unit models are committed under
+> [`../models/`](../models/) (drafted, not yet grammar-validated).
 
 ## Pattern selection
 
@@ -39,24 +40,33 @@ flowchart TD
     V -->|grammar fail| SEL
     V -->|valid| CODE[select primitive code lib + generate orchestration]
  
-    CODE --> CDEP[spike_deploy: calibration test]
+    CODE --> GCAL{human gate: calibration test design}
+    GCAL -->|reject| CODE
+    GCAL -->|approve| CDEP[spike_deploy: calibration test]
     CDEP --> CRUN[spike_run]
     CRUN --> FIT[fit constants - deterministic]
     FIT --> BIND[bind parameters to model]
     BIND -->|params unstable| CODE
-    BIND -->|params stable| GATE{human gate: calibration sufficiency}
+    BIND -->|params stable| VCHK{verification check: calibration sufficiency}
  
-    GATE -->|reject| CODE
-    GATE -->|approve| IDEP[spike_deploy: integrated program]
+    VCHK -->|insufficient| CODE
+    VCHK -->|sufficient| GSYS{human gate: system test design}
+    GSYS -->|reject| CODE
+    GSYS -->|approve| IDEP[spike_deploy: integrated program]
     IDEP --> IRUN[spike_run]
     IRUN --> E[test_eval]
     E -->|fail| CODE
-    E -->|pass| DONE[done]
+    E -->|pass| GACC{human gate: integration results}
+    GACC -->|reject| CODE
+    GACC -->|accept| DONE[done]
 ```
 > Left half (spec → requirements) is orchestrator-workers. The grammar loop on
 > `sysml_validate` is the retained half of Iserte. The two hardware loops
-> (calibration, integration) are both evaluator-optimizer. The human gate is
-> the Aegis review node.
+> (calibration, integration) are both evaluator-optimizer. There are four human
+> checkpoints: a test-design review gate before each hardware run, and a results
+> verification after each — the calibration-sufficiency check (the Aegis
+> review-before-proceed node) gating the expensive integrated test, and the
+> integration-results acceptance gating "done".
 
 ## Tool surface
 
@@ -70,6 +80,12 @@ flowchart TD
 > Calibration (stage 5) and the integration gate (stage 6) will add tool surface — a calibration-test selector, a deterministic constant-fitter, and a sufficiency-report builder for the human gate. These are unbuilt and deliberately kept out of the table above.
 
 The hub-to-host wire format and the requirements model schema both live in [`docs/wire_contract.md`](wire_contract.md). The orchestrator-workers prompts are in [`docs/system_prompts.md`](system_prompts.md).
+
+## Interactive seam: spike-prime-mcp
+
+The tool surface above is the *in-process* pipeline interface — the orchestrator and `spiketelem.py` call those functions directly. A second, parallel front-end reaches the same hardware: the `spike-prime-mcp` server (see [`../spike_prime_mcp/README.md`](../spike_prime_mcp/README.md)) exposes three tools — `flash_program`, `run_program`, `get_telemetry` — over the Model Context Protocol, so a conversational client such as Claude Desktop can deploy code, run it, and read telemetry directly. Both front-ends sit on the same async runtime (`tools/_runtime.py`) and differ only in caller: in-process Python for the pipeline, stdio MCP for the interactive client.
+
+This seam is also the apparatus for the control arm of the structured-vs-zero-shot comparison (see the README's *Evaluation* section): the zero-shot arm is Claude driving the hardware over the MCP with no SysML governance in front of it. The structured arm currently reaches the hardware through the in-process tool path instead; routing it through the MCP too — so a controlled head-to-head varies only the governance layer, not the seam — is a deliberate design choice still to be settled (the calibration loop's live plotting is the tension, since the MCP returns a trace only at the end rather than streaming).
 
 ## Calibration
  
@@ -92,7 +108,7 @@ Division of labor matters here. The agent selects the test and interprets the re
 
 ## Resolved decisions
 
-- **The review gate (human in the loop).** The pipeline has exactly two human touchpoints: authoring the original spec at the front, and signing off calibration sufficiency before the integrated system test. Everything in between is agent-owned. The second touchpoint is the V-model integration gate — unit-level verification and calibration accepted before the expensive integrated test is authorized — and it is structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides.
+- **The review gates (human in the loop).** The pipeline has human touchpoints at five places: authoring the original spec at the front, and four checkpoints on the hardware side arranged as a pre-run gate and a post-run verification around each of the two hardware activities. A *test-design gate* precedes each run — the human approves the calibration test (design + code) before it runs, and the requirement/system test before the integrated run — so no hardware actuates on an unreviewed plan. A *results verification* follows each: after calibration, a *sufficiency check* confirms the fit is physical and adequate (fitted values, the residual-curvature flag, parameter plausibility) before the expensive integrated test is authorized; after integration, a *results acceptance* confirms the run genuinely passed (evidence sound, pass not spurious, requirements actually exercised) before the build is declared done. The calibration-sufficiency check is the V-model integration gate, structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides. Everything else is agent-owned.
 - **Generation vs. selection.** For SysML model construction, Spike SysML selects and composes from a fixed registry of unit models rather than generating them from natural language. With only three unit models on this hardware (distance sensor, reflectivity sensor, drive/steer motors), synthesis-from-scratch — the **Iserte et al.** approach — buys generality the domain doesn't need and adds a failure surface it can't justify; template-based selection (cf. **SysTemp**) is the better fit. What is retained from Iserte is the grammar-validation-in-a-loop: the *composed* model still validates against the SysML v2 grammar via `sysml_validate`, because composition — the interconnections and bound parameters — is where invalidity is introduced even when the unit models are individually valid.
 - **Library primitives vs. generated orchestration.** Code is split at the hardware boundary. Primitive operations — commanding a motor to a speed, reading a sensor channel — are templated library blocks: the operation set is closed, and pre-tested code is more trustworthy than generated MicroPython where there is no upside to generating it. Mission orchestration — the control logic that sequences primitives to satisfy a spec — is generated, because it varies per requirement and is where generation earns its place. The split mirrors ordinary software practice: the standard library is not regenerated on every build; the application logic that calls it is. The evaluator-optimizer loop iterates on the orchestration, not on whether the motor API was called correctly.
 - **The SysML layer carries constraints and parameters, not labels.** With unit models reduced to registry entries, the SysML v2 layer earns its place through what it holds rather than what it generates: requirement-to-element-to-test  traceability, the parametric relations that encode the system physics, and the calibration constants those relations depend on. Two worked examples: *motor turn → rover speed* is a parametric edge whose constant (bundling wheel geometry, gear ratio, and slip) is bound by calibration, not computed; and the stop constraint, `d_measured ≥ v·t_response + v²/(2a) + margin`, encodes reaction distance, braking distance, and a human-set safety margin as a formal relation rather than logic buried in code. This is the distinction between the model and a configuration table, and it is the point at which calibration (stage 5) becomes model anchoring — binding a parametric model's free parameters to physical hardware through designed tests.

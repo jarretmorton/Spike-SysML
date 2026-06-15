@@ -1,6 +1,6 @@
 # System Prompts
 
-> **Status:** Drafts — Week 1. Written before any of these prompts have been run against an LLM. Expect the orchestrator and worker prompts to converge once Week 3 has produced real outputs to react to. The draft-agent and critic prompts at the bottom of this file are sketchier — included for completeness, but the requirements-decomposition side of the system is the priority.
+> **Status:** Drafts. These prompts define the orchestrator-workers left-half, which is not yet wired in code (the README calls it "in prompts only"), so they have not yet been exercised end-to-end against an LLM. Expect them to converge once the orchestrator is built and producing real outputs to react to. The draft-agent and critic prompts at the bottom of this file are sketchier — included for completeness, but the requirements-decomposition side of the system is the priority.
 
 ---
 
