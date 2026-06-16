@@ -107,7 +107,8 @@ fields. The v0.1 grammar:
 | `reaches`    | `sensor`, `value`, `within_seconds`     | `sensor` must attain `value` at least once before `within_seconds` elapses.  |
 
 Optional `unit` field is informational; it propagates to the live plot but
-is not used by `test_eval`.
+is not used by `test_eval`. The channel's canonical unit (§2.2), not this
+field, is what `value` is interpreted in.
 
 Examples (drawn from `examples/requirements_example.json`):
 
@@ -119,6 +120,37 @@ Examples (drawn from `examples/requirements_example.json`):
 Operators beyond this set (time-windowed in-band, derived/cross-signal,
 phase-scoped) are deliberately deferred. When you need them, extend the
 grammar here first, then the evaluator.
+
+### 2.2 Channel units (canonical)
+
+Every channel has one canonical unit. The telemetry value (§1) and the
+`pass_criteria.value` that grades it (§2.1) are BOTH in that unit, so
+`test_eval` compares them raw and performs no conversion. The rule, stated
+once: **a channel emits in its native sensor unit, and any `pass_criteria`
+against it uses that same unit.** Distance sensors report mm, so distance
+channels and their criteria are in mm.
+
+| channel        | canonical unit  | notes                                |
+| -------------- | --------------- | ------------------------------------ |
+| `clearance_mm` | mm              | forward clearance = min(left, right) |
+| `distance_*`   | mm              | raw per-sensor distance              |
+| `reflection`   | percent (0–100) | dimensionless reflectance            |
+| `speed_mps`    | m/s             | ground speed, signed (+ = forward)   |
+
+The SysML models are SI (metres, seconds, m/s**2), so SI→sensor-unit is a
+real conversion boundary. It lives in exactly two places, and there is no
+single shared converter because they run in different runtimes:
+
+- **host-side**, in `tools/units.py` (the machine-readable mirror of this
+  table), used by composition when it emits a `pass_criteria.value` from an
+  SI model parameter — e.g. a 0.040 m collision margin against `clearance_mm`
+  becomes `40`;
+- **on-hub**, in each mission's labelled unit-boundary block, where SI model
+  parameters become sensor-unit working constants before the control loop —
+  e.g. `threshold_m * 1000 → threshold_mm`.
+
+This table is the declaration both sides convert toward; keep it and
+`tools/units.py` in sync.
 
 ## 3. Signal-name agreement
 
