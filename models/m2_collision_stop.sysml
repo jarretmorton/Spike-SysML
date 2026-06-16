@@ -34,6 +34,13 @@ package CollisionStop {
     // Human-set safety margin for the collision case.
     attribute marginCollision : LengthValue;         // SET BY HUMAN — m
 
+    // Reliable forward sensing range: the distance within which a forward
+    // distance reading can be trusted to react on. This is the distance
+    // BUDGET the stop maneuver must fit inside, so it is what bounds top
+    // speed (see MaxForwardSpeed). Spec- or calibration-bound, NOT the raw
+    // datasheet max range.
+    attribute dSenseMax : LengthValue;               // UNCALIBRATED — m; reliable forward range
+
     // --- Relations ---------------------------------------------------------
 
     // Speed-dependent distance at which the stop maneuver must already trigger.
@@ -44,6 +51,24 @@ package CollisionStop {
         in margin : LengthValue;           // marginCollision
         return threshold : LengthValue =
             v * tResponse + v ** 2 / (2 * a) + margin;
+    }
+
+    // Maximum forward speed: the largest v for which the stop threshold still
+    // fits inside the reliable forward sensing range dSenseMax. This is the
+    // inverse of ForwardStopThreshold — given the distance budget, solve for v.
+    //   dSenseMax = v*tResponse + v**2/(2a) + margin
+    // Positive root (real and positive while dSenseMax > margin). Structurally
+    // identical to FallStop::MaxSafeSpeed; the budget here is sensor RANGE
+    // rather than the fall model's geometric sensor OFFSET. sqrt is written
+    // as ** 0.5 to match the rest of the registry (no math-library import).
+    calc def MaxForwardSpeed {
+        in tResponse : DurationValue;      // = RoverLatency::tChain + tSensorDistance
+        in a : AccelerationValue;          // decelCollision
+        in dSenseMax : LengthValue;        // reliable forward sensing range
+        in margin : LengthValue;           // marginCollision
+        return vMax : SpeedValue =
+            - a * tResponse
+            + ( a ** 2 * tResponse ** 2 + 2 * a * (dSenseMax - margin) ) ** 0.5;
     }
 
     // Safe while measured clearance is at least the threshold.
