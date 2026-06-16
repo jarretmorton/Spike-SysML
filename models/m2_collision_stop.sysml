@@ -18,9 +18,9 @@ package CollisionStop {
      * quietly wrong at the envelope edges.
      */
 
-    import ISQ::*;
-    import SI::*;
-    import RoverCommon::*;
+    private import ISQ::*;
+    private import SI::*;
+    private import RoverCommon::*;
 
     // --- Calibrated / human-set parameters (all UNCALIBRATED) --------------
 

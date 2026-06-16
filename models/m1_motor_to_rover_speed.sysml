@@ -16,8 +16,8 @@ package MotorToRoverSpeed {
      * safety claim in its own right.
      */
 
-    import ISQ::*;
-    import SI::*;
+    private import ISQ::*;
+    private import SI::*;
 
     // Calibrated: metres of ground travel per radian of wheel rotation.
     // (Radian is dimensionless in SI, so this carries length units.)

@@ -14,9 +14,9 @@ package RoverCommon {
      *     tSensorDistance / tSensorColor.
      */
 
-    import ISQ::*;
-    import SI::*;
-    import ScalarValues::*;
+    private import ISQ::*;
+    private import SI::*;
+    private import ScalarValues::*;
 
     // --- Value types -------------------------------------------------------
 

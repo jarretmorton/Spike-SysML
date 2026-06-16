@@ -1,6 +1,6 @@
 // Status: drafted, not yet validated via sysml_validate.
-// Operator note: exponentiation written as ** ; sqrt assumed available from the
-// standard math library — confirm the import against the installed version.
+// Operator note: exponentiation written as ** ; square root expressed as ** 0.5
+// to avoid depending on a sqrt() function from the standard math library.
 
 package FallStop {
     doc /*
@@ -24,9 +24,9 @@ package FallStop {
      * collision maneuver, so decelFall is its own calibrated parameter.
      */
 
-    import ISQ::*;
-    import SI::*;
-    import RoverCommon::*;
+    private import ISQ::*;
+    private import SI::*;
+    private import RoverCommon::*;
 
     // --- Calibrated / human-set parameters (all UNCALIBRATED) --------------
 
@@ -69,7 +69,7 @@ package FallStop {
         in margin : LengthValue;           // marginFall
         return vMax : SpeedValue =
             - a * tResponse
-            + sqrt( a ** 2 * tResponse ** 2 + 2 * a * (offset - margin) );
+            + ( a ** 2 * tResponse ** 2 + 2 * a * (offset - margin) ) ** 0.5;
     }
 
     // Commanded speed must not exceed the geometry-limited maximum.
