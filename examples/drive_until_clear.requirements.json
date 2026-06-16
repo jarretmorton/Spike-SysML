@@ -1,0 +1,63 @@
+{
+  "requirements": [
+    {
+      "id": "R-COL-1",
+      "type": "constraint",
+      "text": "The rover shall maintain forward clearance no less than the speed-dependent collision stop threshold; on reaching it, the collision stop maneuver is triggered.",
+      "source": "rover_test_v1: 'without running into anything'",
+
+      "unit_model": "m2_collision_stop",
+      "depends_on_parts": ["P-DIST-F", "P-DRIVE"],
+      "implemented_by": "examples/drive_until_clear.py",
+      "depends_on_params": [
+        {"param": "decelCollision",  "model": "m2_collision_stop", "bound_by": "calibration:speed_sweep"},
+        {"param": "dSenseMax",       "model": "m2_collision_stop", "bound_by": "spec"},
+        {"param": "tSensorDistance", "model": "m2_collision_stop", "bound_by": "spec"},
+        {"param": "marginCollision", "model": "m2_collision_stop", "bound_by": "human"},
+        {"param": "tChain",          "model": "rover_common",      "bound_by": "calibration:latency"},
+        {"param": "driveConstant",   "model": "m1_motor_to_rover_speed", "bound_by": "calibration:drive_constant"}
+      ],
+
+      "pass_criteria": {
+        "sensor": "clearance_mm",
+        "op": ">=",
+        "value": 40,
+        "unit": "mm"
+      }
+    },
+    {
+      "id": "R-PERF-1",
+      "type": "functional",
+      "text": "The rover shall drive forward at the maximum speed for which R-COL-1 holds (v_max, per m2 MaxForwardSpeed).",
+      "source": "rover_test_v1: 'as fast as it can'",
+
+      "unit_model": "m2_collision_stop",
+      "depends_on_parts": ["P-DRIVE", "P-DIST-F"],
+      "implemented_by": "examples/drive_until_clear.py",
+
+      "pass_criteria": null,
+      "verified_by": "R-COL-1"
+    }
+  ],
+
+  "parts": [
+    {
+      "part_id": "P-DIST-F",
+      "kind": "distance_sensor",
+      "ports": ["A", "B"],
+      "lego_element": "SPIKE Ultrasonic Distance Sensor (x2, forward L/R)",
+      "emits": ["clearance_mm", "distance_left", "distance_right"]
+    },
+    {
+      "part_id": "P-DRIVE",
+      "kind": "drive_motor_pair",
+      "ports": ["C", "D"],
+      "lego_element": "SPIKE Motor (x2, left/right wheel)"
+    }
+  ],
+
+  "metadata": {
+    "source_spec": "rover_test_v1",
+    "generated_at": "2026-06-15T00:00:00Z"
+  }
+}
