@@ -32,7 +32,7 @@ right_eye = UltrasonicSensor(Port.B)       # forward-right distance sensor
 left_eye = UltrasonicSensor(Port.A)        # forward-left distance sensor
 back_eye = UltrasonicSensor(Port.E)        # rear distance sensor (declared, unused here)
 edge_sensor = ColorSensor(Port.F)          # downward sensor; reflection() finds table edges/lines
-WHEEL_CIRC_M = 0.055 * 3.1416 * 2          # wheel circumference in metres (55 mm radius)
+WHEEL_CIRC_M = 0.055 * 3.1416              # wheel circumference in metres (55 mm diameter)
 
 clock = StopWatch()                        # hub-local millisecond clock, started at import
 
@@ -59,10 +59,14 @@ right_wheel.run(80)
 try:
     motors_stopped = False                  # latch so we only issue stop() once
     while True:
-        # Average the two wheel speeds (deg/s), convert to a linear ground
-        # speed in m/s, and take the magnitude so direction doesn't matter.
-        deg_per_s = (left_wheel.speed() + right_wheel.speed()) / 2
-        speed_mps = abs(deg_per_s / 360.0 * WHEEL_CIRC_M)
+        # Combine the two wheel speeds (deg/s) into a ground speed. The wheels
+        # are mounted mirror-image and driven with opposite signs, so the LEFT
+        # reading is negated into the chassis-forward convention before
+        # averaging -- summing the raw signed values cancels them to ~0, which
+        # is the long-standing "speed reads near zero" artifact. Direction is
+        # preserved (negative = reversing), so no outer abs() is needed.
+        deg_per_s = (-left_wheel.speed() + right_wheel.speed()) / 2
+        speed_mps = deg_per_s / 360.0 * WHEEL_CIRC_M
         distance_on_the_right = right_eye.distance()   # mm to nearest obstacle
         distance_on_the_left = left_eye.distance()     # mm to nearest obstacle
         reflection = edge_sensor.reflection()          # 0-100% surface reflectivity
