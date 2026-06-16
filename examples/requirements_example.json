@@ -24,7 +24,7 @@
       },
       "source": "rover_test_v1.txt: 'the rover must not get closer than 50mm'"
     },
-       {
+    {
       "id": "CN-003",
       "type": "constraint",
       "text": "Rover shall not drive over an edge",

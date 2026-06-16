@@ -84,7 +84,6 @@ Implementation v0.1. (Docs may carry their own version — e.g. `docs/architectu
 
 ### Known issues
 
-- **`speed_mps` reads low.** `Motor.speed()` on the hub reports well below the commanded ground speed (~10× low in bench runs); the rover moves correctly, so this is a telemetry reporting artifact, not a motion fault. Any `reaches` / speed-characterization requirement grading on `speed_mps` will be affected — pin down the conversion before relying on that channel.
 - **`reaches` crossing precision.** `test_eval` scores `reaches` by attainment-or-crossing (a sign change in `value - target` between samples), which fixes the prior exact-float-equality bug. Sub-sample crossing time is not interpolated; see the TODO in `tools/test_eval.py`.
 
 ## License

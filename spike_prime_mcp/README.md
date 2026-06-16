@@ -30,8 +30,11 @@ logic. The normal agent sequence is `flash_program` → `run_program` →
   Traces are re-queryable — summary first, then drill into a window —
   without re-running hardware.
 - Composes the async primitives in [`tools/_runtime.py`](../tools/_runtime.py)
-  directly (bus, framer, sinks, `connect_hub`/`deploy_program`/`run_program`).
-  Wire contract: [`docs/wire_contract.md`](../docs/wire_contract.md).
+  directly (bus, framer, sinks, `connect_hub`/`run_program`). It compiles and
+  downloads the program itself (`hub.download_user_program`) rather than via
+  `deploy_program`, to dodge a Windows BLE-thread deadlock in pybricksdev's
+  executor-based `download`. Wire contract:
+  [`docs/wire_contract.md`](../docs/wire_contract.md).
 
 ## Setup
 

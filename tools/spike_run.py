@@ -25,7 +25,7 @@ def spike_run(
     disconnects. Telemetry is captured for the entire run window. Used in
     both hardware loops — calibration tests (whose telemetry feeds the
     deterministic constant-fitter) and integration tests (whose telemetry
-    feeds test_eval)
+    feeds test_eval).
 
     Args:
         slot: Program slot to execute. Defaults to ``0``, which matches
