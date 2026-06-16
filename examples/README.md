@@ -36,8 +36,8 @@ the input/output of the v0.1 prototype.
   before the speed-aggregation fix, so its `speed_mps` values are the
   near-zero artifact — re-capture for a clean speed trace.)
 
-- **`drive_until_clear.py`** — the traceability-spine worked example (paired
-  with `drive_until_clear.requirements.json`). Implements R-COL-1 (forward
+- **`drive_until_blocked.py`** — the traceability-spine worked example (paired
+  with `drive_until_blocked.requirements.json`). Implements R-COL-1 (forward
   collision avoidance) and R-PERF-1 (drive at the maximum speed for which
   R-COL-1 holds) from the spec line *"drive as fast as it can without running
   into anything."* Computes v_max and the stop threshold on-hub from the m2
@@ -45,7 +45,7 @@ the input/output of the v0.1 prototype.
   channel) plus the two raw forward distances, and triggers the collision stop
   at the threshold. Runs on the SPIKE Prime hub under Pybricks.
 
-- **`drive_until_clear.requirements.json`** — the requirements model for the
+- **`drive_until_blocked.requirements.json`** — the requirements model for the
   above, carrying the traceability-spine joins: each requirement links to its
   unit model (`unit_model`), the parts it depends on (`depends_on_parts`), and
   the program that implements it (`implemented_by`); R-COL-1 also lists the
