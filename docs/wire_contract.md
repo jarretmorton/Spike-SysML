@@ -74,7 +74,7 @@ document of this shape:
 
 ### Requirement object
 
-Every requirement has four required fields:
+Every requirement has three required fields, plus a verifiability rule:
 
 - `id` (str): a unique, stable identifier. House convention is
   `R-<CONCERN>-<n>` (e.g. `R-COL-1`), where the prefix is a human-readable
@@ -86,12 +86,20 @@ Every requirement has four required fields:
   not encoded in the id.
 - `text` (str): the requirement, written in the form the relevant worker
   produces (see `docs/system_prompts.md`).
-- `pass_criteria` (object): the machine-checkable condition (§2.1).
+
+A requirement must also be **verifiable**: it carries either a `pass_criteria`
+object (§2.1) or a `verified_by` (§2.3) naming the requirement that grades it.
+Most requirements have `pass_criteria`; an objective checked only via a
+stricter sibling constraint uses `verified_by` instead. A requirement with
+neither is rejected.
 
 Optional fields:
 
 - `source` (str): the substring of the input spec this requirement was
   derived from. Carried through for traceability.
+- Traceability-spine fields (`unit_model`, `depends_on_parts`,
+  `implemented_by`, `depends_on_params`, `verified_by`) and the top-level
+  `parts` block — see §2.3.
 
 Type-specific fields:
 
@@ -114,6 +122,16 @@ fields. The v0.1 grammar:
 Optional `unit` field is informational; it propagates to the live plot but
 is not used by `test_eval`. The channel's canonical unit (§2.2), not this
 field, is what `value` is interpreted in.
+
+**Written at composition, not by the workers.** `pass_criteria` binds to a
+`sensor` channel that exists only once unit models are selected and parts are
+wired, so it is authored at the composition stage — not by the extracting
+worker, which emits only requirement semantics (`text`, `type`, `source`). A
+freshly-merged requirements model therefore carries no `pass_criteria`; it
+appears by the composed stage, which is why the pass_criteria-or-`verified_by`
+rule (§2) is a composed-stage check rather than a decomposition one. Constraint
+requirements often take a *negative* criterion here — the absence of a
+forbidden event — rather than a positive threshold.
 
 Examples (drawn from `examples/requirements_example.json`):
 
@@ -156,6 +174,58 @@ single shared converter because they run in different runtimes:
 
 This table is the declaration both sides convert toward; keep it and
 `tools/units.py` in sync.
+
+### 2.3 Traceability-spine fields
+
+These five fields wire each requirement into the rest of the system — the
+SysML model it was realised against, the hardware parts it touches, the
+program that implements it, the model parameters it binds, and (for
+objectives that are not independently graded) the requirement that verifies
+it. They are the spine that lets a telemetry failure be traced back to a
+specific spec line.
+
+| field               | type        | join it makes                                             |
+| ------------------- | ----------- | --------------------------------------------------------- |
+| `unit_model`        | str         | the registry model this requirement was realised against  |
+| `depends_on_parts`  | list of str | `part_id`s (in the top-level `parts` block) it exercises   |
+| `implemented_by`    | str \| null | the program/example that implements it                     |
+| `depends_on_params` | list of obj | model parameters it binds (`{param, model, bound_by}`)     |
+| `verified_by`       | str \| null | another requirement id that grades this one indirectly     |
+
+A top-level `parts` list accompanies them: each entry is
+`{part_id, kind, ports, lego_element, emits}`, with unique `part_id`s.
+`depends_on_parts` references resolve against this block.
+
+**Optional about presence, strict about correctness.** The spine fills in
+progressively as a requirement moves through the pipeline — it does not all
+exist at decomposition time — so every field above is *optional* to
+`sysml_validate`: a model missing them is still well-formed. But whenever a
+field is present it is integrity-checked, and three rules are enforced:
+
+1. Every `depends_on_parts` entry must name a `part_id` defined in the
+   top-level `parts` block (no dangling part references).
+2. `verified_by` must name an existing requirement id, and a requirement may
+   not verify itself (no dangling or circular verification).
+3. Every requirement must be verifiable: a non-null `pass_criteria` **or** a
+   `verified_by` (the rule stated in §2). Neither is rejected.
+
+**Presence is a separate, staged question.** Whether the spine is *complete* —
+not merely well-formed — depends on how far the model has travelled, so it is
+answered by `check_trace_complete(model, stage=...)`, not by `sysml_validate`.
+This keeps "valid" meaning strictly "well-formed," never silently "well-formed
+*and* fully traced." The stage map:
+
+| stage         | additionally required on every requirement                 |
+| ------------- | ---------------------------------------------------------- |
+| decomposition | nothing beyond the core object — the spine is not wired yet |
+| composed      | `unit_model` and a non-empty `depends_on_parts`            |
+| verified      | `implemented_by` and pass_criteria/emit coverage (deferred) |
+
+`sysml_validate` runs at the **composed** stage (after composition, before
+code), so the pipeline pairs it with `check_trace_complete(model,
+stage="composed")` there. The `verified` stage is defined but not implemented
+in v0.1; its emit-coverage half is the §3 agreement checked against live
+`parts[].emits`.
 
 ## 3. Signal-name agreement
 

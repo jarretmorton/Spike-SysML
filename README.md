@@ -21,6 +21,7 @@ Built around two patterns from [*Building Effective Agents*](https://www.anthrop
 Tool surface (v0.1):
 
 - `sysml_validate` — schema-check structured requirements against the `lego` subset of SysML v2.
+- `check_trace_complete` — confirm the traceability spine is present (not just well-formed) at the composed stage.
 - `spike_deploy` — push generated MicroPython to the SPIKE Prime hub over Bluetooth.
 - `spike_run` — execute a deployed program and stream sensor telemetry.
 - `test_eval` — score a run against the requirement it implements.

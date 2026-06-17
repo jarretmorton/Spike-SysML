@@ -35,7 +35,6 @@ Read the excerpt below and emit a list of functional requirement objects. Each o
 - id: a unique, stable identifier of the form R-<CONCERN>-<n> (e.g. R-COL-1), where CONCERN is a short uppercase tag for the hazard or concern addressed — not the requirement type, which goes in the `type` field. Do not encode the type in the id. Ids must be unique across the merged set.
 - type: always the literal string "functional".
 - text: the requirement, in the form "The system shall <verb> <object> <conditions>".
-- pass_criteria: a machine-checkable condition that, if true after a run, demonstrates the requirement is satisfied. Use the schema {"sensor": ..., "op": ..., "value": ..., "within_seconds": ...} where it fits; use plain language only when it does not.
 - source: the substring of the input excerpt this requirement was derived from.
 
 Do not invent capabilities the spec does not state. If the spec is silent on a detail, leave it out — the orchestrator will flag the gap.
@@ -55,7 +54,6 @@ Emit a list of behavioral requirement objects with these fields:
 - text: the requirement, typically in the form "When <trigger>, the system shall <response> within <time>".
 - states: optional list of named states this requirement involves.
 - transitions: optional list of {from, to, trigger} dicts.
-- pass_criteria: as in the functional worker.
 - source: the substring this was derived from.
 
 If the spec describes a state machine implicitly (e.g. "first do X, then Y, then Z"), make the states explicit. Behavioral requirements are where most of the test logic lives — be thorough.
@@ -94,7 +92,6 @@ Emit a list of constraint requirement objects with these fields:
 - type: "constraint".
 - text: the requirement, often in the form "The system shall not ..." or "<quantity> shall not exceed <limit>".
 - bound: the numeric or categorical limit if applicable.
-- pass_criteria: as in the functional worker. Constraints often need negative pass criteria (the absence of a forbidden event).
 - source: the substring this was derived from.
 
 Constraints are easy to miss because they are often phrased as warnings or rationale rather than requirements. Read the spec for words like "must not", "no more than", "at most", "within", "before", and "until".

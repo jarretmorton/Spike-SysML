@@ -67,12 +67,19 @@ flowchart TD
 > verification after each — the calibration-sufficiency check (the Aegis
 > review-before-proceed node) gating the expensive integrated test, and the
 > integration-results acceptance gating "done".
+>
+> The select-and-compose step (`SEL`) is also where each requirement's
+> `pass_criteria` and `verified_by` are written: it is the first stage holding
+> the channels and bound parameters those reference, so the upstream workers
+> emit only requirement semantics (`text`, `type`, `source`). See
+> [`wire_contract.md` §2.1](wire_contract.md#21-pass_criteria-operator-grammar-v01).
 
 ## Tool surface
 
 | Tool | Purpose | Status |
 |------|---------|--------|
 | `sysml_validate` | Validate a composed SysML v2 model against the `lego` grammar subset; returns the parse result and a list of violations, empty on success. Fails closed — an unparseable model blocks codegen. | v0.1, `lego` subset |
+| `check_trace_complete` | Companion to `sysml_validate` at the composed stage: confirms the traceability spine is *present* (every requirement carries `unit_model` and a non-empty `depends_on_parts`), as opposed to merely well-formed. Returns a `complete` verdict kept separate from `valid`, so structural validity never depends on pipeline stage. | v0.1, `composed` stage |
 | `spike_deploy` | Transfer a MicroPython program to the hub over BLE and confirm receipt; returns a deploy handle or a transport error. Does not execute. | v0.1, BLE via `pybricksdev` |
 | `spike_run` | Execute a deployed program and stream hub-emitted telemetry until the `{"event":"end"}` sentinel; returns the JSONL trace. Surfaces truncation via stop conditions rather than absorbing it. | v0.1, BLE via `pybricksdev` |
 | `test_eval` | Score a telemetry trace against the `pass_criteria` of the requirement it implements; returns per-criterion pass/fail and the joined evidence. Zero matching samples is a fail, not an error. | v0.1, grammar in `docs/wire_contract.md` |
@@ -104,7 +111,7 @@ Division of labor matters here. The agent selects the test and interprets the re
 - **Safety-margin ownership.** The `margin` term in the stop constraint is a risk-acceptance decision set by the human at the gate. Default value, and whether it should scale with speed, are open.
 - **SysML v2 schema source.** The OMG draft, or a constrained subset suitable for the LEGO domain? Likely the latter — full SysML v2 is overkill for SPIKE Prime, and a subset is easier to validate against. v0.1 implements the `lego` subset; the `full` mode in `sysml_validate` is deferred.
 - **Iteration budget on the evaluator-optimizer loops.** Now applies to two loops — calibration (stage 5) and integration (stage 6). Hard cap (e.g., 5 retries) or cost-aware? A hard cap is simpler; cost-aware is more honest about the production-shaped constraint. The two loops may warrant different budgets.
-- **Signal-name pre-flight check.** The agreement between `pass_criteria.sensor` in the requirements model and the sensors the draft agent's program actually emits is currently validated only at runtime (`test_eval` returns zero samples for a mismatched name). The intended fix is a pre-flight check inside `sysml_validate` that takes both the model and the candidate program; see [`docs/wire_contract.md` §3](wire_contract.md#3-signal-name-agreement).
+- **Signal-name pre-flight check.** The agreement between `pass_criteria.sensor` and the channels a run actually produces is currently caught only at runtime (`test_eval` returns zero samples for a mismatched name). There are two halves to close earlier, and they belong in different places. The model-internal half — `pass_criteria.sensor` must name a channel some part *declares* in `parts[].emits` — is the emit-coverage check of the `verified` stage of `check_trace_complete` (see [`docs/wire_contract.md` §2.3](wire_contract.md#23-traceability-spine-fields)), kept out of `sysml_validate` so "valid" stays strictly "well-formed." The program-conformance half — the candidate program actually emits the channel it declares — still needs the program in hand and remains a runtime discovery for now; see [`docs/wire_contract.md` §3](wire_contract.md#3-signal-name-agreement).
 
 ## Resolved decisions
 
