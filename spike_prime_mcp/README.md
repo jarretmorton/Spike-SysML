@@ -11,9 +11,9 @@ pipeline — the deploy-and-run hardware steps inside the calibration
 | `run_program` | Execute the deployed program; persist the telemetry trace to `runs/<run_id>.jsonl`; return run metadata only. |
 | `get_telemetry` | Read a persisted trace back at `summary` (default), `downsampled`, or `full` detail. |
 
-The host-side pipeline tools (`sysml_validate`, `test_eval`) deliberately
-stay out of the MCP surface — the server exposes hardware, not pipeline
-logic. The normal agent sequence is `flash_program` → `run_program` →
+The host-side pipeline tools (`sysml_validate`, `check_trace_complete`,
+`test_eval`) deliberately stay out of the MCP surface — the server exposes
+hardware, not pipeline logic. The normal agent sequence is `flash_program` → `run_program` →
 `get_telemetry`.
 
 ## Design
@@ -30,11 +30,8 @@ logic. The normal agent sequence is `flash_program` → `run_program` →
   Traces are re-queryable — summary first, then drill into a window —
   without re-running hardware.
 - Composes the async primitives in [`tools/_runtime.py`](../tools/_runtime.py)
-  directly (bus, framer, sinks, `connect_hub`/`run_program`). It compiles and
-  downloads the program itself (`hub.download_user_program`) rather than via
-  `deploy_program`, to dodge a Windows BLE-thread deadlock in pybricksdev's
-  executor-based `download`. Wire contract:
-  [`docs/wire_contract.md`](../docs/wire_contract.md).
+  directly (bus, framer, sinks, `connect_hub`/`deploy_program`/`run_program`).
+  Wire contract: [`docs/wire_contract.md`](../docs/wire_contract.md).
 
 ## Setup
 
