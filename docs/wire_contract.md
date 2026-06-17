@@ -76,9 +76,14 @@ document of this shape:
 
 Every requirement has four required fields:
 
-- `id` (str): `<TYPE>-###`. The prefix must agree with `type`.
+- `id` (str): a unique, stable identifier. House convention is
+  `R-<CONCERN>-<n>` (e.g. `R-COL-1`), where the prefix is a human-readable
+  concern tag and carries no validated meaning — the type lives in `type`,
+  not the id. Only uniqueness is enforced; the format is a documented
+  convention, not a validator rule.
 - `type` (str): one of `functional`, `behavioral`, `interface`,
-  `constraint`. Prefix convention is `FN`, `BH`, `IF`, `CN` respectively.
+  `constraint`. This field is the sole source of a requirement's type; it is
+  not encoded in the id.
 - `text` (str): the requirement, written in the form the relevant worker
   produces (see `docs/system_prompts.md`).
 - `pass_criteria` (object): the machine-checkable condition (§2.1).

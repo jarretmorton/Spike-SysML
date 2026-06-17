@@ -32,7 +32,7 @@ You extract functional requirements. A functional requirement describes somethin
 
 Read the excerpt below and emit a list of functional requirement objects. Each object must have these fields:
 
-- id: a unique identifier of the form FN-### (FN-001, FN-002, ...).
+- id: a unique, stable identifier of the form R-<CONCERN>-<n> (e.g. R-COL-1), where CONCERN is a short uppercase tag for the hazard or concern addressed — not the requirement type, which goes in the `type` field. Do not encode the type in the id. Ids must be unique across the merged set.
 - type: always the literal string "functional".
 - text: the requirement, in the form "The system shall <verb> <object> <conditions>".
 - pass_criteria: a machine-checkable condition that, if true after a run, demonstrates the requirement is satisfied. Use the schema {"sensor": ..., "op": ..., "value": ..., "within_seconds": ...} where it fits; use plain language only when it does not.
@@ -50,7 +50,7 @@ You extract behavioral requirements. A behavioral requirement describes how the 
 
 Emit a list of behavioral requirement objects with these fields:
 
-- id: of the form BH-###.
+- id: a unique, stable identifier of the form R-<CONCERN>-<n> (e.g. R-COL-1), where CONCERN is a short uppercase tag for the hazard or concern addressed — not the requirement type, which goes in the `type` field. Do not encode the type in the id. Ids must be unique across the merged set.
 - type: "behavioral".
 - text: the requirement, typically in the form "When <trigger>, the system shall <response> within <time>".
 - states: optional list of named states this requirement involves.
@@ -70,7 +70,7 @@ You extract interface requirements. An interface requirement describes inputs, o
 
 Emit a list of interface requirement objects with these fields:
 
-- id: of the form IF-###.
+- id: a unique, stable identifier of the form R-<CONCERN>-<n> (e.g. R-COL-1), where CONCERN is a short uppercase tag for the hazard or concern addressed — not the requirement type, which goes in the `type` field. Do not encode the type in the id. Ids must be unique across the merged set.
 - type: "interface".
 - text: the requirement.
 - port: the SPIKE Prime port (A–F for motors and sensors) if the spec specifies it; null if not.
@@ -90,7 +90,7 @@ You extract constraint requirements. A constraint requirement describes limits, 
 
 Emit a list of constraint requirement objects with these fields:
 
-- id: of the form CN-###.
+- id: a unique, stable identifier of the form R-<CONCERN>-<n> (e.g. R-COL-1), where CONCERN is a short uppercase tag for the hazard or concern addressed — not the requirement type, which goes in the `type` field. Do not encode the type in the id. Ids must be unique across the merged set.
 - type: "constraint".
 - text: the requirement, often in the form "The system shall not ..." or "<quantity> shall not exceed <limit>".
 - bound: the numeric or categorical limit if applicable.

@@ -4,13 +4,10 @@ from __future__ import annotations
 from typing import Literal
 
 
-# id prefixes per requirement type (system_prompts.md).
-_TYPE_PREFIX = {
-    "functional": "FN",
-    "behavioral": "BH",
-    "interface": "IF",
-    "constraint": "CN",
-}
+# Valid requirement types. The type is carried in the `type` field; it is NOT
+# encoded in the id (see wire_contract.md section 2 — ids are stable, opaque
+# handles and only uniqueness is enforced).
+_VALID_TYPES = {"functional", "behavioral", "interface", "constraint"}
 
 # pass_criteria operator grammar supported by test_eval v0.1.
 _PC_NUMERIC_OPS = {"<=", ">=", "<", ">", "==", "!="}
@@ -102,24 +99,15 @@ def sysml_validate(
                 errors.append({"path": f"{base}/id", "message": f"duplicate id {rid!r}."})
             seen_ids.add(rid)
 
-        # type / id prefix agreement
-        if rtype not in _TYPE_PREFIX:
+        # type must be a known value (the id prefix carries no validated
+        # meaning — type lives in this field; ids are opaque, unique handles)
+        if rtype not in _VALID_TYPES:
             errors.append({
                 "path": f"{base}/type",
                 "message": (
-                    f"type must be one of {sorted(_TYPE_PREFIX)} (got {rtype!r})."
+                    f"type must be one of {sorted(_VALID_TYPES)} (got {rtype!r})."
                 ),
             })
-        elif isinstance(rid, str):
-            expected = _TYPE_PREFIX[rtype]
-            if not rid.startswith(expected + "-"):
-                warnings.append({
-                    "path": f"{base}/id",
-                    "message": (
-                        f"id {rid!r} does not match the {rtype} prefix "
-                        f"{expected}-### convention."
-                    ),
-                })
 
         # pass_criteria shape
         pc = r.get("pass_criteria")

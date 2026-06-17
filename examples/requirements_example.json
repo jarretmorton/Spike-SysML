@@ -1,7 +1,7 @@
 {
   "requirements": [
     {
-      "id": "CN-001",
+      "id": "R-DIST-1",
       "type": "constraint",
       "text": "Rover shall not get within 50mm on the right",
       "pass_criteria": {
@@ -13,7 +13,7 @@
       "source": "rover_test_v1.txt: 'the rover must not get closer than 50mm'"
     },
     {
-      "id": "CN-002",
+      "id": "R-DIST-2",
       "type": "constraint",
       "text": "Rover shall not get within 50mm on the left",
       "pass_criteria": {
@@ -24,8 +24,8 @@
       },
       "source": "rover_test_v1.txt: 'the rover must not get closer than 50mm'"
     },
-    {
-      "id": "CN-003",
+       {
+      "id": "R-EDGE-1",
       "type": "constraint",
       "text": "Rover shall not drive over an edge",
       "pass_criteria": {

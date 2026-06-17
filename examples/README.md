@@ -8,7 +8,7 @@ the input/output of the v0.1 prototype.
 
 - **`requirements_example.json`** — a small requirements model in the
   schema defined by `docs/wire_contract.md`. Three constraint
-  requirements (CN-001, CN-002, CN-003) from a fictional rover spec
+  requirements (R-DIST-1, R-DIST-2, R-EDGE-1) from a fictional rover spec
   (`rover_test_v1.txt`): stay clear of obstacles on the right and left
   (distance > 50 mm) and stop at a table edge (reflection > 20%). This
   is the shape the orchestrator-workers pipeline merges to and that
@@ -26,9 +26,9 @@ the input/output of the v0.1 prototype.
   `hub_program_example.py` on hardware. Each line is one event per the
   wire contract. All three requirements fail in this run: both distance
   sensors close to 40 mm before the program's stop latch fires (it trips on
-  `< 50`, so the `> 50` clearance constraint is already breached — CN-001 and
-  CN-002 fail), and the reflection sensor falls to ~3% through the second half
-  as the rover reaches an edge (CN-003 fails). The distance failures are the
+  `< 50`, so the `> 50` clearance constraint is already breached — R-DIST-1 and
+  R-DIST-2 fail), and the reflection sensor falls to ~3% through the second half
+  as the rover reaches an edge (R-EDGE-1 fails). The distance failures are the
   instructive part: a stop rule that reacts *at* 50 mm cannot satisfy a
   constraint that forbids *reaching* it — that gap is the reaction + braking
   + margin the stop constraint exists to cover. A useful input for re-grading
