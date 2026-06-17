@@ -30,7 +30,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [
 
 For interactive, conversational hardware control, the `spike-prime-mcp` server exposes `flash_program`, `run_program`, and `get_telemetry` over MCP — the same seam that backs the control arm of the Evaluation comparison below. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
 
-The fixed unit-model registry lives in [`models/`](models/): `rover_common` (shared value types and the actuation-chain latency), `m1_motor_to_rover_speed` (the motor→speed characterization), and the two safety models `m2_collision_stop` (R-COL-1) and `m3_fall_stop` (R-FALL-1). These are drafted but not yet grammar-validated.
+The fixed unit-model registry lives in [`models/`](models/): `rover_common` (shared value types and the actuation-chain latency), `m1_motor_to_rover_speed` (the motor→speed characterization), and the two safety models `m2_collision_stop` (R-COL-1) and `m3_fall_stop` (R-FALL-1). Each validates clean in Syside (the SysML v2 VSCode tooling); they are not yet validated through the in-pipeline grammar loop.
 
 ## Evaluation: structured vs. zero-shot
 
@@ -81,7 +81,7 @@ it (no matplotlib needed), or `--snapshot out.png` on `demo` to render headless.
 
 ## Status
 
-Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.2, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The seed unit models in `models/` are drafted but not yet grammar-validated.
+Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.2, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The seed unit models in `models/` validate clean in Syside (the SysML v2 VSCode tooling), but are not yet validated through the in-pipeline grammar loop.
 
 ### Known issues
 

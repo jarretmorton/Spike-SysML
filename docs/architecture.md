@@ -6,7 +6,8 @@
 > `spiketelem.py` and via the `spike-prime-mcp` server. The left-half model
 > selection and composition, the calibration stage, and the human review gates
 > are designed here but not yet built. The seed unit models are committed under
-> [`../models/`](../models/) (drafted, not yet grammar-validated).
+> [`../models/`](../models/) (validated clean in Syside, the SysML v2 VSCode
+> tooling; not yet validated through the in-pipeline grammar loop).
 
 ## Pattern selection
 
