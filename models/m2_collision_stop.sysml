@@ -71,19 +71,21 @@ package CollisionStop {
             + ( a ** 2 * tResponse ** 2 + 2 * a * (dSenseMax - margin) ) ** 0.5;
     }
 
-    // Safe while measured clearance is at least the threshold.
-    constraint def SafeForwardClearance {
-        in measuredDistance : LengthValue;
-        in threshold : LengthValue;        // from ForwardStopThreshold
-        measuredDistance >= threshold
-    }
-
     requirement def < 'R-COL-1' > NoForwardCollision {
         doc /* The rover shall maintain forward clearance no less than the
              * speed-dependent stop threshold; on reaching it, the collision
              * stop maneuver is triggered. Verified by a braking-distance test
              * across a speed sweep. */
         subject rover;
-        require constraint SafeForwardClearance;
+
+        // Operands of the safety check, declared on the requirement and bound
+        // to actual values when this requirement is used against the rover:
+        //   measuredDistance <- forward clearance from telemetry (clearance_mm)
+        //   threshold        <- ForwardStopThreshold(v, tResponse, decelCollision, marginCollision)
+        attribute measuredDistance : LengthValue;
+        attribute threshold : LengthValue;
+
+        // Safe while measured clearance is at least the threshold.
+        require constraint { measuredDistance >= threshold }
     }
 }

@@ -52,13 +52,6 @@ package FallStop {
 
     // --- Relations ---------------------------------------------------------
 
-    // Fixed, speed-independent edge detection.
-    constraint def EdgeDetected {
-        in measuredReflectance : Reflectance;
-        in threshold : Reflectance;        // detectThreshold
-        measuredReflectance <= threshold
-    }
-
     // Maximum safe speed: positive root of
     //   sensorOffset = v*tResponse + v**2/(2a) + margin
     // Real and positive while sensorOffset > margin.
@@ -72,13 +65,6 @@ package FallStop {
             + ( a ** 2 * tResponse ** 2 + 2 * a * (offset - margin) ) ** 0.5;
     }
 
-    // Commanded speed must not exceed the geometry-limited maximum.
-    constraint def FallSafeSpeed {
-        in v : SpeedValue;
-        in vMax : SpeedValue;              // from MaxSafeSpeed
-        v <= vMax
-    }
-
     requirement def < 'R-FALL-1' > NoFallOverEdge {
         doc /* The rover shall (a) trigger the fall stop maneuver when downward
              * reflectance drops to the calibrated detection threshold, and
@@ -86,7 +72,21 @@ package FallStop {
              * sensor offset and the calibrated fall-stop dynamics. Calibration
              * sets vMax. Verified by an edge-trip test at, and just above, vMax. */
         subject rover;
-        require constraint EdgeDetected;
-        require constraint FallSafeSpeed;
+
+        // Operands of the two safety checks, declared on the requirement and
+        // bound to actual values when this requirement is used against the rover:
+        //   measuredReflectance <- downward reflectance from telemetry
+        //   detectThreshold     <- the model's calibrated trip level (above)
+        //   v                   <- commanded speed
+        //   vMax                <- MaxSafeSpeed(tResponse, decelFall, sensorOffset, marginFall)
+        attribute measuredReflectance : Reflectance;
+        attribute detectThreshold : Reflectance;
+        attribute v : SpeedValue;
+        attribute vMax : SpeedValue;
+
+        // (a) Fixed, speed-independent edge detection.
+        require constraint { measuredReflectance <= detectThreshold }
+        // (b) Commanded speed must not exceed the geometry-limited maximum.
+        require constraint { v <= vMax }
     }
 }
