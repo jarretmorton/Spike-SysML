@@ -1,4 +1,4 @@
-// Status: drafted, not yet validated via sysml_validate.
+// Status: validated clean in Syside (SysML v2, VSCode).
 
 package MotorToRoverSpeed {
     doc /*

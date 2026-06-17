@@ -1,5 +1,7 @@
-// Status: drafted, not yet validated via sysml_validate.
-// Operator note: exponentiation written as ** ; confirm against grammar.
+// Status: validated clean in Syside (SysML v2, VSCode).
+// Confirmed in Syside: ** is exponentiation and ** 0.5 is sqrt — Syside accepts
+// ** 0.5 but does not resolve sqrt(), so ** 0.5 is the import-free form. The
+// safety constraint is inlined (require constraint { ... }) per the spec idiom.
 
 package CollisionStop {
     doc /*

@@ -1,6 +1,6 @@
-// Status: drafted, not yet validated via sysml_validate.
-// Confirm ISQ/SI value-type names and the sqrt import against the installed
-// standard-library version before loading into the API server.
+// Status: validated clean in Syside (SysML v2, VSCode).
+// ISQ/SI value-type names resolve against the standard library
+// (e.g. LengthValue -> ISQSpaceTime::LengthValue).
 
 package RoverCommon {
     doc /*
