@@ -8,13 +8,13 @@ The choice of SPIKE Prime is deliberate. It's cheap enough to easily test, and c
 
 ## What this is not
 
-Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE App or Pybricks. It does not generate certifiable artifacts and does not perform V&V — it is a tooling layer that produces inputs to a human-led verification process, with LEGO hardware standing in for a target system. It is a portfolio demonstrator rather than a research program — though it deliberately measures itself against an unstructured baseline (see [Evaluation](#evaluation-structured-vs-zero-shot)).
+Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE App or Pybricks. It does not generate certifiable artifacts and does not perform V&V — it is a tooling layer that produces inputs to a human-led verification process, with LEGO hardware standing in for a target system. It is a portfolio demonstrator rather than a research program — though it deliberately measures itself against an unstructured baseline (see [Evaluation](#evaluation-structured-vs-freestyle)).
 
 ## Architecture
 
 Built around two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents):
 
-- **Orchestrator-workers** for requirements decomposition. A planning agent reads the spec and dispatches structured-output sub-agents to extract functional, behavioral, interface, and constraint requirements in parallel; a selection-and-composition step then assembles these into a SysML v2 model from a fixed unit-model registry.
+- **Orchestrator-workers** for requirements decomposition. A planning agent reads the spec and dispatches structured-output sub-agents to extract functional, behavioral, interface, and constraint requirements in parallel; a selection-and-composition step then assembles these into a SysML v2 model by composing generic relation templates and binding calibrated parameters.
 - **Evaluator-optimizer** for code generation, with the hardware as the evaluator. A draft agent generates MicroPython for the SPIKE hub; the code runs on the robot; telemetry and pass/fail signals come back; the loop iterates until tests pass or a budget is hit.
 - **Parameter calibration and human review gates.** Unit-level constants are calibrated against the hardware; a human reviews each test design before it runs, signs off that the calibration fit is *sufficient* before the expensive integrated test, and accepts the integration *results* before the run is declared done — the costly steps are gated behind cheap verification.
 
@@ -28,20 +28,20 @@ Tool surface (v0.1):
 
 See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [`docs/wire_contract.md`](docs/wire_contract.md) for the telemetry wire format and requirements model schema.
 
-For interactive, conversational hardware control, the `spike-prime-mcp` server exposes `flash_program`, `run_program`, and `get_telemetry` over MCP — the same seam that backs the control arm of the Evaluation comparison below. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
+For interactive, conversational hardware control, the `spike-prime-mcp` server exposes `flash_program`, `run_program`, and `get_telemetry` over MCP — the shared hardware seam both arms of the Evaluation comparison below run through. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
 
-The fixed unit-model registry lives in [`models/`](models/): `rover_common` (shared value types and the actuation-chain latency), `m1_motor_to_rover_speed` (the motor→speed characterization), and the two safety models `m2_collision_stop` (R-COL-1) and `m3_fall_stop` (R-FALL-1). Each validates clean in Syside (the SysML v2 VSCode tooling); they are not yet validated through the in-pipeline grammar loop.
+Rover-specific exemplar models live in [`models/`](models/): `rover_common` (shared value types and the actuation-chain latency), `m1_motor_to_rover_speed` (the motor→speed characterization), and the two safety models `m2_collision_stop` (R-COL-1) and `m3_fall_stop` (R-FALL-1). They are reference for the generic template catalog the structured arm composes from, not the catalog itself. Each validates clean in Syside (the SysML v2 VSCode tooling); they are not yet validated through the in-pipeline grammar loop.
 
-## Evaluation: structured vs. zero-shot
+## Evaluation: structured vs. freestyle
 
-The point of the structured pipeline is a claim — that systems-engineering rigor buys you something before you let expensive equipment loose — and a claim like that is worth *demonstrating*, not asserting. So the project is framed as a two-arm comparison:
+The point of the structured pipeline is a claim — that systems-engineering rigor buys you something before you let expensive equipment loose — and a claim like that is worth *demonstrating*, not asserting. So the project is a two-arm comparison on one shared hardware seam, with the same model and configuration on both sides so the only variable is governance:
 
-- **Control (zero-shot):** a free-text request handed to Claude with only the `spike-prime-mcp` tools (`flash_program` → `run_program` → `get_telemetry`). No SysML model, no gates — Claude writes code, runs it, reports back.
-- **Treatment (structured):** the requirements → unit-model → calibration → verification pipeline above, which drives the hardware through the in-process tool path (`spike_deploy` / `spike_run`, with `spiketelem.py` over the shared `_runtime`).
+- **Freestyle (control):** a free-text request handed to the model with only the `spike-prime-mcp` tools (`flash_program` → `run_program` → `get_telemetry`). No model, no gates — it reasons, writes code, runs it, iterates.
+- **Structured (treatment):** the requirements → unit-model → calibration → verification pipeline above.
 
-For the cleanest head-to-head, both arms can be run through the same MCP seam, so the comparison isolates the governance layer as its only variable. Whether to route the structured arm's hardware steps through the MCP — rather than the in-process path it uses today, which the calibration loop's live plotting depends on — is a deliberate design choice still to be settled. Two things get measured either way: **outcome** — does the rover reach the safe-and-fast operating point (this discriminates only when the stopping margin is thin) — and **provenance** — can you produce an auditable argument that it will stop *before* it runs. The second is the durable claim: better models may close the outcome gap, but auditability doesn't come for free. The comparison is also run across Claude versions, to separate "competence scales" from "scaffolding still earns its place."
+**Both arms run through the same MCP seam** — this is settled — so the comparison isolates the governance layer. The task is a max-speed wall approach (full speed, stop as close to the wall as possible without contact), chosen because a *calibrated* stopping parameter is the difference between a tight safe stop and a contact, which makes the structured arm's speed-sweep calibration load-bearing. Each arm runs a counted characterization phase, then locks one program and runs it five times; the metrics are characterization cost, no-contact rate over the five, the gap distribution, and outside-input count — plus the one thing only the structured arm produces: an inspectable argument, *before the run*, that the rover will stop within its envelope. Better models may close the outcome gap, but that argument doesn't come for free.
 
-Either way, `spike-prime-mcp` is load-bearing rather than a demo: it is the apparatus for the control arm, and the candidate shared seam for a controlled head-to-head.
+The full design — information diet, the two-phase protocol, the generation-vs-selection rule, and the metrics — is in [`docs/evaluation.md`](docs/evaluation.md). `spike-prime-mcp` is load-bearing rather than a demo: it is the shared seam both arms drive through.
 
 ## Setup
 
@@ -81,7 +81,7 @@ it (no matplotlib needed), or `--snapshot out.png` on `demo` to render headless.
 
 ## Status
 
-Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.2, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The seed unit models in `models/` validate clean in Syside (the SysML v2 VSCode tooling), but are not yet validated through the in-pipeline grammar loop.
+Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.3, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The seed unit models in `models/` validate clean in Syside (the SysML v2 VSCode tooling), but are not yet validated through the in-pipeline grammar loop. The structured-vs-freestyle comparison that frames the project is specified in [`docs/evaluation.md`](docs/evaluation.md); the structured arm's left half — requirements derivation, generic-template composition, and the calibration stage — is the next build.
 
 ### Known issues
 

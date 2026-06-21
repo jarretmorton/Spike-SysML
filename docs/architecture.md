@@ -1,13 +1,18 @@
 # Architecture
 
-> **Status:** v0.2 — this document now describes the full intended pipeline;
-> implementation is unchanged. The evaluator-optimizer right-half
-> (deploy → run → eval) runs end-to-end against real hardware via
-> `spiketelem.py` and via the `spike-prime-mcp` server. The left-half model
-> selection and composition, the calibration stage, and the human review gates
-> are designed here but not yet built. The seed unit models are committed under
-> [`../models/`](../models/) (validated clean in Syside, the SysML v2 VSCode
-> tooling; not yet validated through the in-pipeline grammar loop).
+> **Status:** v0.3 — this document describes the full intended pipeline ahead of
+> the build. The evaluator-optimizer right-half (deploy → run → eval) runs
+> end-to-end against real hardware via `spiketelem.py` and via the
+> `spike-prime-mcp` server. The left-half model selection and composition, the
+> calibration stage, and the human review gates are designed here but not yet
+> built. The seed unit models are committed under [`../models/`](../models/)
+> (validated clean in Syside, the SysML v2 VSCode tooling; not yet validated
+> through the in-pipeline grammar loop). The structured-vs-freestyle comparison
+> this pipeline anchors is specified in [`evaluation.md`](evaluation.md).
+>
+> *v0.3 changes: both comparison arms now run through the MCP (routing resolved);
+> the generation/selection rule refined to "develop what calibration can verify";
+> the comparison design consolidated into evaluation.md.*
 
 ## Pattern selection
 
@@ -19,8 +24,8 @@ Spike SysML uses two patterns from [*Building Effective Agents*](https://www.ant
 Why these two: requirements decomposition is naturally parallel (functional, behavioral, interface, and constraint requirements can be extracted independently), and the hardware loop has a natural critic — the robot either does the thing or it doesn't. The two other major patterns from the post are less interesting here: prompt chaining is too linear for the parallel decomposition step, and routing implies a choice between specialists where this system has only one path.
 
 Two published systems ground the harder halves of this pipeline without displacing the two patterns above; they sit underneath them. **Iserte et al.** (*Computers in Industry* 172, 2025) generate valid SysML v2 from natural language by pairing retrieval over a curated example repository with an ANTLR-grammar validation engine in a self-correcting loop; Spike SysML borrows the validation-in-a-loop half and declines the generate-from-scratch half (see *Generation vs. selection* under Resolved decisions). **Aegis** (arXiv 2410.12475) structures functional-safety work as a hierarchical multi-agent team whose progress is gated by a review-before-proceed node — the pattern Spike SysML adopts for its human calibration gate (see *The review gate*).
- 
-One refinement to the pattern map: the evaluator-optimizer pattern now recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once in the integration loop (stage 6, hardware as evaluator for system behavior). Orchestrator-workers still applies to requirements derivation (stage 2); model selection and composition (stage 3) is a selection step rather than worker-parallelism, and is treated as such below. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
+
+One refinement to the pattern map: the evaluator-optimizer pattern now recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once in the integration loop (stage 6, hardware as evaluator for system behavior). Orchestrator-workers still applies to requirements derivation (stage 2); model selection and composition (stage 3) is a selection-and-composition step rather than worker-parallelism, and is treated as such below. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
 
 ## Flow
 
@@ -35,12 +40,12 @@ flowchart TD
     W2 --> RQ
     W3 --> RQ
     W4 --> RQ
- 
-    RQ --> SEL[select + compose unit models from registry]
+
+    RQ --> SEL[select + compose from generic template catalog]
     SEL --> V[sysml_validate]
     V -->|grammar fail| SEL
     V -->|valid| CODE[select primitive code lib + generate orchestration]
- 
+
     CODE --> GCAL{human gate: calibration test design}
     GCAL -->|reject| CODE
     GCAL -->|approve| CDEP[spike_deploy: calibration test]
@@ -49,7 +54,7 @@ flowchart TD
     FIT --> BIND[bind parameters to model]
     BIND -->|params unstable| CODE
     BIND -->|params stable| VCHK{verification check: calibration sufficiency}
- 
+
     VCHK -->|insufficient| CODE
     VCHK -->|sufficient| GSYS{human gate: system test design}
     GSYS -->|reject| CODE
@@ -93,15 +98,15 @@ The hub-to-host wire format and the requirements model schema both live in [`doc
 
 The tool surface above is the *in-process* pipeline interface — the orchestrator and `spiketelem.py` call those functions directly. A second, parallel front-end reaches the same hardware: the `spike-prime-mcp` server (see [`../spike_prime_mcp/README.md`](../spike_prime_mcp/README.md)) exposes three tools — `flash_program`, `run_program`, `get_telemetry` — over the Model Context Protocol, so a conversational client such as Claude Desktop can deploy code, run it, and read telemetry directly. Both front-ends sit on the same async runtime (`tools/_runtime.py`) and differ only in caller: in-process Python for the pipeline, stdio MCP for the interactive client.
 
-This seam is also the apparatus for the control arm of the structured-vs-zero-shot comparison (see the README's *Evaluation* section): the zero-shot arm is Claude driving the hardware over the MCP with no SysML governance in front of it. The structured arm currently reaches the hardware through the in-process tool path instead; routing it through the MCP too — so a controlled head-to-head varies only the governance layer, not the seam — is a deliberate design choice still to be settled (the calibration loop's live plotting is the tension, since the MCP returns a trace only at the end rather than streaming).
+This seam is the shared hardware interface for the structured-vs-freestyle comparison (see [`evaluation.md`](evaluation.md)): **both arms drive the hardware through the MCP**, so the comparison varies only the governance layer, not the seam. The freestyle arm is the model over the MCP with no SysML governance in front of it; the structured arm runs its calibration and verifying runs through the same tools. Because the MCP returns a complete trace at end-of-run rather than streaming, the structured arm's calibration reads its decay points from on-hub buffering rather than a live feed; live plotting is preserved on the in-process diagnostic path (`spiketelem.py`) for development use, outside the scored comparison.
 
 ## Calibration
- 
+
 Unit models enter composition with free parameters — the rpm-to-speed constant, the achievable deceleration `a`, the composite response time `t_response`, the distance-sensor offset. None are known until they are measured on the specific
 hardware. Stage 5 binds them: for each parameter the system selects a calibration test (drive a known motor command and read actual travel off the gyro/clock; brake from speed and measure stopping distance; approach a wall slowly to zero the distance offset), runs it, and fits the constant.
- 
+
 Division of labor matters here. The agent selects the test and interprets the result; the numerical fit is deterministic code, not the LLM — eyeballed constants produce plausible-but-wrong calibration, the worst failure mode because it passes review. Calibration that estimates a single linear constant must also be designed to expose the terms it might otherwise absorb: the braking term `v²/(2a)` is quadratic in speed, so a single-speed calibration folds it silently into the linear constant and is quietly wrong at the edges of the envelope. The mitigation is a speed sweep with inspection of the fit residuals for curvature — design the test to surface the second-order term, then let the data retire it if it proves negligible.
- 
+
 *Status: designed, not built.*
 
 ## Open questions
@@ -117,8 +122,8 @@ Division of labor matters here. The agent selects the test and interprets the re
 ## Resolved decisions
 
 - **The review gates (human in the loop).** The pipeline has human touchpoints at five places: authoring the original spec at the front, and four checkpoints on the hardware side arranged as a pre-run gate and a post-run verification around each of the two hardware activities. A *test-design gate* precedes each run — the human approves the calibration test (design + code) before it runs, and the requirement/system test before the integrated run — so no hardware actuates on an unreviewed plan. A *results verification* follows each: after calibration, a *sufficiency check* confirms the fit is physical and adequate (fitted values, the residual-curvature flag, parameter plausibility) before the expensive integrated test is authorized; after integration, a *results acceptance* confirms the run genuinely passed (evidence sound, pass not spurious, requirements actually exercised) before the build is declared done. The calibration-sufficiency check is the V-model integration gate, structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides. Everything else is agent-owned.
-- **Generation vs. selection.** For SysML model construction, Spike SysML selects and composes from a fixed registry of unit models rather than generating them from natural language. With only three unit models on this hardware (distance sensor, reflectivity sensor, drive/steer motors), synthesis-from-scratch — the **Iserte et al.** approach — buys generality the domain doesn't need and adds a failure surface it can't justify; template-based selection (cf. **SysTemp**) is the better fit. What is retained from Iserte is the grammar-validation-in-a-loop: the *composed* model still validates against the SysML v2 grammar via `sysml_validate`, because composition — the interconnections and bound parameters — is where invalidity is introduced even when the unit models are individually valid.
+- **Generation vs. selection.** The pipeline **composes** a SysML model — it selects from a catalog of *generic, rover-agnostic* relation templates (e.g. speed-from-rotation, stopping-distance = reaction + braking, parameters left free), instantiates them against the requirements it derived, binds calibrated parameters, and grammar-validates the result. It does not synthesize models freely from natural language (the **Iserte et al.** approach), which buys generality the domain doesn't need and adds a failure surface it can't justify. Retained from Iserte is the grammar-validation-in-a-loop: the *composed* model validates against the SysML v2 grammar via `sysml_validate`, because composition — interconnections and bound parameters — is where invalidity enters even when templates are individually valid. The selection/generation line is drawn by **what calibration can verify**: the pipeline may *develop* a relation whose structural error its calibration can independently expose, and must *select* a validated template for any relation the calibration cannot check. The stop relation qualifies — a dropped quadratic term shows up as residual curvature in the speed-sweep fit, so the calibration is the error detector — which makes developing it a stronger demonstration (the process catches its own error) without surrendering the verification claim. This is graded by consequence: develop-with-calibration-backstop is appropriate for this LEGO demonstrator; safety-critical hardware would tighten to validated, reviewed relations and not rely on calibration to find model-structure errors. The committed seed models in [`../models/`](../models/) are rover-specific *exemplars*; for the structured arm they are the reference the generic catalog and the agent's developed composition are checked against — not the input handed to the arm.
 - **Library primitives vs. generated orchestration.** Code is split at the hardware boundary. Primitive operations — commanding a motor to a speed, reading a sensor channel — are templated library blocks: the operation set is closed, and pre-tested code is more trustworthy than generated MicroPython where there is no upside to generating it. Mission orchestration — the control logic that sequences primitives to satisfy a spec — is generated, because it varies per requirement and is where generation earns its place. The split mirrors ordinary software practice: the standard library is not regenerated on every build; the application logic that calls it is. The evaluator-optimizer loop iterates on the orchestration, not on whether the motor API was called correctly.
-- **The SysML layer carries constraints and parameters, not labels.** With unit models reduced to registry entries, the SysML v2 layer earns its place through what it holds rather than what it generates: requirement-to-element-to-test  traceability, the parametric relations that encode the system physics, and the calibration constants those relations depend on. Two worked examples: *motor turn → rover speed* is a parametric edge whose constant (bundling wheel geometry, gear ratio, and slip) is bound by calibration, not computed; and the stop constraint, `d_measured ≥ v·t_response + v²/(2a) + margin`, encodes reaction distance, braking distance, and a human-set safety margin as a formal relation rather than logic buried in code. This is the distinction between the model and a configuration table, and it is the point at which calibration (stage 5) becomes model anchoring — binding a parametric model's free parameters to physical hardware through designed tests.
+- **The SysML layer carries constraints and parameters, not labels.** With the unit relations supplied as generic templates, the SysML v2 layer earns its place through what it holds rather than what it generates: requirement-to-element-to-test  traceability, the parametric relations that encode the system physics, and the calibration constants those relations depend on. Two worked examples: *motor turn → rover speed* is a parametric edge whose constant (bundling wheel geometry, gear ratio, and slip) is bound by calibration, not computed; and the stop constraint, `d_measured ≥ v·t_response + v²/(2a) + margin`, encodes reaction distance, braking distance, and a human-set safety margin as a formal relation rather than logic buried in code. This is the distinction between the model and a configuration table, and it is the point at which calibration (stage 5) becomes model anchoring — binding a parametric model's free parameters to physical hardware through designed tests.
 - **SPIKE communication.** Bluetooth via `pybricksdev`. The JSONL framing plus `{"event":"end"}` sentinel is the reliability pattern that closes the gap originally flagged against USB — buffer-drain races at end-of-run are fenced by the sentinel; chunk-boundary line assembly is handled in `tools/_runtime.py`.
 - **Requirements-to-test traceability.** Telemetry is sensor-tagged, not requirement-tagged; the requirements model is the single source of truth, and `test_eval` joins on `pass_criteria.sensor` per requirement. This keeps the wire format general (any telemetry consumer can read a trace without knowing the requirements model) and makes re-grading an old trace against a new model trivial.
