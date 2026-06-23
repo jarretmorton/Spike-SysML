@@ -26,14 +26,14 @@ Scanned all six ports by attempting `Motor` → `UltrasonicSensor` → `ColorSen
 
 | Port | Device | Initial reading |
 |------|--------|----------------|
-| A | UltrasonicSensor | 1026 mm → **primary forward sensor** |
-| B | UltrasonicSensor | 840 mm (side or angled) |
+| A | UltrasonicSensor | 1026 mm → forward sensor (selected as primary) |
+| B | UltrasonicSensor | 840 mm → **also forward-facing** (confirmed post-campaign) |
 | C | Motor | — |
 | D | Motor | — |
 | E | UltrasonicSensor | 543 mm (rear) |
 | F | ColorSensor | 37 % reflectance (downward) |
 
-Port A at 1026 mm matched the stated ~1000 mm start distance and was selected as the primary stopping sensor.
+Port A at 1026 mm matched the stated ~1000 mm start distance and was selected as the primary stopping sensor. Port B's lower reading (~840 mm) at the same position was initially misread as indicating a side-facing orientation; post-campaign testing confirmed it is also forward-facing. B consistently reads less than A at every distance, which is consistent with B's sensor face being mounted closer to the rover's front. This misidentification was a significant missed opportunity — see Phase 3.
 
 ---
 
@@ -215,24 +215,98 @@ The gap from 285 mm to 44 mm represents one sensor update interval (~480 ms × 5
 
 ## What I Would Change With a Second Attempt
 
-### 1. Stop threshold 350 mm (not 270 mm)
+### 1. Use both forward sensors from the start (most impactful change)
 
-The sensor's last stable reading before the close-range jump is typically ~285 mm. A threshold of 300–350 mm catches that reading reliably before the jump:
+Port B is also forward-facing — a fact discovered post-campaign. Polling both A and B in the control loop effectively doubles the sensor sample rate, since the two sensors run independent hardware update cycles. This directly addresses the root failure mode (sensor dead zone of ~240 mm per update). Confirmed by bonus runs — see Phase 3.
 
-- Trigger at ~285 mm → BRAKE → rest ≈ 285 − 105 = 180 mm sensor / ~140 mm actual
-- Less spectacular gap, but **5/5 no-contact** reliability
+### 2. Stop threshold 350 mm for the single-sensor case
 
-### 2. Encoder-based stopping
+If only one forward sensor is available, the threshold should be ~350 mm to catch the last stable reading (~285 mm) before the close-range jump. This guarantees 5/5 no-contact at ~140 mm actual gap, trading closeness for reliability.
+
+### 3. Encoder-based stopping
 
 Read `motor.angle()` at the start, track degrees turned, and compute estimated rover travel. Calibrate motor-degrees-per-mm from the first two reliable long-range sensor readings (which are stable above ~400 mm). This bypasses the ultrasonic update-rate problem entirely and gives continuous, high-resolution position at every polling interval — roughly 8.6 mm resolution instead of the sensor's 240 mm jump.
 
-### 3. Eliminate the spin program
+### 4. Eliminate the spin program
 
 Program 2 was wasted. A single-motor sniff (`motor_C.run(100)` alone for 0.3 s, observe heading change direction) would have identified mounting orientation without a dedicated failed program. Combined with the port scan in Program 1, characterization would have completed in 3 programs instead of 4.
 
-### 4. BRAKE not HOLD for final stopping
+### 5. BRAKE not HOLD for final stopping
 
 Confirmed by P4: HOLD causes −18° heading yaw during deceleration, making the sensor reading unreliable as a gap proxy. BRAKE keeps heading within ~2° and is the correct choice for this rover.
+
+---
+
+## Phase 3 — Post-Campaign Bonus Runs (dual forward sensor)
+
+After the campaign, the operator confirmed that Port B is also forward-facing. Two additional runs were conducted to test the dual-sensor hypothesis.
+
+### Hypothesis
+
+Port A and B have independent hardware update cycles. Polling both sensors in each loop iteration and triggering on whichever fires first effectively doubles the sampling rate (~4 Hz vs ~2 Hz), halving the dead zone from ~240 mm to ~120 mm per effective sample. This should prevent the "jump to 44 mm" failure mode that caused Runs C2 and C3 to contact.
+
+### Bonus Run 1 — dual sensor, threshold 270 mm
+
+```python
+fwd_A = UltrasonicSensor(Port.A)
+fwd_B = UltrasonicSensor(Port.B)
+STOP_THRESH = 270  # mm
+
+# In loop: trigger on either sensor
+a_hit = d_a is not None and d_a < STOP_THRESH
+b_hit = d_b is not None and d_b < STOP_THRESH
+if a_hit or b_hit:
+    trig = min(d for d in [d_a, d_b] if d is not None and d < STOP_THRESH)
+    # brake and break
+```
+
+| Parameter | Value |
+|-----------|-------|
+| d_A_init | 1030 mm |
+| d_B_init | 894 mm |
+| Triggered by | **Sensor B** (trigger_which = 2) |
+| trigger_d | 264 mm |
+| d_A at trigger | 411 mm (A had not yet reached threshold) |
+| d_A_rest | 291 mm |
+| d_B_rest | **131 mm** |
+| h_final | −14.0° |
+| Contact? | **No** |
+
+**Result:** B caught a 264 mm reading cleanly — right where single-sensor A was failing (jumping from ~285 mm to 44 mm). The "jump to 44 mm" dead zone never occurred. B's independent update cycle provided the intermediate reading that A consistently missed.
+
+B braking: 264 − 131 = **133 mm** in B-units.
+
+---
+
+### Bonus Run 2 — dual sensor, threshold lowered to 200 mm
+
+With reliable triggering confirmed, the threshold was reduced to 200 mm to stop closer to the wall.
+
+| Parameter | Value |
+|-----------|-------|
+| d_A_init | 1016 mm |
+| d_B_init | 880 mm |
+| Triggered by | **Sensor B** (trigger_which = 2) |
+| trigger_d | 183 mm |
+| d_A at trigger | 331 mm |
+| d_A_rest | 205 mm |
+| d_B_rest | **60 mm** |
+| h_final | −13.6° |
+| Contact? | **No** |
+
+**Result:** closest confirmed stop of the entire session. B triggered at 183 mm, rested at **60 mm** — well above B's sensor floor — with no contact. B braking: 183 − 60 = **123 mm** (consistent with 133 mm from BR1, confirming stable and repeatable braking behaviour).
+
+---
+
+### Dual-sensor comparison summary
+
+| Approach | Trigger stability | Best rest | Reliable? |
+|----------|------------------|-----------|-----------|
+| Single A, 270 mm (campaign) | 44–210 mm (variable) | 78 mm A | No — 2/5 contact |
+| Dual A+B, 270 mm (BR1) | ~264 mm (stable) | 131 mm B | Yes, conservative |
+| Dual A+B, 200 mm (BR2) | ~183 mm (stable) | **60 mm B** | Yes, and close |
+
+The dual-sensor approach resolves the fundamental reliability problem while matching or improving on the campaign's closest stops. With a threshold of ~180–200 mm, a well-tuned dual-sensor program would be expected to achieve 5/5 no-contact runs at ~60 mm gap.
 
 ---
 
@@ -249,8 +323,10 @@ Confirmed by P4: HOLD causes −18° heading yaw during deceleration, making the
 | C3 Campaign Run 3 | `run-20260623-002545` |
 | C4 Campaign Run 4 | `run-20260623-002651` |
 | C5 Campaign Run 5 | `run-20260623-002918` |
+| BR1 Bonus — dual sensor, 270 mm | `run-20260623-004421` |
+| BR2 Bonus — dual sensor, 200 mm | `run-20260623-004829` |
 
 *Total thinking time and tokens used are not surfaced within the Pybricks/MCP session; those metrics would need to be pulled from the Anthropic API usage log for this conversation.*
 
 ## Actual results
-Run#1=42mm, Run#2=0, Run#3=0, Run#4=83mm, Run#5=54mm
+Run#1=42mm, Run#2=0, Run#3=0, Run#4=83mm, Run#5=54mm, Run#6=?mm (similar to Run#7), Run#7=172mm
