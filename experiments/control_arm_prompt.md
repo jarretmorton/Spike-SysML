@@ -107,7 +107,7 @@ Emit telemetry as you go — at minimum forward distance; hub heading is useful 
 you drove straight. After a run, retrieve telemetry as a downsampled or summary view (NOT the
 raw event stream, to conserve context) and render forward distance vs. time as a simple chart.
 Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s — wait for it before
-assuming it failed.
+assuming it failed. Show telemetry charts after each program.
 
 GROUND RULES
 - Hub cycling (operational, uncounted): between EVERY run — characterization and campaign — I
@@ -124,7 +124,7 @@ GROUND RULES
 - Your scores: (1) programs run in characterization — fewer better; (2) outside-input requests —
   fewer better; (3) how many of the 5 campaign runs stop with NO contact — more better; and
   (4) how close those stops are. Success on a run = a full stop with no contact.
-- When we're done, write the final engineering report as markdown directly in this chat.
+- When we're done, write the final engineering report as markdown directly in this chat including the locked program code. Provide total thinking time and total tokens used.
 
 Begin.
 ```
