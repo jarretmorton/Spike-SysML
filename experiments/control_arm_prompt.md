@@ -47,7 +47,7 @@ Objective: minimize the final gap between the rover and the wall.
 THE ROVER (what's physically on it)
 - A SPIKE Prime hub running Pybricks firmware, with a built-in IMU (heading + acceleration).
 - Two drive motors (differential drivetrain).
-- Ultrasonic distance sensors: forward-facing ones for obstacles ahead, plus a rear one.
+- Ultrasonic distance sensors: two forward-facing ones for obstacles ahead, plus a rear one.
 - A downward-facing color/reflectance sensor.
 
 You do NOT know which device is on which port, or the drivetrain's direction conventions.
@@ -107,7 +107,7 @@ Emit telemetry as you go — at minimum forward distance; hub heading is useful 
 you drove straight. After a run, retrieve telemetry as a downsampled or summary view (NOT the
 raw event stream, to conserve context) and render forward distance vs. time as a simple chart.
 Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s — wait for it before
-assuming it failed. Show telemetry charts after each program.
+assuming it failed. Show telemetry charts after each program in both phase 1 and 2.
 
 GROUND RULES
 - Hub cycling (operational, uncounted): between EVERY run — characterization and campaign — I
