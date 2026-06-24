@@ -30,6 +30,7 @@ package WallRunDesign {
 
     private import ISQ::*;
     private import SI::*;
+    private import ScalarValues::*;
     private import RoverCommon::*;
     private import RoverStructure::*;
 
@@ -118,6 +119,7 @@ package WallRunRequirements {
      * consume (noted per leaf).
      */
 
+    private import ISQ::*;
     private import RequirementTemplates::*;
     private import WallRunDesign::*;
 
