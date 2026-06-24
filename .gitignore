@@ -71,6 +71,7 @@ Thumbs.db
 runs/
 telemetry/
 *.log
+learning/
 
 # Secrets and API keys
 secrets/
