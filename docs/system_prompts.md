@@ -2,7 +2,9 @@
 
 > **Status:** Drafts. These prompts define the orchestrator-workers left-half, which is not yet wired in code (the README calls it "in prompts only"), so they have not yet been exercised end-to-end against an LLM. Expect them to converge once the orchestrator is built and producing real outputs to react to. The draft-agent and critic prompts at the bottom of this file are sketchier — included for completeness, but the requirements-decomposition side of the system is the priority.
 
+> **Superseded decomposition axis — read before the prompts below.** These prompts dispatch workers *by requirement category* (functional / behavioral / interface / constraint) and merge a flat typed set. That category-as-axis has since been replaced by a leveled, top-down decomposition — **STK→SYS→FUN→CMP** to the single-effector leaf, every child traced to its parent, authored in **EARS** to **INCOSE GtWR / ISO-29148**, with the four categories demoted to requirement *types* (a tag on each leaf, not the thing you split on). The canonical articulation of that method — and the one the structured-vs-freestyle comparison actually runs — now lives in [`experiments/se_arm_prompt.md`](../experiments/se_arm_prompt.md), the in-context realization of the structured arm. The worker prompts below remain useful for two things — their per-type field definitions, and their text forms, which are already broadly EARS-shaped (functional → Ubiquitous, behavioral → Event-driven, constraint → Unwanted; only the State-driven "While …" form is absent) — but their *dispatch structure* is pre-reframe. They will be reworked into per-function-area workers when the orchestrator left-half is built.
 ---
+
 
 ## Orchestrator
 
@@ -21,9 +23,11 @@ The four workers are:
 A single sentence in the spec may belong to more than one worker. When in doubt, dispatch to multiple workers; the merge step will handle overlap. When a worker returns a requirement that contradicts another worker's output, do not silently resolve — surface the conflict in your final report.
 
 Output format: emit a JSON object with the keys `dispatch` (a dict mapping worker names to the spec excerpts they receive) and `notes` (a list of strings flagging ambiguities, missing context, or assumptions you are making).
+
 ```
 
 ---
+
 
 ## Worker — functional
 
@@ -38,9 +42,11 @@ Read the excerpt below and emit a list of functional requirement objects. Each o
 - source: the substring of the input excerpt this requirement was derived from.
 
 Do not invent capabilities the spec does not state. If the spec is silent on a detail, leave it out — the orchestrator will flag the gap.
+
 ```
 
 ---
+
 
 ## Worker — behavioral
 
@@ -57,9 +63,11 @@ Emit a list of behavioral requirement objects with these fields:
 - source: the substring this was derived from.
 
 If the spec describes a state machine implicitly (e.g. "first do X, then Y, then Z"), make the states explicit. Behavioral requirements are where most of the test logic lives — be thorough.
+
 ```
 
 ---
+
 
 ## Worker — interface
 
@@ -77,9 +85,11 @@ Emit a list of interface requirement objects with these fields:
 - source: the substring this was derived from.
 
 If the spec assumes a port assignment without stating it, do not guess — leave port null and let the orchestrator surface the gap.
+
 ```
 
 ---
+
 
 ## Worker — constraint
 
@@ -95,9 +105,11 @@ Emit a list of constraint requirement objects with these fields:
 - source: the substring this was derived from.
 
 Constraints are easy to miss because they are often phrased as warnings or rationale rather than requirements. Read the spec for words like "must not", "no more than", "at most", "within", "before", and "until".
+
 ```
 
 ---
+
 
 ## Draft agent
 
@@ -114,9 +126,11 @@ Constraints:
 - Implement only the requirement passed to you. Do not interpret adjacent requirements.
 
 If the requirement cannot be tested on a SPIKE Prime hub (e.g. it constrains software behavior that has no hardware analogue), say so explicitly and do not fabricate a test.
+
 ```
 
 ---
+
 
 ## Critic (test_eval)
 
@@ -128,4 +142,5 @@ You decide whether a hardware run satisfies the requirement it was built to test
 Your verdict is either "passed" or "failed". When you return "failed", your reasoning field must be specific enough that the draft agent can act on it: name the telemetry event (or its absence) that drove the verdict, and suggest one concrete change to the program.
 
 You do not propose new requirements. You do not pass when the requirement is partially met. The verdict is binary.
+
 ```
