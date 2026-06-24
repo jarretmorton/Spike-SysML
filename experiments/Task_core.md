@@ -1,37 +1,19 @@
-# Control-arm prompt — freestyle wall approach
+# task_core.md — shared controlled apparatus (BOTH arms)
 
-This is the runnable instrument for the **freestyle (control) arm** of the
-structured-vs-freestyle comparison (see [`../docs/evaluation.md`](../docs/evaluation.md)).
-It is handed to the model in a fresh, memory-free context (incognito) with the
-`spike-prime-mcp` tools connected and nothing else — no project knowledge, no
-prior design, so the arm starts genuinely blind.
+Source of truth for the controlled variables of the structured-vs-freestyle A/B: the task,
+rover inventory, code primitives, telemetry wire format, two-phase protocol, scoring, and
+ground rules. **Edit these here once** — both arms prepend this identical block so "both arms
+ran under identical conditions" is true by construction.
 
-What it deliberately gives the model: the task, the effector inventory, the
-port-parameterized code primitives, the IMU, and the telemetry wire format. What
-it withholds: the port mapping, the drivetrain sign convention, the stopping
-physics, and anything calibrated — those are the model's to discover or solve.
-
-Run conditions:
-- Same model and configuration as the structured arm (config is a controlled
-  variable). Thinking on; moderate effort.
-- Fill in the measured start distance (set to ~1000 mm below).
-- The hub is **power-cycled between every run** to clear accumulated gyro/sensor
-  drift, so each run starts from a clean hub state. (A long uncycled session was
-  observed to drift the true stop distance run-to-run while the rover's reading
-  stayed flat.)
-- Operator policy: provide offline characterization measurements *on request*
-  during Phase 1 (counted as outside input); provide no input during the
-  campaign; record contact and gap **externally** for scoring — never trust the
-  model's self-reported closeness.
-- Incognito does not persist — capture the transcript and report as you go.
-
----
+Assembly: the prompt delivered to each arm is the fenced block below, **then** that arm's delta
+block (`freestyle_arm_prompt.md` or `se_arm_prompt.md`), ending in `Begin.`. The model always
+receives full text, never a link.
 
 ```
 You have direct control of a physical LEGO SPIKE Prime rover through three MCP tools:
 flash_program, run_program, and get_telemetry. You write MicroPython (Pybricks firmware),
-flash it to the hub, run it, and read back telemetry — iterating until the task is done.
-The normal sequence is flash_program → run_program → get_telemetry.
+flash it to the hub, run it, and read back telemetry. The normal sequence is
+flash_program -> run_program -> get_telemetry.
 
 TASK
 There is a wall directly ahead of the rover. Make the rover drive straight at the wall at the
@@ -73,7 +55,7 @@ clock = StopWatch()
 #   s = UltrasonicSensor(Port.X); d_mm = s.distance()
 # Downward reflectance, 0-100%:
 #   c = ColorSensor(Port.X); pct = c.reflection()
-# Hub IMU (no port — on the hub):
+# Hub IMU (no port - on the hub):
 #   hub.imu.heading()           # yaw in degrees, relative to start
 #   hub.imu.acceleration()      # 3-axis acceleration
 #   hub.imu.angular_velocity()  # 3-axis rotation rate
@@ -90,12 +72,12 @@ def emit(sensor, value):
 Wrap your control loop so the motors always stop and the sentinel is always sent, even on
 interruption (e.g. try/finally). Pace the loop with wait(ms). NOTE: the hub is power-cycled
 between every run, so the IMU heading and the hub clock reset to zero each time and no state
-carries across runs — your program must stand on its own each run.
+carries across runs - your program must stand on its own each run.
 
-RUN PROTOCOL — two phases
-- Phase 1, Characterization: run programs to understand the rover and develop your stopping
-  approach. There's no cap, but the NUMBER OF PROGRAMS you run here is one of your scores —
-  fewer is better. Be efficient: characterize only what you need to make the campaign reliable.
+RUN PROTOCOL - two phases
+- Phase 1, Characterization: run programs to understand the rover and prepare your campaign
+  program. There's no cap, but the NUMBER OF PROGRAMS you run here is one of your scores -
+  fewer is better. Characterize only what you need to make the campaign reliable.
 - Phase 2, Campaign (scored): when you're satisfied, LOCK your final program and tell me. Then
   run that SAME, unchanged program 5 times at maximum speed. The hub is power-cycled and your
   locked program re-flashed unchanged before each of the five, so each is a clean-state run of
@@ -103,28 +85,27 @@ RUN PROTOCOL — two phases
   the campaign.
 
 TELEMETRY & CHARTS
-Emit telemetry as you go — at minimum forward distance; hub heading is useful so we can see if
+Emit telemetry as you go - at minimum forward distance; hub heading is useful so we can see if
 you drove straight. After a run, retrieve telemetry as a downsampled or summary view (NOT the
 raw event stream, to conserve context) and render forward distance vs. time as a simple chart.
-Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s — wait for it before
-assuming it failed. Show telemetry charts after each program in both phase 1 and 2.
+Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s - wait for it before
+assuming it failed. Show telemetry charts after each program in both phases.
 
 GROUND RULES
-- Hub cycling (operational, uncounted): between EVERY run — characterization and campaign — I
+- Hub cycling (operational, uncounted): between EVERY run - characterization and campaign - I
   power-cycle the hub before you flash. This clears accumulated gyro/sensor/thermal drift, so
   every run starts from a clean hub state (heading and clock reset to zero). It is not help.
-- Other free actions — uncounted, ask any time: I'll reset the rover to the start line,
+- Other free actions - uncounted, ask any time: I'll reset the rover to the start line,
   reposition/square it up, and wake the hub on request. These are hardware operation, not help.
-- Outside input — a SECOND score, so minimize it: anything else I do for you during
-  characterization — most often a ground-truth measurement you request (e.g. actual stopping
-  distance or gap) — is counted. During the campaign I provide NO input; I only power-cycle and
+- Outside input - a SECOND score, so minimize it: anything else I do for you during
+  characterization - most often a ground-truth measurement you request (e.g. actual stopping
+  distance or gap) - is counted. During the campaign I provide NO input; I only power-cycle and
   reset the rover between the five runs.
 - Setup (fixed across all attempts): the rover starts squared up to the wall at a marked start
   line, ~1000 mm out. I keep this constant.
-- Your scores: (1) programs run in characterization — fewer better; (2) outside-input requests —
-  fewer better; (3) how many of the 5 campaign runs stop with NO contact — more better; and
+- Your scores: (1) programs run in characterization - fewer better; (2) outside-input requests -
+  fewer better; (3) how many of the 5 campaign runs stop with NO contact - more better; and
   (4) how close those stops are. Success on a run = a full stop with no contact.
-- When we're done, write the final engineering report as markdown directly in this chat including the locked program code. Provide total thinking time and total tokens used.
-
-Begin.
+- When we're done, write the final engineering report as markdown directly in this chat including
+  the locked program code.
 ```
