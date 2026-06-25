@@ -135,6 +135,38 @@ unit-model templates; do NOT generate model structure from scratch. Instantiate 
 the requirements call for. Leave parameters free until calibration binds them (uncalibrated, not
 zeroed). Maintain a trace spine linking each CMP requirement -> SysML parameter -> calibration
 evidence -> result.
+
+The formal roll-up has exactly one shape - reproduce it, do not approximate it with a prose trace
+or unbound operands. A task requirement specialises a template, adds a subject, and BINDS its
+operands against that subject's attributes using the redefinition-with-binding form
+`attribute :>> measured = subject.attr` (NOT `attribute redefines measured :>> subject.attr` -
+that conflates the keyword and symbol forms and is invalid); the require constraint is inherited,
+so the evaluable logic lives in one place. Decomposition is nested `requirement : Child` usages.
+The design part claims the top need with `satisfy`, and evaluating that satisfy/require roll-up
+against the calibrated values IS the pre-run verification artifact. All of this is inside the
+validated construct set; leaving operands as comments or carrying the trace as documentation
+forfeits the artifact - and a by-hand reachability/edge-set check then certifies a roll-up the
+model does not actually contain. The shape, end to end:
+
+    // catalog template - inherited constraint, untyped operands:
+    requirement def LowerBoundRequirement {
+        attribute measured;
+        attribute target;
+        require constraint { measured >= target }
+    }
+
+    // task requirement - specialise, add a subject, BIND the operands, inherit the constraint:
+    requirement def <'SYS-1'> CommandMaxSpeed specializes LowerBoundRequirement {
+        subject rover : WallRover;
+        attribute :>> measured = rover.commandedMotorSpeed;
+        attribute :>> target   = rover.maxMotorSpeed;
+        requirement : ReachMaxSpeed;        // nested child (a CMP leaf), itself a requirement def
+    }
+
+    // the design claims the top need; nested usages carry the tree beneath it:
+    part def WallRover specializes Rover {
+        satisfy requirement : WallRunRequirements::WallRunNeed;
+    }
 Validate on two fronts: grammar (a SysML v2 checker such as Syside) AND structure that grammar does
 not see - every requirement reachable from the top need, the realized decomposition edge-set
 matching the requirement tree, and per-package import resolution. Where no checker is in-loop,
