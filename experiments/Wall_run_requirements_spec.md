@@ -66,8 +66,9 @@ DAG at the leaf level — that overlap is where cross-sourcing (B1) lives.
   over the speed range used. *[motor: commanded displacement vs ground-truth distance]*
 - **CMP-M2** ←FUN-D2, FUN-G2: each motor shall report achieved angular velocity; its maximum shall be
   characterized (sets the matched straight-line max). *[motor: command max, read achieved]*
-- **CMP-M3** ←FUN-D3: each motor shall produce a repeatable deceleration profile from max speed.
-  *[motor: stop from known speed, measure decel / stop distance]*
+- **CMP-M3** ←FUN-D3: each motor shall produce a repeatable stop from max speed; the stopping
+  distance is measured directly at v_max. *[motor: stop from v_max, measure stop distance,
+  multi-cycle → mean + σ_run; back-solve decel for the feasibility ceiling]*
 - **CMP-M4** ←FUN-D1/G2 *(interface)*: forward drive-sign convention per motor. *[motor: command +,
   observe direction]*
 - **CMP-U1** ←FUN-S1, FUN-S4: each forward ultrasonic shall report range with characterized bias/scale
@@ -91,7 +92,7 @@ DAG at the leaf level — that overlap is where cross-sourcing (B1) lives.
 |---|---|---|
 | θ_max | SYS-3 | IMU yaw-drift (CMP-I1) + lateral-clearance geometry |
 | braking threshold | SYS-4 | derived = d_stop + M; resolves with the three below |
-| σ(d_stop) — prediction uncertainty | SYS-7a | motor max + driveConstant (CMP-M1/M2), decel (CMP-M3), latency (CMP-U4) |
+| σ(d_stop) — stopping-distance uncertainty | SYS-7a | SEM of the direct stop-distance measurement at v_max (CMP-M3) + latency (CMP-U4) |
 | σ(d_meas) — clearance uncertainty | SYS-7b | forward range bias/scale (CMP-U1) + cross-validation (FUN-S4) |
 | σ(run) — run-to-run variability | SYS-7c | repeatability characterization (repeated identical stops, Phase 1) |
 
@@ -134,7 +135,7 @@ graph TD
     FUND1 --> CMPM1["CMP-M1 · Ground distance per revolution · motor"]
     FUND2 --> CMPM2["CMP-M2 · Max angular velocity · motor"]
     FUNG2 --> CMPM2
-    FUND3 --> CMPM3["CMP-M3 · Deceleration profile from max speed · motor"]
+    FUND3 --> CMPM3["CMP-M3 · Stopping distance at max speed (direct) · motor"]
     FUND1 --> CMPM4["CMP-M4 · Forward drive-sign convention · motor"]
     FUNG2 --> CMPM4
     FUNS1 --> CMPU1["CMP-U1 · Forward range bias/scale, each sensor · ultrasonic"]
@@ -176,6 +177,10 @@ motor to steer violates the constraint. So straightness is **open-loop**, a cali
 
 ## 6. Consequence for the model
 SYS-1 fixes speed at max and un-tradeable, so the only control authority over no-contact is
-braking-initiation timing and margin. The problem collapses onto predicting stopping distance
-accurately — which is why CMP-M3, CMP-U4, and the distance cross-checks are the high-value leaves,
-and the stopping-distance relation is the auditability centerpiece.
+braking-initiation timing and margin. The problem collapses onto knowing the stopping distance
+accurately — which is why CMP-M3 (measured directly at v_max), CMP-U4, and the distance
+cross-checks are the high-value leaves. The auditability centerpiece is the pre-run verification
+artifact: the satisfy/require roll-up evaluated against the calibrated values, committed before the
+run. The stopping distance is calibrated directly at the single operating point v_max (calibration
+point = operating point ⇒ zero extrapolation), so a speed sweep is unnecessary; the deceleration a
+is back-solved from that point for the feasibility-ceiling check only.

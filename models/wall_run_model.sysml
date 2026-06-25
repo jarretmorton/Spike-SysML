@@ -57,12 +57,12 @@ package WallRunDesign {
         attribute tResponse : DurationValue = latency.tChain + tSensorDistance;
 
         // --- braking dynamics -------------------------------------------------
-        attribute decelCollision : AccelerationValue;     // UNCALIBRATED — m/s^2; speed-sweep, check residual curvature (CMP-M3)
+        attribute decelCollision : AccelerationValue;     // UNCALIBRATED — m/s^2; back-solved from the directly-measured stop distance at v_max (CMP-M3); feeds the threshold relation + feasibility ceiling
 
         // --- clearance budget and margin M ------------------------------------
         attribute dSenseMax : LengthValue;                // UNCALIBRATED — reliable forward sensing range (CMP-U1)
         // M = kSigma * RSS of the three uncertainty sources (the SYS-7 TBDs):
-        attribute sigmaDStop : LengthValue;               // UNCALIBRATED — stopping-distance prediction uncertainty (SYS-7a); CMP-M3 fit residual
+        attribute sigmaDStop : LengthValue;               // UNCALIBRATED — stopping-distance uncertainty (SYS-7a); SEM of the direct stop-distance measurement at v_max + latency (CMP-M3)
         attribute sigmaDMeas : LengthValue;               // UNCALIBRATED — clearance-measurement uncertainty (SYS-7b)
         attribute sigmaRun   : LengthValue;               // UNCALIBRATED — run-to-run variability (SYS-7c); confirmation-run spread, system-level (no CMP)
         attribute kSigma     : Real;                      // SET BY HUMAN — coverage factor
@@ -107,8 +107,8 @@ package WallRunDesign {
         //   thetaMax    (SYS-3)   heading tolerance. A BUDGET, set from lateral-
         //                         clearance geometry; CMP-I1 measures the achieved
         //                         drift checked against it (not itself measured).
-        //   sigmaDStop  (SYS-7a)  stopping-distance prediction uncertainty =
-        //                         the FIT RESIDUAL of the CMP-M3 speed sweep.
+        //   sigmaDStop  (SYS-7a)  stopping-distance uncertainty = the SEM of the
+        //                         direct CMP-M3 stop-distance measurement (+ latency).
         //   sigmaDMeas  (SYS-7b)  clearance-measurement uncertainty =
         //                         CMP-U1 range bias/scale + FUN-S4 cross-check.
         //   sigmaRun    (SYS-7c)  run-to-run variability = CONFIRMATION-RUN spread
@@ -119,8 +119,8 @@ package WallRunDesign {
         //   driveConstant   (CMP-M1)    m per rad, motor rev -> linear distance.
         //   maxMotorSpeed   (CMP-M2)    matched straight-line max.
         //   tSensorDistance (CMP-U4)    forward sensor sampling latency.
-        //   decelCollision  (CMP-M3)    deceleration (sweep slope; its residual
-        //                               is sigmaDStop above).
+        //   decelCollision  (CMP-M3)    deceleration, back-solved from the directly-
+        //                               measured stop distance at v_max.
         //   dSenseMax       (CMP-U1)    reliable forward sensing range.
         //   latency.tChain  (platform)  compute+BLE+actuation lag; TIMING test,
         //                               no CMP (platform-common, inherited).
@@ -226,7 +226,7 @@ package WallRunRequirements {
              * shall decelerate to a complete stop. The invariant "clearance >=
              * threshold while at speed" is the collision-avoidance mechanism;
              * threshold instantiates StoppingDistance against the rover's bound
-             * parameters. Verified by a braking-distance test across a speed sweep. */
+             * parameters. Verified by direct measurement of the stop distance at v_max (multi-cycle). */
         subject rover : WallRover;
         attribute :>> measured = rover.forwardClearance;
         attribute :>> target = rover.brakingThreshold;
@@ -369,11 +369,12 @@ package WallRunRequirements {
         subject rover : WallRover;
     }
     requirement def <'CMP-M3'> DecelerationProfile {
-        doc /* Each motor shall produce a repeatable deceleration profile from max
-             * speed. [motor: stop from known speed, measure decel / stop distance]
-             * Binds decelCollision (sweep slope) AND sigmaDStop (SYS-7a — the fit
-             * residual) — speed-sweep with residual-curvature check; the
-             * auditability centerpiece. */
+        doc /* Each motor shall produce a repeatable stop from max speed; the stop
+             * distance is measured DIRECTLY at v_max. [motor: stop from v_max,
+             * measure stop distance, multi-cycle -> mean + run spread] Binds the
+             * stop distance at v_max (which back-solves decelCollision) and
+             * sigmaRun; sigmaDStop (SYS-7a) is the measurement SEM. Operating point
+             * = calibration point, so no speed sweep is needed (zero extrapolation). */
         subject rover : WallRover;
     }
     requirement def <'CMP-M4'> DriveSignConvention {

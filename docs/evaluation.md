@@ -79,10 +79,12 @@ plus the verification spine — so the task has to be one where the value of a *
 A guessed stopping distance must be the failure mode. At top speed the stopping
 distance is largest (the quadratic braking term `v²/(2a)` dominates) and a
 threshold tuned at any slower, safer speed is far short — a guaranteed contact.
-The calibrated parameter (and the speed-dependent stop threshold / max-safe-speed
+The calibrated parameter (and the stop threshold / max-safe-speed
 it feeds) is the whole game, which makes the structured arm's signature move —
-the speed sweep with residual-curvature inspection — load-bearing rather than
-ceremony.
+calibrating the stopping distance directly at the operating point and committing,
+before the run, an argument that the stop fits inside the budget — load-bearing
+rather than ceremony. The freestyle arm can only tune the threshold empirically
+and has no such argument.
 
 ## Hardware realism (kept deliberately)
 
@@ -156,16 +158,19 @@ Iserte approach, declined). The refinement of that rule:
 > independently expose; it must *select* (from a validated template) any relation
 > the calibration cannot check.**
 
-For the stop relation this license holds: a structurally wrong relation — a
-linear-only stop that drops the quadratic term — shows up as residual curvature
-in the speed-sweep fit, so the calibration is itself the error detector. This is
-a *stronger* demonstration than handing over the equation: the process derives
-the relation and the calibration catches its own structural error and converges.
-
-The cost is real and stated plainly: developing the physics moves verification
-integrity off "safe by construction" and onto "safe if the calibration design
-and the human gate are good enough to catch a structurally-wrong relation." That
-backstop is partial — it catches a missing quadratic term, not every error.
+For the stop relation the license is real but conditional on the envelope.
+Across a speed range, a structurally wrong relation — a linear-only stop that
+drops the quadratic term — shows up as residual curvature in the sweep fit, so
+the calibration is itself the error detector: a *stronger* demonstration than
+handing over the equation, because the process derives the relation and the
+calibration catches its own structural error and converges. The wall-run, though,
+runs at a single operating point, where there is no range to extrapolate across
+and so no form error for calibration to expose; it therefore *selects* the
+validated stop template and calibrates its stopping distance directly at v_max.
+The develop branch — and its cost, moving verification integrity off "safe by
+construction" and onto "safe if the calibration design and the human gate catch
+a structurally-wrong relation," a backstop that is partial — is the principle's
+other half, demonstrable on a speed-spanning variant rather than exercised here.
 
 **Graded assurance.** This is where the assurance line moves with consequence.
 For the LEGO demonstration, develop-with-calibration-backstop is the right call.

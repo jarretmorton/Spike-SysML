@@ -110,9 +110,13 @@ package RelationTemplates {
     }
 
     // Distance at which a stop must already be triggered: reaction + braking +
-    // human margin. Quadratic in v; the deceleration is calibrated by a SPEED
-    // SWEEP with fit-residual-curvature inspection — a single-speed fit folds the
-    // quadratic into the linear term and is quietly wrong at the envelope edge.
+    // human margin. Quadratic in v, so the deceleration's calibration tracks the
+    // speed envelope the requirements exercise. At a SINGLE operating point,
+    // measure the stopping distance directly at that point (calibration point =
+    // operating point => zero extrapolation) and back-solve `a` only if a
+    // feasibility check needs it. Across a RANGE of speeds, sweep and inspect the
+    // fit residuals for curvature (a single-speed fit would fold the quadratic
+    // into the linear term and be quietly wrong at the envelope edge).
     // (was m2 ForwardStopThreshold)
     calc def StoppingDistance {
         in v : SpeedValue;
