@@ -167,11 +167,11 @@ model does not actually contain. The shape, end to end:
     part def WallRover specializes Rover {
         satisfy requirement : WallRunRequirements::WallRunNeed;
     }
-Validate on two fronts: grammar (a SysML v2 checker such as Syside) AND structure that grammar does
-not see - every requirement reachable from the top need, the realized decomposition edge-set
-matching the requirement tree, and per-package import resolution. Where no checker is in-loop,
-restrict to constructs already validated in the template library (do not invent notation) and treat
-the structural checks as the gate.
+No grammar checker runs in-loop, so two things stand in for one. Restrict to constructs already
+validated in the template library - do not invent notation. And run the structural checks grammar
+cannot see anyway, as the gate: every requirement reachable from the top need, the realized
+decomposition edge-set matching the requirement tree, and per-package import resolution. Grammar
+conformance is verified out of band, after the run, not by you.
 Skeleton and template catalogs: models/rover_generic.sysml - the rover-agnostic skeleton
 (RoverStructure) plus the relation catalog (RelationTemplates) and requirement-shape catalog
 (RequirementTemplates). The wall-run instantiation that consumes them is models/wall_run_model.sysml.

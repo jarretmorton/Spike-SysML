@@ -76,8 +76,8 @@ carries across runs - your program must stand on its own each run.
 
 RUN PROTOCOL - two phases
 - Phase 1, Characterization: run programs to understand the rover and prepare your campaign
-  program. There's no cap, but the NUMBER OF PROGRAMS you run here is one of your scores -
-  fewer is better. Characterize only what you need to make the campaign reliable.
+  program. There's no cap, but the NUMBER OF PROGRAM RUNS here is one of your scores - every
+  flash-and-run counts, including re-running an unchanged program; fewer is better. Characterize only what you need to make the campaign reliable.
 - Phase 2, Campaign (scored): when you're satisfied, LOCK your final program and tell me. Then
   run that SAME, unchanged program 5 times at maximum speed. The hub is power-cycled and your
   locked program re-flashed unchanged before each of the five, so each is a clean-state run of
@@ -99,12 +99,14 @@ GROUND RULES
   reposition/square it up, and wake the hub on request. These are hardware operation, not help.
 - Outside input - a SECOND score, so minimize it: anything else I do for you during
   characterization - most often a ground-truth measurement you request (e.g. actual stopping
-  distance or gap) - is counted. During the campaign I provide NO input; I only power-cycle and
+  distance or gap) - is counted, and each distinct measurement or action counts separately even
+  when you batch several into one request. During the campaign I provide NO input; I only power-cycle and
   reset the rover between the five runs.
 - Setup (fixed across all attempts): the rover starts squared up to the wall at a marked start
   line, ~1000 mm out. I keep this constant.
-- Your scores: (1) programs run in characterization - fewer better; (2) outside-input requests -
-  fewer better; (3) how many of the 5 campaign runs stop with NO contact - more better; and
+- Your scores: (1) program runs in characterization (every flash-and-run, incl. re-runs of an
+  unchanged program) - fewer better; (2) outside-input actions (each distinct measurement/action
+  counts, even when batched into one request) - fewer better; (3) how many of the 5 campaign runs stop with NO contact - more better; and
   (4) how close those stops are. Success on a run = a full stop with no contact.
 - When we're done, write the final engineering report as markdown directly in this chat including
   the locked program code.
