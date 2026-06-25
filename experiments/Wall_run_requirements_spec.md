@@ -4,6 +4,10 @@ The SE arm's output record for the wall-run task: a **requirements specification
 register**, and the **visual requirement tree** — all three. Traceable to the locked task in
 `task_core.md`. (Also the reference/answer-key the arm's own decomposition is graded against.)
 
+**Source of truth.** This specification is the source of truth for the wall-run requirements.
+The SysML model (`models/wall_run_model.sysml`) is a formal realisation of it; on any
+disagreement, this document governs and the model is reconciled to it.
+
 Method: INCOSE GtWR over ISO/IEC/IEEE 29148, EARS grammar, NASA SP-2016-6105 framing
 (see `se_arm_prompt.md`). Levels STK → SYS → FUN → CMP. EARS pattern in brackets; trace with `←`.
 

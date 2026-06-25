@@ -25,8 +25,8 @@ Run conditions:
   or counted as desired in analysis.
 - Incognito does not persist — capture the transcript and record as you go.
 
-> Pending: the **tenets** below are the current candidate set, not yet trimmed. The **model
-> artifact paths** (skeleton + template catalog) are TBD until the generic-model refactor lands.
+> Pending: the **tenets** below are the current candidate set, not yet trimmed. The model
+> artifact paths are now filled (see Process 3 / Model strategy: `models/rover_generic.sysml`).
 
 ---
 
@@ -59,6 +59,8 @@ PROCESS (in order)
 7. Campaign - lock and run the campaign as defined in the task.
 
 REQUIREMENTS METHOD
+The requirements specification is the source of truth for requirements; the SysML model is a
+formal realisation of it, not a replacement - on any disagreement, the spec governs.
 Write to INCOSE GtWR (4th ed.) quality rules over ISO/IEC/IEEE 29148:2018, authored in EARS
 grammar; NASA SP-2016-6105 for decomposition and V&V framing.
 - EARS patterns - tag each requirement: Ubiquitous ("The X shall..."), State-driven
@@ -91,6 +93,17 @@ A - Assurance & modeling
   A3. Parameters uncalibrated, not zeroed - never eyeball a constant.
   A4. Tailor the model to the requirements - instantiate only the templates the decomposition calls
       for; validate the composition even when templates are individually valid.
+  A5. Verify control authority before specifying control - before allocating a function that actively
+      corrects a quantity (heading, position, speed), confirm the effectors provide the authority to
+      execute it at the operating point. Where that authority collapses (e.g. differential steering
+      when both drive motors are near saturation at maximum speed), the function is not active
+      control but open-loop setup plus calibration-verification; specify it that way and mark it
+      derived. Do not specify a control function you cannot realize at the commanded point.
+  A6. Size margins from uncertainty, do not guess - a derived safety margin is the root-sum-square of
+      the independent uncertainty contributors (prediction, measurement, run-to-run), each resolved
+      by calibration. And check the commanded operating point against the feasibility ceiling the
+      same physics implies (the fastest stop that fits inside the sensing / geometry budget) rather
+      than assuming the commanded point is reachable.
 B - Characterization
   B1. Data is king - every characterization run logs every independent channel bearing on the
       quantity, not just the one under test. Cross-sourcing is also the hardware-fault detector, and
@@ -113,13 +126,23 @@ D - Epistemic hygiene
       keep the within-run realities you should face.
 
 MODEL STRATEGY
+Author to the OMG SysML v2 specification with the standard library for quantities/units; the
+formal-requirements and satisfaction/verification constructs follow the OMG beta-spec lessons
+(Sensmetry Advent of SysML v2, Lessons 23-24). The SysML model realises the requirements
+specification (the source of truth); it does not replace it.
 Library + calibration + assembler: compose the system model from pre-validated, generic SysML v2
 unit-model templates; do NOT generate model structure from scratch. Instantiate only the templates
 the requirements call for. Leave parameters free until calibration binds them (uncalibrated, not
-zeroed). Grammar-validate the composition. Maintain a trace spine linking each CMP requirement ->
-SysML parameter -> calibration evidence -> result.
-[Skeleton and template-catalog artifact paths: TBD - added when the generic-model refactor lands.
-This version specifies the requirements method; the model artifacts plug in here.]
+zeroed). Maintain a trace spine linking each CMP requirement -> SysML parameter -> calibration
+evidence -> result.
+Validate on two fronts: grammar (a SysML v2 checker such as Syside) AND structure that grammar does
+not see - every requirement reachable from the top need, the realized decomposition edge-set
+matching the requirement tree, and per-package import resolution. Where no checker is in-loop,
+restrict to constructs already validated in the template library (do not invent notation) and treat
+the structural checks as the gate.
+Skeleton and template catalogs: models/rover_generic.sysml - the rover-agnostic skeleton
+(RoverStructure) plus the relation catalog (RelationTemplates) and requirement-shape catalog
+(RequirementTemplates). The wall-run instantiation that consumes them is models/wall_run_model.sysml.
 
 YOUR RECORD (produce and keep - separate from this prompt)
 Requirements specification (incl. TBD register) - requirement tree (Mermaid) - tailored SysML

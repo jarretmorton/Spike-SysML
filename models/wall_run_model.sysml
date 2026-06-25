@@ -62,9 +62,9 @@ package WallRunDesign {
         // --- clearance budget and margin M ------------------------------------
         attribute dSenseMax : LengthValue;                // UNCALIBRATED — reliable forward sensing range (CMP-U1)
         // M = kSigma * RSS of the three uncertainty sources (the SYS-7 TBDs):
-        attribute sigmaDStop : LengthValue;               // UNCALIBRATED — stopping-distance prediction uncertainty (SYS-7a)
+        attribute sigmaDStop : LengthValue;               // UNCALIBRATED — stopping-distance prediction uncertainty (SYS-7a); CMP-M3 fit residual
         attribute sigmaDMeas : LengthValue;               // UNCALIBRATED — clearance-measurement uncertainty (SYS-7b)
-        attribute sigmaRun   : LengthValue;               // UNCALIBRATED — run-to-run variability (SYS-7c)
+        attribute sigmaRun   : LengthValue;               // UNCALIBRATED — run-to-run variability (SYS-7c); confirmation-run spread, system-level (no CMP)
         attribute kSigma     : Real;                      // SET BY HUMAN — coverage factor
         attribute marginM : LengthValue =
             kSigma * ( sigmaDStop ** 2 + sigmaDMeas ** 2 + sigmaRun ** 2 ) ** 0.5;
@@ -92,7 +92,44 @@ package WallRunDesign {
         attribute forwardClearance : LengthValue;   // min(L,R) during approach (FUN-S1/CMP-U2) — SYS-4 operand
         attribute finalClearance   : LengthValue;   // clearance at final stop — SYS-5/SYS-7 operand
         attribute headingDrift     : Angle;         // |yaw - normal| magnitude during approach (CMP-I1) — SYS-3 operand
-        attribute thetaMax         : Angle;         // UNCALIBRATED — heading tolerance (SYS-3 TBD)
+        attribute thetaMax         : Angle;         // heading tolerance (SYS-3) — budget set from clearance geometry; CMP-I1 checks drift against it
+
+        // ====================================================================
+        // CALIBRATION SURFACE — the complete set of unbound quantities the
+        // calibration step must resolve, consolidated from BOTH origins. This
+        // is the model-side INDEX of the calibration intake (name + producing
+        // test); the procedure-bearing register (units, method, value slots)
+        // lives at the head of the calibration plan and pulls from this set.
+        // Every entry here is one of the value-less attributes declared above,
+        // so the worklist is mechanically reconcilable against this part def.
+        //
+        // Requirement TBDs — a requirement names them (cf. spec §2 register):
+        //   thetaMax    (SYS-3)   heading tolerance. A BUDGET, set from lateral-
+        //                         clearance geometry; CMP-I1 measures the achieved
+        //                         drift checked against it (not itself measured).
+        //   sigmaDStop  (SYS-7a)  stopping-distance prediction uncertainty =
+        //                         the FIT RESIDUAL of the CMP-M3 speed sweep.
+        //   sigmaDMeas  (SYS-7b)  clearance-measurement uncertainty =
+        //                         CMP-U1 range bias/scale + FUN-S4 cross-check.
+        //   sigmaRun    (SYS-7c)  run-to-run variability = CONFIRMATION-RUN spread
+        //                         (repeated identical stops); system-level, no CMP.
+        //
+        // Model-completion parameters — no requirement names them; the model
+        // needs them to predict ("model completion", spec §2):
+        //   driveConstant   (CMP-M1)    m per rad, motor rev -> linear distance.
+        //   maxMotorSpeed   (CMP-M2)    matched straight-line max.
+        //   tSensorDistance (CMP-U4)    forward sensor sampling latency.
+        //   decelCollision  (CMP-M3)    deceleration (sweep slope; its residual
+        //                               is sigmaDStop above).
+        //   dSenseMax       (CMP-U1)    reliable forward sensing range.
+        //   latency.tChain  (platform)  compute+BLE+actuation lag; TIMING test,
+        //                               no CMP (platform-common, inherited).
+        //
+        // NOT calibration targets: brakingThreshold (SYS-4) is DERIVED and
+        // resolves once the above bind; kSigma is human-set; and the run-time/
+        // telemetry quantities (commandedMotorSpeed, forwardClearance,
+        // finalClearance, headingDrift) are produced during the run.
+        // ====================================================================
 
         // --- the claim: this rover satisfies the wall-run need ----------------
         // Binds the subject of the whole requirement tree to this rover and
@@ -104,6 +141,12 @@ package WallRunDesign {
 
 package WallRunRequirements {
     doc /*
+     * SOURCE OF TRUTH. The requirements document — experiments/Wall_run_requirements_spec.md
+     * — is the source of truth for the wall-run requirements. This package is a
+     * formal SysML realisation of it, not a replacement: on any disagreement the
+     * spec governs and the model has a bug to reconcile (requirement IDs and the
+     * decomposition edge-set must match the spec's tree).
+     *
      * Leveled requirements STK -> SYS -> FUN -> CMP (Wall_run_requirements_spec.md):
      * INCOSE GtWR over ISO/IEC/IEEE 29148, EARS grammar, NASA SP-2016-6105 framing.
      * Decomposition is expressed by nested requirement usages (requirement : Child).
@@ -328,7 +371,8 @@ package WallRunRequirements {
     requirement def <'CMP-M3'> DecelerationProfile {
         doc /* Each motor shall produce a repeatable deceleration profile from max
              * speed. [motor: stop from known speed, measure decel / stop distance]
-             * Binds decelCollision — speed-sweep with residual-curvature check; the
+             * Binds decelCollision (sweep slope) AND sigmaDStop (SYS-7a — the fit
+             * residual) — speed-sweep with residual-curvature check; the
              * auditability centerpiece. */
         subject rover : WallRover;
     }
@@ -362,7 +406,8 @@ package WallRunRequirements {
     }
     requirement def <'CMP-I1'> YawDrift {
         doc /* The IMU shall report yaw with characterised drift over a run.
-             * [IMU: known rotation / static-hold drift] Binds thetaMax feasibility. */
+             * [IMU: known rotation / static-hold drift] Measures the achieved drift
+             * checked against the thetaMax budget (SYS-3). */
         subject rover : WallRover;
     }
     requirement def <'CMP-I2'> ForwardAccelCharacterization {
