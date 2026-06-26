@@ -23,7 +23,7 @@ package WallRunDesign {
     doc /*
      * The wall-run rover: the platform skeleton specialised to this task's
      * configuration, with task parameters declared UNCALIBRATED until the
-     * calibration campaign binds them, and the consumed relation templates
+     * calibration binds them, and the consumed relation templates
      * (RotationToSpeed, StoppingDistance, MaxSpeedFromBudget) instantiated as
      * derived attributes.
      */
@@ -64,7 +64,7 @@ package WallRunDesign {
         // M = kSigma * RSS of the three uncertainty sources (the SYS-7 TBDs):
         attribute sigmaDStop : LengthValue;               // UNCALIBRATED — stopping-distance uncertainty (SYS-7a); SEM of the direct stop-distance measurement at v_max + latency (CMP-M3)
         attribute sigmaDMeas : LengthValue;               // UNCALIBRATED — clearance-measurement uncertainty (SYS-7b)
-        attribute sigmaRun   : LengthValue;               // UNCALIBRATED — run-to-run variability (SYS-7c); confirmation-run spread, system-level (no CMP)
+        attribute sigmaRun   : LengthValue;               // UNCALIBRATED — run-to-run variability (SYS-7c); verification-run spread, system-level (no CMP)
         attribute kSigma     : Real;                      // SET BY HUMAN — coverage factor
         attribute marginM : LengthValue =
             kSigma * ( sigmaDStop ** 2 + sigmaDMeas ** 2 + sigmaRun ** 2 ) ** 0.5;
@@ -111,7 +111,7 @@ package WallRunDesign {
         //                         direct CMP-M3 stop-distance measurement (+ latency).
         //   sigmaDMeas  (SYS-7b)  clearance-measurement uncertainty =
         //                         CMP-U1 range bias/scale + FUN-S4 cross-check.
-        //   sigmaRun    (SYS-7c)  run-to-run variability = CONFIRMATION-RUN spread
+        //   sigmaRun    (SYS-7c)  run-to-run variability = VERIFICATION-RUN spread
         //                         (repeated identical stops); system-level, no CMP.
         //
         // Model-completion parameters — no requirement names them; the model
@@ -263,7 +263,7 @@ package WallRunRequirements {
              * (a) stopping-distance prediction uncertainty, (b) clearance-
              * measurement uncertainty, and (c) run-to-run variability. The
              * verifiable proxy for "as close as possible without contact"; the
-             * campaign verifies M covers the spread. M = rover.marginM, three TBDs:
+             * operation tests that M covers the spread. M = rover.marginM, three TBDs:
              * sigmaDStop, sigmaDMeas, sigmaRun. */
         subject rover : WallRover;
         attribute :>> measured = rover.finalClearance;
