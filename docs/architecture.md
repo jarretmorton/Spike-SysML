@@ -19,9 +19,9 @@
 > added between requirements and model composition; calibration binds both the
 > model's free parameters and the requirement TBDs; the pre-run verification
 > artifact made explicit as the committed-before-the-run centerpiece; the integrated
-> test reframed as a single confirmation run that tests the committed prediction
+> test reframed as a single verification run that tests the committed prediction
 > (falsification → diagnose the model parameter and re-derive), with the 5-run
-> campaign as the experimental wrapper.*
+> operation as the experimental wrapper.*
 >
 > *v0.3 changes: both comparison arms now run through the MCP (routing resolved);
 > the generation/selection rule refined to "develop what calibration can verify";
@@ -39,7 +39,7 @@ Why these two: requirements decomposition fans out — the top-down STK→SYS→
 
 Two published systems ground the harder halves of this pipeline without displacing the two patterns above; they sit underneath them. **Iserte et al.** (*Computers in Industry* 172, 2025) generate valid SysML v2 from natural language by pairing retrieval over a curated example repository with an ANTLR-grammar validation engine in a self-correcting loop; Spike SysML borrows the validation-in-a-loop half and declines the generate-from-scratch half (see *Generation vs. selection* under Resolved decisions). **Aegis** (arXiv 2410.12475) structures functional-safety work as a hierarchical multi-agent team whose progress is gated by a review-before-proceed node — the pattern Spike SysML adopts for its human calibration gate (see *The review gate*).
 
-One refinement to the pattern map: the evaluator-optimizer pattern recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once at the integrated confirmation run (stage 6, hardware as evaluator for the committed system prediction). Orchestrator-workers applies to requirements derivation (stage 2) — the top-down split, then per-function-area decomposition to the single-effector leaves in parallel; effector selection and model selection-and-composition (stage 3) are selection-and-composition steps rather than worker-parallelism, and are treated as such below. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
+One refinement to the pattern map: the evaluator-optimizer pattern recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once at the integrated verification run (stage 6, hardware as evaluator for the committed system prediction). Orchestrator-workers applies to requirements derivation (stage 2) — the top-down split, then per-function-area decomposition to the single-effector leaves in parallel; effector selection and model selection-and-composition (stage 3) are selection-and-composition steps rather than worker-parallelism, and are treated as such below. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
 
 ## Requirements method
 
@@ -80,31 +80,31 @@ flowchart TD
 
     VCHK -->|insufficient| CODE
     VCHK -->|sufficient| ART["commit pre-run verification artifact"]
-    ART --> GSYS{"human gate: confirmation-run design"}
+    ART --> GSYS{"human gate: verification-run design"}
     GSYS -->|reject| CODE
     GSYS -->|approve| IDEP["spike_deploy: integrated program"]
-    IDEP --> IRUN["spike_run: confirmation run"]
+    IDEP --> IRUN["spike_run: verification run"]
     IRUN --> E["test_eval"]
     E -->|prediction falsified| DIAG["diagnose model parameter, re-derive"]
     DIAG --> SEL
-    E -->|prediction holds| GACC{"human gate: confirmation results"}
+    E -->|prediction holds| GACC{"human gate: verification results"}
     GACC -->|reject| CODE
-    GACC -->|accept| CAMP["lock; run 5-run campaign"]
-    CAMP --> DONE["done"]
+    GACC -->|accept| OPS["lock; run 5-run operation"]
+    OPS --> DONE["done"]
 ```
 
 > Left half (spec → requirements → effectors) is orchestrator-workers over the
 > leveled decomposition, with the grammar loop on `sysml_validate` the retained
 > half of Iserte. The two hardware activities (calibration, the integrated
-> confirmation run) are both evaluator-optimizer, with deterministic fitting
+> verification run) are both evaluator-optimizer, with deterministic fitting
 > between. There are four human checkpoints: a test-design review gate before each
 > hardware run, and a results verification after each — the calibration-sufficiency
 > check (the Aegis review-before-proceed node) gating the expensive integrated run,
-> and the confirmation-results acceptance gating the campaign. The **pre-run
+> and the verification-results acceptance gating the operation. The **pre-run
 > verification artifact** is committed at `ART`, before the integrated run, and is
 > the centerpiece of the structured-vs-freestyle contrast; on a falsified prediction
 > the loop re-derives the model parameter rather than tweaking the program. The
-> 5-run **campaign** (`CAMP`) is the experimental wrapper specified in
+> 5-run **operation** (`OPS`) is the experimental wrapper specified in
 > [`evaluation.md`](evaluation.md), not part of the per-build pipeline.
 >
 > The select-and-compose step (`SEL`) is also where each requirement's
@@ -123,7 +123,7 @@ flowchart TD
 | `spike_run`            | Execute a deployed program and stream hub-emitted telemetry until the `{"event":"end"}` sentinel; returns the JSONL trace. Surfaces truncation via stop conditions rather than absorbing it.                                                                                                                                      | v0.1, BLE via `pybricksdev`              |
 | `test_eval`            | Score a telemetry trace against the `pass_criteria` of the requirement it implements; returns per-criterion pass/fail and the joined evidence. Zero matching samples is a fail, not an error.                                                                                                                                     | v0.1, grammar in `docs/wire_contract.md` |
 
-> Calibration (stage 5) and the integrated confirmation run (stage 6) will add tool surface — a calibration-test selector, a deterministic constant-fitter, and a sufficiency-report builder for the human gate. These are unbuilt and deliberately kept out of the table above.
+> Calibration (stage 5) and the integrated verification run (stage 6) will add tool surface — a calibration-test selector, a deterministic constant-fitter, and a sufficiency-report builder for the human gate. These are unbuilt and deliberately kept out of the table above.
 
 The hub-to-host wire format and the requirements model schema both live in [`wire_contract.md`](wire_contract.md). The orchestrator-workers prompts are in [`system_prompts.md`](system_prompts.md).
 
@@ -150,13 +150,13 @@ Division of labor matters here. The agent selects the test and interprets the re
 - **Higher-order calibration terms.** Where the line sits for promoting a calibration model from linear to higher-order. The braking term is the first case; the policy (sweep and test for curvature *where the envelope spans the relevant range*, measure directly at the operating point where it does not, and add terms only on demonstrated residual structure) generalizes to other parameters.
 - **Safety-margin ownership.** The `margin` term in the stop constraint is a risk-acceptance decision set by the human at the gate. Default value, and whether it should scale with speed, are open. (In the requirements model this is SYS-7's margin `M`, sized from the calibrated uncertainties — see the TBD register.)
 - **SysML v2 schema source.** The OMG draft, or a constrained subset suitable for the LEGO domain? Likely the latter — full SysML v2 is overkill for SPIKE Prime, and a subset is easier to validate against. v0.1 implements the `lego` subset; the `full` mode in `sysml_validate` is deferred.
-- **Iteration budget on the evaluator-optimizer loops.** Applies to the calibration loop (stage 5) and the integrated confirmation run with its re-derive path (stage 6). Hard cap (e.g., 5 retries) or cost-aware? A hard cap is simpler; cost-aware is more honest about the production-shaped constraint. The two may warrant different budgets.
+- **Iteration budget on the evaluator-optimizer loops.** Applies to the calibration loop (stage 5) and the integrated verification run with its re-derive path (stage 6). Hard cap (e.g., 5 retries) or cost-aware? A hard cap is simpler; cost-aware is more honest about the production-shaped constraint. The two may warrant different budgets.
 - **Signal-name pre-flight check.** The agreement between `pass_criteria.sensor` and the channels a run actually produces is currently caught only at runtime (`test_eval` returns zero samples for a mismatched name). There are two halves to close earlier, and they belong in different places. The model-internal half — `pass_criteria.sensor` must name a channel some part *declares* in `parts[].emits` — is the emit-coverage check of the `verified` stage of `check_trace_complete` (see [`wire_contract.md` §2.3](wire_contract.md#23-traceability-spine-fields)), kept out of `sysml_validate` so "valid" stays strictly "well-formed." The program-conformance half — the candidate program actually emits the channel it declares — still needs the program in hand and remains a runtime discovery for now; see [`wire_contract.md` §3](wire_contract.md#3-signal-name-agreement).
 
 
 ## Resolved decisions
 
-- **The review gates (human in the loop).** The pipeline has human touchpoints at five places: authoring the original spec at the front, and four checkpoints on the hardware side arranged as a pre-run gate and a post-run verification around each of the two hardware activities. A *test-design gate* precedes each run — the human approves the calibration test (design + code) before it runs, and the confirmation-run design before the integrated run — so no hardware actuates on an unreviewed plan. A *results verification* follows each: after calibration, a *sufficiency check* confirms the fit is physical and adequate (fitted values, the residual-curvature flag where a sweep was used, parameter plausibility) before the expensive integrated run is authorized; after the confirmation run, a *results acceptance* confirms the committed prediction held (evidence sound, pass not spurious, requirements actually exercised) before the campaign is locked. The calibration-sufficiency check is the V-model integration gate, structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides. Everything else is agent-owned.
+- **The review gates (human in the loop).** The pipeline has human touchpoints at five places: authoring the original spec at the front, and four checkpoints on the hardware side arranged as a pre-run gate and a post-run verification around each of the two hardware activities. A *test-design gate* precedes each run — the human approves the calibration test (design + code) before it runs, and the verification-run design before the integrated run — so no hardware actuates on an unreviewed plan. A *results verification* follows each: after calibration, a *sufficiency check* confirms the fit is physical and adequate (fitted values, the residual-curvature flag where a sweep was used, parameter plausibility) before the expensive integrated run is authorized; after the verification run, a *results acceptance* confirms the committed prediction held (evidence sound, pass not spurious, requirements actually exercised) before operation is locked. The calibration-sufficiency check is the V-model integration gate, structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides. Everything else is agent-owned.
 - **Generation vs. selection.** The pipeline **composes** a SysML model — it selects from a catalog of *generic, rover-agnostic* relation templates (e.g. speed-from-rotation, stopping-distance = reaction + braking, parameters left free), instantiates them against the requirements it derived, binds calibrated parameters, and grammar-validates the result. It does not synthesize models freely from natural language (the **Iserte et al.** approach), which buys generality the domain doesn't need and adds a failure surface it can't justify. Retained from Iserte is the grammar-validation-in-a-loop: the *composed* model validates against the SysML v2 grammar via `sysml_validate`, because composition — interconnections and bound parameters — is where invalidity enters even when templates are individually valid. The selection/generation line is drawn by **what calibration can verify**: the pipeline may *develop* a relation whose structural error its calibration can independently expose, and must *select* a validated template for any relation the calibration cannot check. The stop relation sits on that boundary, and which side it falls on depends on the task: across a speed range a sweep's residual curvature would expose a dropped quadratic term (develop — a stronger demonstration, the process catching its own error); at a single operating point the calibration cannot expose a form error, so the relation is selected and calibrated directly at the point. The wall-run is single-point and therefore selects; a speed-spanning variant is the case that would demonstrate the develop branch. This is graded by consequence: develop-with-calibration-backstop is appropriate for this LEGO demonstrator; safety-critical hardware would tighten to validated, reviewed relations and not rely on calibration to find model-structure errors. The committed seed models in [`../models/`](../models) are rover-specific *exemplars*; for the structured arm they are the reference the generic catalog and the agent's developed composition are checked against — not the input handed to the arm.
 - **Library primitives vs. generated orchestration.** Code is split at the hardware boundary. Primitive operations — commanding a motor to a speed, reading a sensor channel — are templated library blocks: the operation set is closed, and pre-tested code is more trustworthy than generated MicroPython where there is no upside to generating it. Mission orchestration — the control logic that sequences primitives to satisfy a spec — is generated, because it varies per requirement and is where generation earns its place. The split mirrors ordinary software practice: the standard library is not regenerated on every build; the application logic that calls it is. The evaluator-optimizer loop iterates on the orchestration, not on whether the motor API was called correctly.
 - **The SysML layer carries constraints and parameters, not labels.** With the unit relations supplied as generic templates, the SysML v2 layer earns its place through what it holds rather than what it generates: requirement-to-element-to-test traceability, the parametric relations that encode the system physics, and the calibration constants those relations depend on. Two worked examples: *motor turn → rover speed* is a parametric edge whose constant (bundling wheel geometry, gear ratio, and slip) is bound by calibration, not computed; and the stop constraint, `d_measured ≥ v·t_response + v²/(2a) + margin`, encodes reaction distance, braking distance, and a human-set safety margin as a formal relation rather than logic buried in code. This is the distinction between the model and a configuration table, and it is the point at which calibration (stage 5) becomes model anchoring — binding a parametric model's free parameters to physical hardware through designed tests.

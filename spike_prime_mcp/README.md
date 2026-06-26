@@ -2,7 +2,7 @@
 
 MCP server exposing the SPIKE Prime hardware seam of the Spike SysML
 pipeline — the deploy-and-run hardware steps inside the calibration
-(stage 5) and integrated confirmation-run (stage 6) loops of [`docs/architecture.md`](https://github.com/jarretmorton/Spike-SysML/blob/main/docs/architecture.md). Three tools over stdio:
+(stage 5) and integrated verification-run (stage 6) loops of [`docs/architecture.md`](https://github.com/jarretmorton/Spike-SysML/blob/main/docs/architecture.md). Three tools over stdio:
 
 | Tool            | Purpose                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------------- |

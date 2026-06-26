@@ -13,16 +13,14 @@ Run conditions:
   on, moderate effort). Only governance differs between the two arms.
 - The hub is **power-cycled between every run** (as in `task_core.md`).
 - Operator policy: provide ground-truth measurements *on request* during Phase 1 (counted as
-  outside input); provide no input during the campaign; record the scored outcome **externally** —
+  outside input); provide no input during operation; record the scored outcome **externally** —
   never trust the model's self-report.
 - The SE arm additionally produces an **output record** (requirements spec + TBD register +
   requirement tree, tailored SysML models, calibration record, pre-run verification artifact,
-  confirmation + campaign results). Capture it to the repo as you go — it is not pasted back to
+  verification + operation results). Capture it to the repo as you go — it is not pasted back to
   the model.
-- The **confirmation run** (Process step 6) is recorded *separately* from the campaign. A
-  properly-prepared confirmation that passes may be promoted to campaign run #1 retrospectively
-  (the dev run that works becomes the first qual run); kept separate here so runs can be truncated
-  or counted as desired in analysis.
+- The **verification run** (Process step 6) is recorded *separately* from operation, and is **not** counted as one of the operation runs — the verification run
+  verifies the system; the operation runs are the scored data.
 - Incognito does not persist — capture the transcript and record as you go.
 
 > Pending: the **tenets** below are the current candidate set, not yet trimmed. The model
@@ -35,7 +33,7 @@ You are operating under a structured systems-engineering process. Do NOT begin d
 to "feel out" the task. You will decompose the task into verifiable requirements, select the
 effectors, tailor a system model, calibrate and verify at the component level, produce an
 inspectable predictive argument that the requirements will hold, and ONLY THEN run the scored
-campaign. The discipline is the point: the deliverable is not merely a rover that completes the
+operation. The discipline is the point: the deliverable is not merely a rover that completes the
 task, but an auditable argument - produced before the task is run - that it will.
 
 PROCESS (in order)
@@ -53,10 +51,10 @@ PROCESS (in order)
    (requirement -> model -> calibrated parameters -> predicted performance + margin) BEFORE any
    integrated run. This artifact is the centerpiece - it is the argument the unstructured approach
    cannot produce.
-6. Confirmation run - run the integrated task ONCE to test the committed prediction. If the result
+6. Verification run - run the integrated task ONCE to test the committed prediction. If the result
    falsifies the prediction, diagnose the responsible model parameter and re-derive - do not
    empirically tweak the program.
-7. Campaign - lock and run the campaign as defined in the task.
+7. Operation - lock and run the operation as defined in the task.
 
 REQUIREMENTS METHOD
 The requirements specification is the source of truth for requirements; the SysML model is a
@@ -118,7 +116,7 @@ B - Characterization
       each request (each one is the outside-input score).
 C - Verification sequencing
   C1. Verify components before integrating - unit verification gates the integrated test.
-  C2. Argue before you run - commit the predictive argument before the campaign.
+  C2. Argue before you run - commit the predictive argument before operation.
 D - Epistemic hygiene
   D1. Know each channel's provenance before trusting it; watch for reporting artifacts.
   D2. Instruments are imperfect - characterize the imperfection, do not idealize it.
@@ -179,7 +177,7 @@ Skeleton and template catalogs: models/rover_generic.sysml - the rover-agnostic 
 YOUR RECORD (produce and keep - separate from this prompt)
 Requirements specification (incl. TBD register) - requirement tree (Mermaid) - tailored SysML
 models - calibration record (with the TBD register closed) - pre-run verification artifact -
-integrated confirmation result (predicted vs actual) - campaign results (per-run outcome:
+integrated verification result (predicted vs actual) - operation results (per-run outcome:
 pass/fail + performance measure). The pre-run verification artifact is the centerpiece.
 
 Begin.

@@ -37,7 +37,7 @@ minimizing the residual gap. *Source: task statement.*
 - **SYS-7** *[Ubiquitous · DERIVED · HARD CONSTRAINT]* ←SYS-5/6: The rover shall stop with a
   clearance margin **M** sized to cover (a) stopping-distance prediction uncertainty,
   (b) clearance-measurement uncertainty, and (c) run-to-run variability. *The verifiable proxy for
-  "as close as possible without contact"; the campaign verifies M covers the spread. Three TBDs.*
+  "as close as possible without contact"; operation tests that M covers the spread. Three TBDs.*
   `M = k·√(σ_d_stop² + σ_d_meas² + σ_run²)`
 
 ### Level 2 — Function

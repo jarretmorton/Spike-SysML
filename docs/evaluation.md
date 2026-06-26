@@ -36,8 +36,8 @@ calibration → verification pipeline: derive and document requirements top-down
 the single-effector level, select the effectors those leaves call for, compose a
 SysML v2 model from generic templates, calibrate both its free model parameters
 and the requirement TBDs against the hardware with designed tests, commit a
-pre-run verification argument, take one integrated confirmation run, then lock and
-run the campaign.
+pre-run verification argument, take one integrated verification run, then lock and
+run the operation.
 
 
 **Both arms run through the same MCP seam.** This is settled (it was previously
@@ -104,7 +104,7 @@ not noise to scrub.
 One distinction matters, because it draws the line between what we keep and what
 we control. The sensor fault and the specular blind-out are *within-run* realities:
 they bear on whether a solution works at all, so each arm should have to face them.
-The hub's *cross-run* drift is different — it accumulates across the five campaign
+The hub's *cross-run* drift is different — it accumulates across the five operation
 runs and makes them non-comparable, so it corrupts the **repeatability metric** rather than testing the solution. We therefore reset it (power-cycle the hub
 between runs) while keeping the genuine hardware faults. Cycling also makes the
 sensor fault *consistent* run-to-run (a steady short read instead of a drifting
@@ -194,9 +194,9 @@ for a measured response — e.g. actual stopping distance from a given speed);
 this is symmetric with how the structured arm's calibration binds a
 parameter, and it is counted as **outside input** (a second score, minimized).
 2. **Lock.** The model fixes its final program.
-3. **Campaign (scored).** Run that **same, unchanged** program 5 times at maximum
-speed. Contact and gap are recorded externally and **not fed back** during the
-campaign — the task must stand on the rover's own perception. Locking before
+3. **Operation (scored).** Run that **same, unchanged** program 5 times at maximum
+speed. Contact and gap are recorded externally and **not fed back** during
+operation — the task must stand on the rover's own perception. Locking before
 the five makes the success rate a *repeatability* measure (the qualification
 analogy: you do not change the design between qualification runs).
 
@@ -204,21 +204,20 @@ analogy: you do not change the design between qualification runs).
 **Free actions** (uncounted, either phase): power-cycle the hub between every run
 (clearing accumulated gyro/sensor/thermal drift so each run starts from a clean
 hub state — heading and clock reset to zero, no state carried across runs; the
-locked program is re-flashed unchanged in the campaign), reset to the start line,
+locked program is re-flashed unchanged in operation), reset to the start line,
 reposition, and wake the hub. These are hardware operation, not help, and identical
 overhead for both arms. **Outside input** (measurements, assistance the model
-requests) is counted during characterization and unavailable during the campaign.
-The campaign provides only operational power-cycles and resets between runs.
+requests) is counted during characterization and unavailable during operation.
+The operation provides only operational power-cycles and resets between runs.
 
 The same two-phase structure applies to the structured arm: its calibration and
 unit-verification runs are the characterization-program count; after it commits
-the verification artifact it takes **one integrated confirmation run** (also
+the verification artifact it takes **one integrated verification run** (also
 counted as a characterization program) to test the committed prediction; its
-locked program is the campaign, and the prediction is that it goes 5/5 with a
-tight gap spread. A confirmation run that *passes* with the program locked
-unchanged may be **promoted to campaign run #1** (truncating one of the five) —
-kept separate by default so the runs can be counted either way in analysis. On a
-confirmation run that *falsifies* the prediction, the structured arm diagnoses the
+locked program then enters operation, and the prediction is that it goes 5/5 with a
+tight gap spread. The verification run is recorded separately and is **not** counted
+among the five operation runs. On a
+verification run that *falsifies* the prediction, the structured arm diagnoses the
 responsible model parameter and re-derives, rather than empirically tweaking the
 program (the move the freestyle arm makes).
 
@@ -226,10 +225,10 @@ program (the move the freestyle arm makes).
 
 | Metric                | What it captures                                                            |
 | --------------------- | --------------------------------------------------------------------------- |
-| Characterization cost | # programs run before the campaign (the structured arm's confirmation run counts here) |
-| Runs-to-first-success | # integrated runs to the first no-contact stop — for the structured arm, the confirmation run is that first integrated run, and the prediction is that it succeeds (= 1) |
+| Characterization cost | # programs run before operation (the structured arm's verification run counts here) |
+| Runs-to-first-success | # integrated runs to the first no-contact stop — for the structured arm, the verification run is that first integrated run, and the prediction is that it succeeds (= 1) |
 | Outside-input count   | human measurements/assists requested during characterization                |
-| Reliability           | # of the 5 campaign runs with no contact                                    |
+| Reliability           | # of the 5 operation runs with no contact                                    |
 | Performance           | the gap distribution across the 5 (closeness *and* consistency)             |
 | Verification artifact | qualitative; present for the structured arm, absent or ad hoc for freestyle |
 
@@ -284,7 +283,7 @@ structure), not a scored result. The scored comparison uses the protocol above.
 ## A second pilot — freestyle, Opus 4.8 (High effort + thinking)
 
 A second freestyle pilot ran the full two-phase protocol: 5 characterization
-programs, 1 outside-input request, and **5/5 no-contact** in the campaign. It is
+programs, 1 outside-input request, and **5/5 no-contact** in operation. It is
 the sharpest single illustration of why outcome is not the metric that matters.
 
 - The model's **performance self-assessment was confidently wrong**. It reported a
@@ -298,7 +297,7 @@ confidently wrong about how close it got.
 — were all correct. The one metric requiring it to know its own true state
 (closeness) was the one it got wrong. This is the case for measuring performance
 **externally**, never from the model's self-report.
-- The campaign also exposed a **hub-drift confound**: across the five runs the true
+- The operation also exposed a **hub-drift confound**: across the five runs the true
 gap climbed (273 → 365) while the sensor reading stayed flat (~110), reset by a
 power cycle (252 mm on a cycled run). The protocol now power-cycles the hub
 between every run; the systematic ~160 mm under-read is a separate faulty-sensor

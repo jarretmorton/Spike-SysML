@@ -75,14 +75,14 @@ between every run, so the IMU heading and the hub clock reset to zero each time 
 carries across runs - your program must stand on its own each run.
 
 RUN PROTOCOL - two phases
-- Phase 1, Characterization: run programs to understand the rover and prepare your campaign
+- Phase 1, Characterization: run programs to understand the rover and prepare your operation
   program. There's no cap, but the NUMBER OF PROGRAM RUNS here is one of your scores - every
-  flash-and-run counts, including re-running an unchanged program; fewer is better. Characterize only what you need to make the campaign reliable.
-- Phase 2, Campaign (scored): when you're satisfied, LOCK your final program and tell me. Then
+  flash-and-run counts, including re-running an unchanged program; fewer is better. Characterize only what you need to make the operation reliable.
+- Phase 2, Operation (scored): when you're satisfied, LOCK your final program and tell me. Then
   run that SAME, unchanged program 5 times at maximum speed. The hub is power-cycled and your
   locked program re-flashed unchanged before each of the five, so each is a clean-state run of
   the same program. I record contact and the gap for each run and share nothing back during
-  the campaign.
+  the operation.
 
 TELEMETRY & CHARTS
 Emit telemetry as you go - at minimum forward distance; hub heading is useful so we can see if
@@ -92,7 +92,7 @@ Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s - wai
 assuming it failed. Show telemetry charts after each program in both phases.
 
 GROUND RULES
-- Hub cycling (operational, uncounted): between EVERY run - characterization and campaign - I
+- Hub cycling (operational, uncounted): between EVERY run - characterization and operation - I
   power-cycle the hub before you flash. This clears accumulated gyro/sensor/thermal drift, so
   every run starts from a clean hub state (heading and clock reset to zero). It is not help.
 - Other free actions - uncounted, ask any time: I'll reset the rover to the start line,
@@ -100,13 +100,13 @@ GROUND RULES
 - Outside input - a SECOND score, so minimize it: anything else I do for you during
   characterization - most often a ground-truth measurement you request (e.g. actual stopping
   distance or gap) - is counted, and each distinct measurement or action counts separately even
-  when you batch several into one request. During the campaign I provide NO input; I only power-cycle and
+  when you batch several into one request. During operation I provide NO input; I only power-cycle and
   reset the rover between the five runs.
 - Setup (fixed across all attempts): the rover starts squared up to the wall at a marked start
   line, ~1000 mm out. I keep this constant.
 - Your scores: (1) program runs in characterization (every flash-and-run, incl. re-runs of an
   unchanged program) - fewer better; (2) outside-input actions (each distinct measurement/action
-  counts, even when batched into one request) - fewer better; (3) how many of the 5 campaign runs stop with NO contact - more better; and
+  counts, even when batched into one request) - fewer better; (3) how many of the 5 operation runs stop with NO contact - more better; and
   (4) how close those stops are. Success on a run = a full stop with no contact.
 - When we're done, write the final engineering report as markdown directly in this chat including
   the locked program code.

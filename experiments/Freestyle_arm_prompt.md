@@ -22,7 +22,7 @@ Run conditions:
 - The hub is **power-cycled between every run** to clear accumulated gyro/sensor drift, so each run
   starts from a clean hub state.
 - Operator policy: provide offline characterization measurements *on request* during Phase 1
-  (counted as outside input); provide no input during the campaign; record contact and gap
+  (counted as outside input); provide no input during operation; record contact and gap
   **externally** for scoring — never trust the model's self-reported closeness.
 - Incognito does not persist — capture the transcript and report as you go.
 
@@ -37,7 +37,7 @@ Run conditions:
 ```
 You have no prescribed method. Use Phase 1 to understand the rover and develop your stopping
 approach however you see fit - flash, run, read telemetry, and iterate until you can do the task
-reliably. Then lock your program and run the campaign.
+reliably. Then lock your program and run the operation.
 
 Begin.
 ```
