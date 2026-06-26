@@ -92,6 +92,10 @@ Give run_program a generous timeout (~10-15 s). Flashing can take ~45-60 s - wai
 assuming it failed. Show telemetry charts after each program in both phases.
 
 GROUND RULES
+- Readiness handshake - ASK BEFORE EVERY FLASH: I power-cycle and reposition the rover between
+  runs, which takes a moment. Before each flash_program (characterization AND operation), ask me
+  whether the hub is ready and WAIT for my explicit go-ahead - do NOT flash until I confirm.
+  Flashing while I'm still repositioning wastes the run and may hit a sleeping or mid-reset hub.
 - Hub cycling (operational, uncounted): between EVERY run - characterization and operation - I
   power-cycle the hub before you flash. This clears accumulated gyro/sensor/thermal drift, so
   every run starts from a clean hub state (heading and clock reset to zero). It is not help.
@@ -100,14 +104,29 @@ GROUND RULES
 - Outside input - a SECOND score, so minimize it: anything else I do for you during
   characterization - most often a ground-truth measurement you request (e.g. actual stopping
   distance or gap) - is counted, and each distinct measurement or action counts separately even
-  when you batch several into one request. During operation I provide NO input; I only power-cycle and
-  reset the rover between the five runs.
+  when you batch several into one request. During the five operation runs I provide NO input; I only
+  power-cycle and reset the rover between them. The sole exception is at close-out, after all five
+  are locked and run, when I give you the measured gaps (see OPERATION CLOSE-OUT) - these arrive
+  after the fact and cannot influence any run.
 - Setup (fixed across all attempts): the rover starts squared up to the wall at a marked start
   line, ~1000 mm out. I keep this constant.
 - Your scores: (1) program runs in characterization (every flash-and-run, incl. re-runs of an
   unchanged program) - fewer better; (2) outside-input actions (each distinct measurement/action
   counts, even when batched into one request) - fewer better; (3) how many of the 5 operation runs stop with NO contact - more better; and
   (4) how close those stops are. Success on a run = a full stop with no contact.
-- When we're done, write the final engineering report as markdown directly in this chat including
-  the locked program code.
+
+OPERATION CLOSE-OUT (after all 5 runs - in this order)
+1. Freeze your onboard estimates FIRST: before I give you any measurement, state your own per-run
+   final gap for each of the 5 runs (whatever channel you used) and commit them here in the chat. This is your prediction of where you stopped, fixed before
+   you see ground truth.
+2. Then ASK me for ground truth and WAIT: request the operator-measured gap for each of the 5 runs.
+   This is the ONLY operator data exchange in the whole operation phase - nothing during the five
+   runs, only these measurements once all five are locked and run, so they cannot influence any run.
+   You genuinely cannot finish without them: they are the scored closeness metric and the check on
+   your own accuracy.
+3. Then produce the final engineering report as a downloadable markdown artifact (a file I can save,
+   not just a chat reply), including the locked program code AND a per-run table with three columns -
+   your onboard estimate (from step 1), my measurement, and the delta - plus a short reconciliation
+   of any systematic gap. My measurement is the authoritative performance figure; your estimate is
+   the prediction being checked against it.
 ```

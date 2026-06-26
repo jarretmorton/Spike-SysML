@@ -16,9 +16,9 @@ Run conditions:
   outside input); provide no input during operation; record the scored outcome **externally** —
   never trust the model's self-report.
 - The SE arm additionally produces an **output record** (requirements spec + TBD register +
-  requirement tree, tailored SysML models, calibration record, pre-run verification artifact,
-  verification + operation results). Capture it to the repo as you go — it is not pasted back to
-  the model.
+  requirement tree, tailored SysML models, Calibration & Verification Plan, Calibration Report,
+  Pre-Verification Report, Post-Verification Report, Final Engineering Report). Capture it to the
+  repo as you go — it is not pasted back to the model.
 - The **verification run** (Process step 6) is recorded *separately* from operation, and is **not** counted as one of the operation runs — the verification run
   verifies the system; the operation runs are the scored data.
 - Incognito does not persist — capture the transcript and record as you go.
@@ -36,12 +36,18 @@ inspectable predictive argument that the requirements will hold, and ONLY THEN r
 operation. The discipline is the point: the deliverable is not merely a rover that completes the
 task, but an auditable argument - produced before the task is run - that it will.
 
-PROCESS (in order)
+PROCESS (in order). Each phase ends at a GATE: produce the named deliverable(s) as downloadable
+markdown artifacts (files I can save, not just chat replies), present them, and WAIT for my review
+before the next phase - never proceed past a gate on your own.
 1. Requirements - decompose the task top-down to the single-effector level.
 2. Effector selection - from the lowest-level (CMP) requirements, identify the effectors the system
    needs. Any effector with no requirement tracing to it drops out (absence by traceability).
 3. System model - tailor a model from the validated template library to the selected effectors and
    their requirements; instantiate only the templates the requirements call for.
+   GATE A (after spec + model, before any hardware): produce the CALIBRATION & VERIFICATION PLAN -
+   the calibration input list (model-completion parameters + the requirement-TBD register), the
+   characterization-run design, the single outside-input request, and the STRUCTURE of the pre-run
+   argument (the satisfy/require roll-up with predictions left open). Present it and WAIT for my review.
 4. Calibration & unit verification - design characterization runs that bind BOTH (a) the free model
    parameters the model needs to predict but that no requirement names (model completion) and
    (b) the requirement-TBD register. Verify each component at the single-effector level before any
@@ -51,10 +57,22 @@ PROCESS (in order)
    (requirement -> model -> calibrated parameters -> predicted performance + margin) BEFORE any
    integrated run. This artifact is the centerpiece - it is the argument the unstructured approach
    cannot produce.
+   GATE B (after calibration, before the verification run): produce the CALIBRATION REPORT (the
+   TBD register closed - each bound value with its producing test) AND the PRE-VERIFICATION REPORT
+   (the pre-run argument now numeric). The Pre-Verification Report is PREDICTIONS ONLY, committed
+   now, before any integrated run - no integrated result may ever touch a predicted cell; freezing
+   it before the run is its entire value. Present BOTH and WAIT for my review.
 6. Verification run - run the integrated task ONCE to test the committed prediction. If the result
    falsifies the prediction, diagnose the responsible model parameter and re-derive - do not
    empirically tweak the program.
-7. Operation - lock and run the operation as defined in the task.
+   GATE C (after the verification run, before operation): produce the POST-VERIFICATION REPORT -
+   predicted vs actual for every requirement, with any falsify -> diagnose -> re-derive recorded.
+   Present it and WAIT for my review.
+7. Operation - lock and run the operation as defined in the task. On completion, produce the FINAL
+   ENGINEERING REPORT (per task_core close-out). In the SE report the per-run reconciliation also
+   carries the PREDICTED gap/margin from the Pre-Verification Report alongside your onboard estimate
+   and my measurement - so the table closes the full chain (predicted -> estimated -> measured) and
+   states plainly whether the committed prediction held against ground truth.
 
 REQUIREMENTS METHOD
 The requirements specification is the source of truth for requirements; the SysML model is a
@@ -174,11 +192,12 @@ Skeleton and template catalogs: models/rover_generic.sysml - the rover-agnostic 
 (RoverStructure) plus the relation catalog (RelationTemplates) and requirement-shape catalog
 (RequirementTemplates). The wall-run instantiation that consumes them is models/wall_run_model.sysml.
 
-YOUR RECORD (produce and keep - separate from this prompt)
+YOUR RECORD (produce and keep - separate from this prompt; gated deliverables in CAPS)
 Requirements specification (incl. TBD register) - requirement tree (Mermaid) - tailored SysML
-models - calibration record (with the TBD register closed) - pre-run verification artifact -
-integrated verification result (predicted vs actual) - operation results (per-run outcome:
-pass/fail + performance measure). The pre-run verification artifact is the centerpiece.
+models - CALIBRATION & VERIFICATION PLAN - CALIBRATION REPORT (TBD register closed) -
+PRE-VERIFICATION REPORT (the frozen pre-run argument, predictions only) - POST-VERIFICATION REPORT
+(predicted vs actual) - FINAL ENGINEERING REPORT. The Pre-Verification Report is the centerpiece -
+frozen before the verification run.
 
 Begin.
 ```
