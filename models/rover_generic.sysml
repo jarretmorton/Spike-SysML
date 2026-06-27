@@ -2,15 +2,12 @@
 // rover_generic.sysml — the GENERIC starting point handed to the SE arm.
 //
 // The SPIKE Prime rover platform's structure, plus reusable relation and
-// requirement templates, free of any task facts. This is the artifact that
-// plugs into the "[Skeleton and template-catalog artifact paths: TBD]" slot in
-// se_arm_prompt.md, and the refactor of {rover_common, m1, m2, m3} into the
-// skeleton + catalog form. Nothing here names a wall, a start distance, or
-// which sensors get used; what gets USED is decided downstream by which
-// requirements trace to it.
+// requirement templates, free of any task facts. Nothing here names a wall, a
+// start distance, or which sensors get used; what gets USED is decided
+// downstream by which requirements trace to it.
 //
-// VALIDATION NOTE. Constructs are restricted to forms validated clean in this
-// repo's four unit models and in the OMG SysML v2 Beta-4 spec examples. Relation
+// VALIDATION NOTE. Constructs are restricted to forms validated clean against
+// the OMG SysML v2 Beta-4 spec examples. Relation
 // templates are kept as calc defs (the validated form). The populated model
 // instantiates a relation by REPRODUCING its expression against bound parameters
 // rather than by calc INVOCATION, which is not yet in this repo's proven-valid
@@ -20,7 +17,7 @@
 package RoverCommon {
     doc /*
      * Shared value types and the one genuinely platform-wide calibrated dynamic
-     * parameter (the latency chain). Carried over from rover_common.sysml.
+     * parameter (the latency chain).
      */
 
     private import ISQ::*;
@@ -102,7 +99,6 @@ package RelationTemplates {
 
     // Rotational drive -> ground speed. The constant bundles wheel radius, gear
     // ratio AND slip, which is exactly why it is calibrated, not computed.
-    // (was m1 RoverSpeed)
     calc def RotationToSpeed {
         in motorSpeed : AngularVelocityValue;   // rad/s
         in k : LengthValue;                     // m per rad
@@ -117,7 +113,6 @@ package RelationTemplates {
     // feasibility check needs it. Across a RANGE of speeds, sweep and inspect the
     // fit residuals for curvature (a single-speed fit would fold the quadratic
     // into the linear term and be quietly wrong at the envelope edge).
-    // (was m2 ForwardStopThreshold)
     calc def StoppingDistance {
         in v : SpeedValue;
         in tResponse : DurationValue;   // latency.tChain + sensor sampling latency
