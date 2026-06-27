@@ -76,7 +76,8 @@ carries across runs - your program must stand on its own each run.
 RUN PROTOCOL - two phases
 - Phase 1, Characterization: run programs to understand the rover and prepare your operation
   program. There's no cap, but the NUMBER OF PROGRAM RUNS here is one of your scores - every
-  flash-and-run counts, including re-running an unchanged program; fewer is better. Characterize only what you need to make the operation reliable.
+  flash-and-run counts, including re-running an unchanged program; fewer is better. Characterize
+  only what you need to make the operation reliable.
 - Phase 2, Operation (scored): when you're satisfied, LOCK your final program and tell me. Then
   run that SAME, unchanged program 5 times at maximum speed. The hub is power-cycled and your
   locked program re-flashed unchanged before each of the five, so each is a clean-state run of
@@ -101,23 +102,23 @@ GROUND RULES
 - Other free actions - uncounted, ask any time: I'll reset the rover to the start line,
   reposition/square it up, and wake the hub on request. These are hardware operation, not help.
 - Outside input - a SECOND score, so minimize it: anything else I do for you during
-  characterization - most often a ground-truth measurement you request (e.g. actual stopping
-  distance or gap) - is counted, and each distinct measurement or action counts separately even
-  when you batch several into one request. During the five operation runs I provide NO input; I only
-  power-cycle and reset the rover between them. The sole exception is at close-out, after all five
-  are locked and run, when I give you the measured gaps (see OPERATION CLOSE-OUT) - these arrive
-  after the fact and cannot influence any run.
+  characterization - most often a ground-truth measurement you request - is counted, and each
+  distinct measurement or action counts separately even when you batch several into one request. 
+  During the five operation runs I provide NO input; I only power-cycle and reset the rover between
+  them. The sole exception is at close-out, after all five are locked and run, when I give you the
+  measured gaps (see OPERATION CLOSE-OUT) - these arrive after the fact and cannot influence any run.
 - Setup (fixed across all attempts): the rover starts squared up to the wall at a marked start
   line, ~1000 mm out. I keep this constant.
 - Your scores: (1) program runs in characterization (every flash-and-run, incl. re-runs of an
   unchanged program) - fewer better; (2) outside-input actions (each distinct measurement/action
-  counts, even when batched into one request) - fewer better; (3) how many of the 5 operation runs stop with NO contact - more better; and
-  (4) how close those stops are. Success on a run = a full stop with no contact.
+  counts, even when batched into one request) - fewer better; (3) how many of the 5 operation runs
+  stop with NO contact - more better; and (4) how close those stops are. Success on a run = a full stop
+  with no contact.
 
 OPERATION CLOSE-OUT (after all 5 runs - in this order)
 1. Freeze your onboard estimates FIRST: before I give you any measurement, state your own per-run
-   final gap for each of the 5 runs (whatever channel you used) and commit them here in the chat. This is your prediction of where you stopped, fixed before
-   you see ground truth.
+   final gap for each of the 5 runs (whatever channel you used) and commit them here in the chat. This
+   is your prediction of where you stopped, fixed before you see ground truth.
 2. Then ASK me for ground truth and WAIT: request the operator-measured gap for each of the 5 runs.
    This is the ONLY operator data exchange in the whole operation phase - nothing during the five
    runs, only these measurements once all five are locked and run, so they cannot influence any run.

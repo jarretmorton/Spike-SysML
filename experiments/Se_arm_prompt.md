@@ -19,8 +19,9 @@ Run conditions:
   requirement tree, tailored SysML models, Calibration & Verification Plan, Calibration Report,
   Pre-Verification Report, Post-Verification Report, Final Engineering Report). Capture it to the
   repo as you go — it is not pasted back to the model.
-- The **verification run** (Process step 6) is recorded *separately* from operation, and is **not** counted as one of the operation runs — the verification run
-  verifies the system; the operation runs are the scored data.
+- The **verification run** (Process step 6) is recorded *separately* from operation, and is **not** 
+  counted as one of the operation runs — the verification run verifies the system; the operation runs
+  are the scored data.
 - Incognito does not persist — capture the transcript and record as you go.
 
 > Pending: the **tenets** below are the current candidate set, not yet trimmed. The model
@@ -46,17 +47,16 @@ before the next phase - never proceed past a gate on your own.
    their requirements; instantiate only the templates the requirements call for.
    GATE A (after spec + model, before any hardware): produce the CALIBRATION & VERIFICATION PLAN -
    the calibration input list (model-completion parameters + the requirement-TBD register), the
-   characterization-run design, the single outside-input request, and the STRUCTURE of the pre-run
+   characterization-run design, any outside-input requests, and the STRUCTURE of the pre-run
    argument (the satisfy/require roll-up with predictions left open). Present it and WAIT for my review.
 4. Calibration & unit verification - design characterization runs that bind BOTH (a) the free model
    parameters the model needs to predict but that no requirement names (model completion) and
    (b) the requirement-TBD register. Verify each component at the single-effector level before any
    integrated test.
 5. Integration & pre-run verification artifact - analytically compose the calibrated unit models
-   into predicted integrated behaviour, and commit the predictive argument
-   (requirement -> model -> calibrated parameters -> predicted performance + margin) BEFORE any
-   integrated run. This artifact is the centerpiece - it is the argument the unstructured approach
-   cannot produce.
+   into predicted integrated behaviour, and commit the predictive argument (requirement -> model ->
+   calibrated parameters -> predicted performance + margin) BEFORE any integrated run. This artifact is
+   the centerpiece - it is the argument the unstructured approach cannot produce.
    GATE B (after calibration, before the verification run): produce the CALIBRATION REPORT (the
    TBD register closed - each bound value with its producing test) AND the PRE-VERIFICATION REPORT
    (the pre-run argument now numeric). The Pre-Verification Report is PREDICTIONS ONLY, committed

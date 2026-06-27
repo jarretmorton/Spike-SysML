@@ -7,7 +7,7 @@
 // se_arm_prompt.md, and the refactor of {rover_common, m1, m2, m3} into the
 // skeleton + catalog form. Nothing here names a wall, a start distance, or
 // which sensors get used; what gets USED is decided downstream by which
-// requirements trace to it (see wall_run_model.sysml).
+// requirements trace to it.
 //
 // VALIDATION NOTE. Constructs are restricted to forms validated clean in this
 // repo's four unit models and in the OMG SysML v2 Beta-4 spec examples. Relation
@@ -90,11 +90,11 @@ package RoverStructure {
 package RelationTemplates {
     doc /*
      * The generic physics-relation catalog: engineering knowledge with free
-     * parameters, not facts about any one rover. Generalised from m1/m2. A task
-     * model selects the relations its requirements call for and binds their
-     * parameters at calibration. (Mechanically, the populated model reproduces a
-     * relation's expression against bound parameters; calc INVOCATION is the
-     * intended alternative once confirmed valid in Syside.)
+     * parameters, not facts about any one rover. A task model selects the 
+     * relations its requirements call for and binds their parameters at
+     * calibration. (Mechanically, the populated model reproduces a relation's
+     * expression against bound parameters; calc INVOCATION is the intended
+     * alternative once confirmed valid in Syside.)
      */
 
     private import ISQ::*;
@@ -129,8 +129,7 @@ package RelationTemplates {
 
     // Inverse of StoppingDistance: the largest v whose stop fits inside a distance
     // BUDGET (a sensor range, or a geometric offset). Positive root, real while
-    // budget > margin. (was m2 MaxForwardSpeed / m3 MaxSafeSpeed — structurally
-    // identical; the budget was sensor RANGE in one, sensor OFFSET in the other.)
+    // budget > margin.
     calc def MaxSpeedFromBudget {
         in tResponse : DurationValue;
         in a : AccelerationValue;
@@ -152,7 +151,7 @@ package RequirementTemplates {
      */
 
     // measured >= target. Serves clearance-vs-threshold, margin floors, and
-    // command-at-maximum. (Generalises m2's NoForwardCollision.)
+    // command-at-maximum.
     requirement def LowerBoundRequirement {
         doc /* {measured} shall be no less than {target}. */
         attribute measured;
