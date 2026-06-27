@@ -70,7 +70,7 @@ package WallRunDesign {
             kSigma * ( sigmaDStop ** 2 + sigmaDMeas ** 2 + sigmaRun ** 2 ) ** 0.5;
 
         // --- speed-dependent braking threshold (StoppingDistance instantiated)-
-        // The clearance at which the stop must already trigger, at full speed =
+        // The clearance at which the stop must already trigger, at the max straight-line speed =
         // StoppingDistance(groundSpeed, tResponse, decelCollision, marginM):
         attribute brakingThreshold : LengthValue =
             groundSpeed * tResponse
@@ -79,7 +79,7 @@ package WallRunDesign {
 
         // Feasibility ceiling the task runs AGAINST but does not command toward:
         // the largest speed whose stop fits inside dSenseMax. If groundSpeed
-        // exceeds this, full speed is infeasible (cannot stop within reliable
+        // exceeds this, the max straight-line speed is infeasible (cannot stop within reliable
         // sensing range) and M cannot rescue it. This is the envelope check the
         // template exists for, surfaced here rather than added as a new SYS req.
         // = MaxSpeedFromBudget(tResponse, decelCollision, dSenseMax, marginM):
@@ -169,7 +169,7 @@ package WallRunRequirements {
     // ===== Level 0 — Need ====================================================
     requirement def <'STK-1'> WallRunNeed {
         doc /* From a fixed ~1000 mm start squared to the wall, the rover shall
-             * approach at the drive motors' maximum speed and come to a complete
+             * approach at maximum straight-line speed and come to a complete
              * stop without contact, minimising the residual gap. Source: task
              * statement. Compound; decomposed into SYS-1..7. */
         subject rover : WallRover;
@@ -187,9 +187,12 @@ package WallRunRequirements {
 
     // SYS-1 [state-driven · HARD CONSTRAINT] <- STK-1
     requirement def <'SYS-1'> CommandMaxSpeed specializes LowerBoundRequirement {
-        doc /* While approaching, the rover shall command both drive motors at
-             * maximum angular velocity. Speed may not be traded for margin.
-             * commanded >= max forces commanded = max (max is the ceiling). */
+        doc /* Command realization of the achieved-speed need (spec SYS-1: drive at
+             * the maximum straight-line ground speed the drivetrain sustains). The
+             * matched-wheel command ceiling is maxMotorSpeed (CMP-M2); commanded >=
+             * max forces commanded = max. Achieved straight-line speed is checked
+             * from telemetry (groundSpeed vs the run), not gated here. Speed may not
+             * be reduced below the ceiling for margin. */
         subject rover : WallRover;
         attribute :>> measured = rover.commandedMotorSpeed;
         attribute :>> target = rover.maxMotorSpeed;

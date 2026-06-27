@@ -165,11 +165,11 @@ model does not actually contain. The shape, end to end:
     }
 
     // task requirement - specialise, add a subject, BIND the operands, inherit the constraint:
-    requirement def <'SYS-1'> CommandMaxSpeed specializes LowerBoundRequirement {
+    requirement def <'SYS-5'> NoContact specializes LowerBoundRequirement {
         subject rover : WallRover;
-        attribute :>> measured = rover.commandedMotorSpeed;
-        attribute :>> target   = rover.maxMotorSpeed;
-        requirement : ReachMaxSpeed;        // nested child (a CMP leaf), itself a requirement def
+        attribute :>> measured = rover.finalClearance;    // gap to the wall at the full stop
+        attribute :>> target   = rover.contactMargin;     // 0 + the verified no-contact margin
+        requirement : StopWithinClearance;  // nested child (a leaf requirement def)
     }
 
     // the design claims the top need; nested usages carry the tree beneath it:

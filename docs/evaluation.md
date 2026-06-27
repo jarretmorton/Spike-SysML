@@ -67,8 +67,8 @@ sustainable config (moderate effort, thinking on) on both arms.
 
 ## The task
 
-**Drive at the drive motors' maximum speed straight at a wall and stop as close
-to it as possible without touching it.** Hard constraints: full speed (no
+**Drive straight at a wall at maximum speed and stop as close
+to it as possible without touching it.** Hard constraints: maximum speed (no
 slowing for margin) and no contact. Objective: minimize the final gap. (The
 canonical statement, with the code primitives and telemetry wire format, is
 [`../experiments/task_core.md`](../experiments/task_core.md).)

@@ -163,7 +163,7 @@ here** and **verified by the run in §E**.
 | CMP-M1/M2/M3/M4 | calibrated drive/brake/sign | calibration | PASS iff calibrated values in range | per-CMP `□` |
 | CMP-U1/U2/U4/U5 | range bias/scale, min(L,R), refresh, rear channel | calibration | PASS iff calibrated / U5-available | per-CMP `□` |
 | CMP-I1/I2 | yaw drift, forward-accel bias/noise | calibration | PASS iff within characterised bounds | per-CMP `□` |
-| feasibility (A6) | `groundSpeed ≤ maxFeasibleSpeed` | calibration | PASS (else full speed infeasible) | `maxFeasibleSpeed − groundSpeed □` |
+| feasibility | `groundSpeed ≤ maxFeasibleSpeed` | calibration | PASS (else max-straight speed cannot stop in budget) | `maxFeasibleSpeed − groundSpeed □` |
 | sensing budget (A6) | `brakingThreshold ≤ dSenseMax` | calibration | PASS | `dSenseMax − brakingThreshold □` |
 
 **Coverage factor `kSigma` (carried prominently — it is the multi-run prediction operations test).**

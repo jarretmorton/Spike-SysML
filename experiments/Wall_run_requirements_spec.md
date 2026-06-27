@@ -17,12 +17,13 @@ Method: INCOSE GtWR over ISO/IEC/IEEE 29148, EARS grammar, NASA SP-2016-6105 fra
 
 ### Level 0 — Need
 **STK-1** *(compound — split below)*: From a fixed ~1000 mm start squared to the wall, the rover
-shall approach at the drive motors' maximum speed and come to a complete stop without contact,
+shall approach at maximum straight-line speed and come to a complete stop without contact,
 minimizing the residual gap. *Source: task statement.*
 
 ### Level 1 — System (rover black-box)
-- **SYS-1** *[State-driven · HARD CONSTRAINT]* ←STK-1: While approaching, the rover shall command
-  both drive motors at maximum angular velocity. *Speed may not be traded for margin.*
+- **SYS-1** *[State-driven · HARD CONSTRAINT]* ←STK-1: While approaching, the rover shall drive at
+  the maximum straight-line ground speed its drivetrain can sustain (the matched-wheel ceiling —
+  see §5). *Speed may not be reduced below that ceiling for margin.*
 - **SYS-2** *[State-driven]* ←STK-1: While approaching, the rover shall translate along the
   start-line normal toward the wall.
 - **SYS-3** *[State-driven · DERIVED]* ←STK-1: While approaching, the rover shall hold heading
@@ -166,8 +167,9 @@ integrated test): straight-line tracking (SYS-3 / FUN-G), the braking-trigger lo
 end-to-end stop-before-wall (SYS-4/5).
 
 ## 5. Steering finding (drives the FUN-G reframe)
-Under SYS-1, run-time differential steering authority is ~zero: you cannot exceed max, and slowing a
-motor to steer violates the constraint. So straightness is **open-loop**, a calibration property:
+At the matched-speed ceiling there is no run-time steering headroom — the limiting wheel is already
+at its max, so heading cannot be corrected by speeding a wheel up. Straightness is therefore
+**open-loop**, a calibration property:
 - "Maximum speed" = maximum *straight-line* speed = both motors trimmed to the **slower motor's max**
   (matched). Matching the faster motor down is not slowing-for-margin.
 - FUN-G2 is a matched-drive trim (from CMP-M2); FUN-G1 is monitoring — the IMU trace verifies drift
@@ -176,8 +178,8 @@ motor to steer violates the constraint. So straightness is **open-loop**, a cali
   over 1000 mm exceeds θ_max, M must absorb a lateral component.
 
 ## 6. Consequence for the model
-SYS-1 fixes speed at max and un-tradeable, so the only control authority over no-contact is
-braking-initiation timing and margin. The problem collapses onto knowing the stopping distance
+SYS-1 pins the approach at the max straight-line ceiling and forbids reducing it for margin, so the
+only authority left over no-contact is braking-initiation timing and margin. The problem collapses onto knowing the stopping distance
 accurately — which is why CMP-M3 (measured directly at v_max), CMP-U4, and the distance
 cross-checks are the high-value leaves. The auditability centerpiece is the pre-run verification
 artifact: the satisfy/require roll-up evaluated against the calibrated values, committed before the
