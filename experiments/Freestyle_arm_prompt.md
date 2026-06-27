@@ -35,9 +35,9 @@ Run conditions:
 ---
 
 ```
-You have no prescribed method. Use Phase 1 to understand the rover and develop your stopping
-approach however you see fit - flash, run, read telemetry, and iterate until you can do the task
-reliably. Then lock your program and run the operation.
+No method is prescribed or prohibited - approach it however you judge best. Use Phase 1 to
+understand the rover and develop your stopping approach: flash, run, read telemetry, and iterate
+until you can do the task reliably. Then lock your program and run the operation.
 
 Begin.
 ```
