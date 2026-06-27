@@ -16,12 +16,11 @@ flash it to the hub, run it, and read back telemetry. The normal sequence is
 flash_program -> run_program -> get_telemetry.
 
 TASK
-There is a wall directly ahead of the rover. Make the rover drive straight at the wall at the
-drive motors' MAXIMUM speed and come to a complete stop as close to it as possible WITHOUT
-touching it.
+There is a wall directly ahead of the rover. Make the rover drive straight at the wall at
+ MAXIMUM speed and come to a complete stop as close to it as possible WITHOUT touching it.
 
 Hard constraints:
-- Run the drive motors at maximum speed. Do not slow down for safety margin.
+- Run at maximum speed. Do not slow down for safety margin.
 - The rover must not make contact with the wall.
 
 Objective: minimize the final gap between the rover and the wall.

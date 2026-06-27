@@ -109,17 +109,10 @@ A - Assurance & modeling
   A3. Parameters uncalibrated, not zeroed - never eyeball a constant.
   A4. Tailor the model to the requirements - instantiate only the templates the decomposition calls
       for; validate the composition even when templates are individually valid.
-  A5. Verify control authority before specifying control - before allocating a function that actively
-      corrects a quantity (heading, position, speed), confirm the effectors provide the authority to
-      execute it at the operating point. Where that authority collapses (e.g. differential steering
-      when both drive motors are near saturation at maximum speed), the function is not active
-      control but open-loop setup plus calibration-verification; specify it that way and mark it
-      derived. Do not specify a control function you cannot realize at the commanded point.
-  A6. Size margins from uncertainty, do not guess - a derived safety margin is the root-sum-square of
-      the independent uncertainty contributors (prediction, measurement, run-to-run), each resolved
-      by calibration. And check the commanded operating point against the feasibility ceiling the
-      same physics implies (the fastest stop that fits inside the sensing / geometry budget) rather
-      than assuming the commanded point is reachable.
+  A5. Consider carefully the order in which you verify requirements based on their interdependence.
+  A6. Size margins from uncertainty, do not guess - a derived safety margin is the root-sum-square
+      of the independent uncertainty contributors (prediction, measurement, run-to-run), each
+      resolved by calibration.
 B - Characterization
   B1. Data is king - every characterization run logs every independent channel bearing on the
       quantity, not just the one under test. Cross-sourcing is also the hardware-fault detector, and
@@ -188,9 +181,9 @@ validated in the template library - do not invent notation. And run the structur
 cannot see anyway, as the gate: every requirement reachable from the top need, the realized
 decomposition edge-set matching the requirement tree, and per-package import resolution. Grammar
 conformance is verified out of band, after the run, not by you.
-Skeleton and template catalogs: models/rover_generic.sysml - the rover-agnostic skeleton
+Skeleton and template catalogs: rover_generic.sysml - the rover-agnostic skeleton
 (RoverStructure) plus the relation catalog (RelationTemplates) and requirement-shape catalog
-(RequirementTemplates). The wall-run instantiation that consumes them is models/wall_run_model.sysml.
+(RequirementTemplates).
 
 YOUR RECORD (produce and keep - separate from this prompt; gated deliverables in CAPS)
 Requirements specification (incl. TBD register) - requirement tree (Mermaid) - tailored SysML
