@@ -16,16 +16,13 @@ Run conditions:
   outside input); provide no input during operation; record the scored outcome **externally** —
   never trust the model's self-report.
 - The SE arm additionally produces an **output record** (requirements spec + TBD register +
-  requirement tree, tailored SysML models, Calibration & Verification Plan, Calibration Report,
-  Pre-Verification Report, Post-Verification Report, Final Engineering Report). Capture it to the
-  repo as you go — it is not pasted back to the model.
-- The **verification run** (Process step 6) is recorded *separately* from operation, and is **not** 
-  counted as one of the operation runs — the verification run verifies the system; the operation runs
-  are the scored data.
+  requirement tree, tailored SysML models, Calibration Plan, Calibration Report, Verification Plan,
+  Verification Report, Final Report). Capture it to the repo as you go.
+- The **verification run** (Process step 6) is part of the **characterization phase**: it counts
+  toward the program-count score (every flash-and-run does, including any verification re-runs), but
+  is **not** one of the five scored operation runs — it verifies the system; the operation runs are
+  the scored data.
 - Incognito does not persist — capture the transcript and record as you go.
-
-> Pending: the **tenets** below are the current candidate set, not yet trimmed. The model
-> artifact paths are now filled (see Process 3 / Model strategy: `models/rover_generic.sysml`).
 
 ---
 
@@ -33,46 +30,71 @@ Run conditions:
 You are operating under a structured systems-engineering process. Do NOT begin driving the rover
 to "feel out" the task. You will decompose the task into verifiable requirements, select the
 effectors, tailor a system model, calibrate and verify at the component level, produce an
-inspectable predictive argument that the requirements will hold, and ONLY THEN run the scored
-operation. The discipline is the point: the deliverable is not merely a rover that completes the
-task, but an auditable argument - produced before the task is run - that it will.
+inspectable predictive argument that is then tested, and ONLY THEN run the scored operation.
+The discipline is the point: the deliverable is not merely a rover that completes the task, but
+an auditable argument - produced before the task is run - that the rover will complete the task.
 
 PROCESS (in order). Each phase ends at a GATE: produce the named deliverable(s) as downloadable
 markdown artifacts (files I can save, not just chat replies), present them, and WAIT for my review
 before the next phase - never proceed past a gate on your own.
+Deliverables are PLANS or REPORTS, and the distinction governs how each may change. A PLAN is
+forward-looking - structured reasoning about the next steps under these tenets and your current
+best knowledge of the system - and you REVISE it (re-issuing a new version, prior versions
+retained) whenever a characterization run reveals something its current version did not anticipate.
+A REPORT is backward-looking - a static record of what happened - and is not edited once written.
+The rhythm is plan -> act -> report, re-planning as discovery warrants.
+Phases: steps 4-6 are the characterization phase (Phase 1) - the calibration runs plus the
+verification run and any re-runs, every one of which counts toward the program-count score; step 7
+is the operation phase (Phase 2), the five scored runs. The verification run tests the system and
+is never one of the five scored runs.
 1. Requirements - decompose the task top-down to the single-effector level.
 2. Effector selection - from the lowest-level (CMP) requirements, identify the effectors the system
    needs. Any effector with no requirement tracing to it drops out (absence by traceability).
 3. System model - tailor a model from the validated template library to the selected effectors and
    their requirements; instantiate only the templates the requirements call for.
-   GATE A (after spec + model, before any hardware): produce the CALIBRATION & VERIFICATION PLAN -
-   the calibration input list (model-completion parameters + the requirement-TBD register), the
-   characterization-run design, any outside-input requests, and the STRUCTURE of the pre-run
-   argument (the satisfy/require roll-up with predictions left open). Present it and WAIT for my review.
+   GATE A (after spec + model, before any hardware): produce the CALIBRATION PLAN (a plan - revise
+   and re-issue it after any characterization run that provides new info necessitating a re-plan) 
+   - the calibration input list (model-completion parameters + the requirement-TBD register), the
+   characterization-run design (per CHARACTERIZATION METHOD below: channel catalog, source-of-truth
+   hierarchy, test-like-you-fly run construction), any outside-input requests, and a VERIFICATION
+   SUPPORT section: how the calibration activities will support verification - in particular unit
+   verification of the lowest-level (CMP) requirements - plus the STRUCTURE of the eventual
+   verification argument (the satisfy/require roll-up with predictions left open). Present it and
+   WAIT for my review.
 4. Calibration & unit verification - design characterization runs that bind BOTH (a) the free model
    parameters the model needs to predict but that no requirement names (model completion) and
    (b) the requirement-TBD register. Verify each component at the single-effector level before any
    integrated test.
-5. Integration & pre-run verification artifact - analytically compose the calibrated unit models
-   into predicted integrated behaviour, and commit the predictive argument (requirement -> model ->
-   calibrated parameters -> predicted performance + margin) BEFORE any integrated run. This artifact is
-   the centerpiece - it is the argument the unstructured approach cannot produce.
-   GATE B (after calibration, before the verification run): produce the CALIBRATION REPORT (the
-   TBD register closed - each bound value with its producing test) AND the PRE-VERIFICATION REPORT
-   (the pre-run argument now numeric). The Pre-Verification Report is PREDICTIONS ONLY, committed
-   now, before any integrated run - no integrated result may ever touch a predicted cell; freezing
-   it before the run is its entire value. Present BOTH and WAIT for my review.
-6. Verification run - run the integrated task ONCE to test the committed prediction. If the result
-   falsifies the prediction, diagnose the responsible model parameter and re-derive - do not
-   empirically tweak the program.
-   GATE C (after the verification run, before operation): produce the POST-VERIFICATION REPORT -
-   predicted vs actual for every requirement, with any falsify -> diagnose -> re-derive recorded.
-   Present it and WAIT for my review.
+5. Integration & verification plan - analytically compose the calibrated unit models into predicted
+   integrated behaviour, and commit the predictive argument (requirement -> model -> calibrated
+   parameters -> predicted performance + margin) BEFORE any integrated run. This argument - the
+   VERIFICATION PLAN - is the centerpiece: the prediction the unstructured approach cannot produce.
+   GATE B (after calibration, before the verification run): produce the CALIBRATION REPORT (a report
+   - static) - the TBD register closed, each bound value with its producing test and its evidence
+   basis (samples / reference / source-of-truth tier; a value set at a higher tier is not silently
+   re-fit to a single later sample) - plus the lowest-level (CMP) requirements verified by those
+   calibration runs (unit verification closes here; the integrated system requirement closes later,
+   in the Verification Report). Also produce the VERIFICATION PLAN - the predictive argument now
+   numeric, PREDICTIONS ONLY, committed before any integrated run. Although a plan, its prediction is
+   FROZEN against the run it precedes: no integrated result may ever edit the version that predicted
+   it - freezing it before the run is its entire value. (If the verification run later falsifies it,
+   re-derive a NEW version before the re-run - see step 6 - never edit the frozen one.) Present BOTH
+   and WAIT for my review.
+6. Verification run - run the integrated task to test the committed prediction in the frozen
+   Verification Plan. If the result falsifies the prediction, diagnose the responsible model
+   parameter and re-derive - do not empirically tweak the program - then issue a NEW Verification
+   Plan version (the prior version stays frozen, the record of what you predicted before that run)
+   and take another verification run against it. Every verification run, re-runs included, is a
+   characterization-phase program and counts toward the program-count score.
+   GATE C (after the verification run, before operation): produce the VERIFICATION REPORT (a report -
+   static) - predicted (from the frozen Verification Plan) vs actual for every requirement, the
+   integrated system requirement verified here, and any falsify -> diagnose -> re-derive ->
+   re-predict trail recorded across Verification Plan versions. Present it and WAIT for my review.
 7. Operation - lock and run the operation as defined in the task. On completion, produce the FINAL
-   ENGINEERING REPORT (per task_core close-out). In the SE report the per-run reconciliation also
-   carries the PREDICTED gap/margin from the Pre-Verification Report alongside your onboard estimate
-   and my measurement - so the table closes the full chain (predicted -> estimated -> measured) and
-   states plainly whether the committed prediction held against ground truth.
+   REPORT (a report - static; per task_core close-out). Its per-run reconciliation carries the
+   PREDICTED gap/margin from the frozen Verification Plan alongside your onboard estimate and my
+   measurement - so the table closes the full chain (predicted -> estimated -> measured) and states
+   plainly whether the committed prediction held against ground truth.
 
 REQUIREMENTS METHOD
 The requirements specification is the source of truth for requirements; the SysML model is a
@@ -185,12 +207,46 @@ Skeleton and template catalogs: rover_generic.sysml - the rover-agnostic skeleto
 (RoverStructure) plus the relation catalog (RelationTemplates) and requirement-shape catalog
 (RequirementTemplates).
 
-YOUR RECORD (produce and keep - separate from this prompt; gated deliverables in CAPS)
+CHARACTERIZATION METHOD
+The characterization-run design is committed at GATE A inside the Calibration Plan, before any
+flash - it turns the B-group tenets into an inspectable plan the way
+REQUIREMENTS METHOD realises the spec. Three required parts:
+1. Channel catalog & cross-sourcing. For every quantity you must calibrate, enumerate ALL the
+   independent onboard channels that observe it - derived from the rover inventory, not just the
+   one channel that is most obvious - and trace each to the quantity it serves; a channel serving
+   no needed quantity drops out (absence by traceability, as with effectors). Rank each quantity's
+   channels by directness and confidence. Every characterization run then logs every catalogued
+   channel bearing on the quantities that run touches, not only the one under test; disagreement
+   between channels is the fault detector and is fault-agnostic - never assume which channel is
+   wrong, let the disagreement reveal it. Where a channel's valid range is bounded, plan the
+   hand-off to an independent channel that covers the gap rather than extrapolating the bounded
+   one past its limit.
+2. Source-of-truth hierarchy. State the trust order explicitly and up front: external ground truth
+   (operator measurement) > an anchored or multi-point onboard calibration > a single onboard
+   sample. A lower tier NEVER silently overwrites a value a higher tier has set; a later sample
+   disagreeing with a higher-confidence value is a discrepancy to diagnose (low draw?
+   range-dependence? glitch?), not grounds to re-fit the constant. Carry each calibrated value
+   with its evidence basis - how many samples, against what reference, at what tier.
+3. Test-like-you-fly run construction. Characterize through the architecture you will operate on:
+   the characterization program is a strict SUPERSET of the operation program - identical control
+   loop, trigger, and buffer skeleton - with all additional characterization logging deferred OFF
+   the hot path (write to a pre-allocated buffer, dump after the motors stop), never woven into
+   it. That keeps maximum data intake and operational timing fidelity in the same run, so what you
+   calibrate transfers to operation with no re-anchor. Within that constraint, combine the
+   independent measurements a single run can carry and capture whatever per-channel data later
+   steps need the first time, so no quantity forces a dedicated repeat run (program count is scored).
+Output: the channel catalog (quantity -> channels -> confidence rank -> binding run), the
+source-of-truth hierarchy, and the per-run design - all inside the Calibration Plan
+at GATE A.
+
+YOUR RECORD (produce and keep - separate from this prompt; gated deliverables in CAPS, each tagged
+plan or report)
 Requirements specification (incl. TBD register) - requirement tree (Mermaid) - tailored SysML
-models - CALIBRATION & VERIFICATION PLAN - CALIBRATION REPORT (TBD register closed) -
-PRE-VERIFICATION REPORT (the frozen pre-run argument, predictions only) - POST-VERIFICATION REPORT
-(predicted vs actual) - FINAL ENGINEERING REPORT. The Pre-Verification Report is the centerpiece -
-frozen before the verification run.
+models - CALIBRATION PLAN (plan) - CALIBRATION REPORT (report; TBD register closed + CMP unit
+verification) - VERIFICATION PLAN (plan; the frozen pre-run prediction, predictions only) -
+VERIFICATION REPORT (report; predicted vs actual, integrated requirement verified) - FINAL REPORT
+(report). The VERIFICATION PLAN is the centerpiece - its prediction frozen before the verification
+run, revised only by re-derivation into a new version before a re-run, never edited.
 
 Begin.
 ```
