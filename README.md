@@ -6,6 +6,12 @@ Spike SysML is a multi-agent system that takes a free-text engineering specifica
 
 The choice of SPIKE Prime is deliberate. It's cheap enough to easily test, and constrained enough that the requirements-to-test loop is interesting rather than overwhelming.
 
+<img width="2494" height="1871" alt="20260629_232744" src="https://github.com/user-attachments/assets/7a2c5ccf-9191-4968-aefe-998cfd8cab1e" style="width: 50%;"/>
+<br><br>
+
+<img width="2175" height="1632" alt="20260629_232800" src="https://github.com/user-attachments/assets/325ffb34-f684-4fd5-bd47-f23ac0218a11" style="width: 50%;"/>
+<br><br>
+
 ## What this is not
 
 Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE App or Pybricks. It does not generate certifiable artifacts and does not perform V&V — it is a tooling layer that produces inputs to a human-led verification process, with LEGO hardware standing in for a target system. It is a scoped engineering project rather than a research program — though it deliberately measures itself against an unstructured baseline (see [Evaluation](#evaluation-structured-vs-freestyle)).
