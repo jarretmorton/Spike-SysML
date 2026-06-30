@@ -254,4 +254,4 @@ Until then, the convention is:
 `spiketelem` CLI also persists each run to a `.jsonl` file when `--log` is
 passed. The file format is one telemetry event per line, in the same
 schema as §1, without the `{"event":"end"}` sentinel (it's implicit in
-end-of-file). See `spike_prime_direct/runs/run.jsonl` for a captured trace.
+end-of-file).

@@ -26,9 +26,10 @@ the input/output of the v0.1 prototype.
   sensor drops below 20%. Runs on the SPIKE Prime hub under Pybricks
   firmware.
 
-- **`runs/run.jsonl`** — a captured telemetry trace (~15 s) from running
-  `hub_program_example.py` on hardware. Each line is one event per the
-  wire contract. All three requirements fail in this run: both distance
+- **`runs/run.jsonl`** (not committed — the `runs/` output directory is
+  gitignored; described here as a reference) — an example telemetry trace
+  (~15 s) of the kind `hub_program_example.py` produces on hardware. Each
+  line is one event per the wire contract. All three requirements fail in this run: both distance
   sensors close to 40 mm before the program's stop latch fires (it trips on
   `< 50`, so the `> 50` clearance constraint is already breached — R-DIST-1 and
   R-DIST-2 fail), and the reflection sensor falls to ~3% through the second half
