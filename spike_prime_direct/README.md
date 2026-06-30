@@ -60,14 +60,14 @@ the input/output of the v0.1 prototype.
 
 ```bash
 # validate the model on its own
-python spiketelem.py validate examples/requirements_example.json
+python spiketelem.py validate requirements_example.json
 
 # synthetic run (no hardware) — exercises the full pipeline including
 # the live plot and the per-requirement verdict
-python spiketelem.py demo examples/requirements_example.json --seconds 8
+python spiketelem.py demo requirements_example.json --seconds 8
 
 # real hub (Pybricks firmware required)
-python spiketelem.py run examples/hub_program_example.py \
-                        examples/requirements_example.json \
+python spiketelem.py run hub_program_example.py \
+                        requirements_example.json \
                         --log run.jsonl
 ```

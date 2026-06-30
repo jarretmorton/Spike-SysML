@@ -8,7 +8,7 @@
 
       "unit_model": "m2_collision_stop",
       "depends_on_parts": ["P-DIST-F", "P-DRIVE"],
-      "implemented_by": "examples/drive_until_blocked.py",
+      "implemented_by": "drive_until_blocked.py",
       "depends_on_params": [
         {"param": "decelCollision",  "model": "m2_collision_stop", "bound_by": "calibration:speed_sweep"},
         {"param": "dSenseMax",       "model": "m2_collision_stop", "bound_by": "spec"},
@@ -33,7 +33,7 @@
 
       "unit_model": "m2_collision_stop",
       "depends_on_parts": ["P-DRIVE", "P-DIST-F"],
-      "implemented_by": "examples/drive_until_blocked.py",
+      "implemented_by": "drive_until_blocked.py",
 
       "pass_criteria": null,
       "verified_by": "R-COL-1"

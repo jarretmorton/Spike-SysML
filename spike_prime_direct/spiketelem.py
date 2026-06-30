@@ -16,8 +16,14 @@ import argparse
 import asyncio
 import json
 import math
+import os
 import random
 import sys
+
+# This script lives in spike_prime_direct/, but the `tools/` package it imports
+# is at the repo root. Python puts the script's own directory on sys.path (not
+# the cwd), so add the repo root explicitly to keep `from tools import ...` working.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tools import sysml_validate, test_eval
 from tools._runtime import (
@@ -75,7 +81,7 @@ async def _real_run(program_path: str, hub_id, model: dict,
 def _synth_sample(t: int, end: int) -> dict:
     """One synthetic telemetry sample for the demo path, keyed by sensor.
 
-    Emits the sensors named in ``examples/requirements_example.json``
+    Emits the sensors named in ``requirements_example.json``
     (``distance_on_the_right``, ``distance_on_the_left``, ``reflection``,
     plus ``speed_mps`` for fidelity with the hub program), shaped to stay
     inside their pass_criteria bands — distances above the 50 mm floor and

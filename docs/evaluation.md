@@ -3,9 +3,9 @@
 > **Status:** experiment design, locked. The freestyle (control) arm has been
 > piloted on hardware; the scored comparison is pending. This document is the
 > reference for the comparison; the README's *Evaluation* section is a summary
-> that points here. The runnable instruments live in [`../experiments/`](../experiments):
-> `task_core.md` (the shared apparatus — the source of truth for the task, packet,
-> and scoring restated below), `freestyle_arm_prompt.md`, and `se_arm_prompt.md`.
+> that points here. The runnable instruments live in [`../prompts/`](../prompts):
+> `Task_core.md` (the shared apparatus — the source of truth for the task, packet,
+> and scoring restated below), `Freestyle_arm_prompt.md`, and `Se_arm_prompt.md`.
 
 ## The claim under test
 
@@ -71,7 +71,7 @@ sustainable config (moderate effort, thinking on) on both arms.
 to it as possible without touching it.** Hard constraints: maximum speed (no
 slowing for margin) and no contact. Objective: minimize the final gap. (The
 canonical statement, with the code primitives and telemetry wire format, is
-[`../experiments/task_core.md`](../experiments/task_core.md).)
+[`../prompts/Task_core.md`](../prompts/Task_core.md).)
 
 Why this task discriminates. With the effector inventory and the code primitives
 shared between both arms, the *entire* difference between them is calibration

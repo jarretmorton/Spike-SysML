@@ -1,4 +1,4 @@
-# examples/hub_program_example.py
+# spike_prime_direct/hub_program_example.py
 #
 # Runs ON the SPIKE Prime hub under Pybricks firmware. This is the shape of
 # program the draft agent is expected to produce — a self-contained

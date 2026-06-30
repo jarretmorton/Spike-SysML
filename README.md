@@ -32,7 +32,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [
 
 For interactive, conversational hardware control, the `spike-prime-mcp` server exposes `flash_program`, `run_program`, and `get_telemetry` over MCP — the shared hardware seam both arms of the Evaluation comparison below run through. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
 
-Two SysML v2 models live in [`models/`](models). `rover_generic` is the rover-agnostic starting point the structured arm composes from: a bare component skeleton (`RoverStructure`), a free-parameter physics-relation catalog (`RelationTemplates` — rotation→speed, stopping-distance, max-speed-from-budget), and a catalog of requirement shapes (`RequirementTemplates`), with shared value types and the platform latency in `RoverCommon`. `wall_run_model` is the worked wall-run instantiation built on it — the templates instantiated against the wall-run requirements and the full STK→SYS→FUN→CMP tree as formal `requirement def`s carrying the satisfy/require roll-up (the pre-run verification artifact). These supersede the earlier per-relation exemplars (`rover_common`, `m1_motor_to_rover_speed`, `m2_collision_stop`, `m3_fall_stop`), now retired. Both validate clean in Syside (the SysML v2 VSCode tooling); neither is yet validated through the in-pipeline grammar loop.
+The generic SysML v2 model lives in [`models/`](models). `rover_generic` is the rover-agnostic starting point the structured arm composes from: a bare component skeleton (`RoverStructure`), a free-parameter physics-relation catalog (`RelationTemplates` — rotation→speed, stopping-distance, max-speed-from-budget), and a catalog of requirement shapes (`RequirementTemplates`), with shared value types and the platform latency in `RoverCommon`. The worked `wall_run_model` instantiation built on it — the templates instantiated against the wall-run requirements and the full STK→SYS→FUN→CMP tree as formal `requirement def`s carrying the satisfy/require roll-up (the pre-run verification artifact) — is now produced per test under [`latest/`](latest) (e.g. `latest/test 5 AB/SE/02_wall_run_model.sysml`). These supersede the earlier per-relation exemplars (`rover_common`, `m1_motor_to_rover_speed`, `m2_collision_stop`, `m3_fall_stop`), now retired. Both validate clean in Syside (the SysML v2 VSCode tooling); neither is yet validated through the in-pipeline grammar loop.
 
 ## Evaluation: structured vs. freestyle
 
@@ -44,7 +44,7 @@ The point of the structured pipeline is a claim — that systems-engineering rig
 
 **Both arms run through the same MCP seam** — this is settled — so the comparison isolates the governance layer. The task is a max-speed wall approach (drive straight at maximum speed, stop as close to the wall as possible without contact), chosen because a *calibrated* stopping parameter is the difference between a tight safe stop and a contact, which makes the structured arm's stopping-distance calibration load-bearing. Each arm runs a counted characterization phase, then locks one program and runs it five times. The metrics are characterization cost, runs-to-first-success, no-contact rate over the five, the gap distribution, and outside-input count — plus the one thing only the structured arm produces: an inspectable argument, *before the run*, that the rover will stop within its envelope. (The structured arm commits that argument and tests it with a single verification run before locking the operation.) Better models may close the outcome gap, but that argument doesn't come for free.
 
-The full design — information diet, the two-phase protocol, the generation-vs-selection rule, and the metrics — is in [`docs/evaluation.md`](docs/evaluation.md), and the runnable instruments are in [`experiments/`](experiments): a shared `task_core.md` both arms prepend, plus the arm-specific `freestyle_arm_prompt.md` and `se_arm_prompt.md`. `spike-prime-mcp` is load-bearing rather than a demo: it is the shared seam both arms drive through.
+The full design — information diet, the two-phase protocol, the generation-vs-selection rule, and the metrics — is in [`docs/evaluation.md`](docs/evaluation.md), and the runnable instruments are in [`prompts/`](prompts): a shared `Task_core.md` both arms prepend, plus the arm-specific `Freestyle_arm_prompt.md` and `Se_arm_prompt.md`. `spike-prime-mcp` is load-bearing rather than a demo: it is the shared seam both arms drive through.
 
 ## Setup
 
@@ -66,15 +66,15 @@ pass `--no-plot`.
 
 ```
 # validate a requirements model
-python spiketelem.py validate examples/requirements_example.json
+python spike_prime_direct/spiketelem.py validate spike_prime_direct/requirements_example.json
 
 # run the full pipeline against a real hub (Pybricks firmware required)
-python spiketelem.py run examples/hub_program_example.py \
-                        examples/requirements_example.json \
+python spike_prime_direct/spiketelem.py run spike_prime_direct/hub_program_example.py \
+                        spike_prime_direct/requirements_example.json \
                         --log run.jsonl
 
 # or synthesize telemetry without hardware to exercise the pipeline
-python spiketelem.py demo examples/requirements_example.json --seconds 8
+python spike_prime_direct/spiketelem.py demo spike_prime_direct/requirements_example.json --seconds 8
 ```
 
 A live plot window opens during `run` and `demo`, one panel per sensor named in
@@ -85,7 +85,7 @@ it (no matplotlib needed), or `--snapshot out.png` on `demo` to render headless.
 
 ## Status
 
-Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.4, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The `models/` SysML v2 models (`rover_generic`, `wall_run_model`) validate clean in Syside (the SysML v2 VSCode tooling), but are not yet validated through the in-pipeline grammar loop. The structured-vs-freestyle comparison that frames the project is specified in [`docs/evaluation.md`](docs/evaluation.md); the structured arm's left half — requirements derivation, effector selection, generic-template composition, and the calibration stage — is the next build.
+Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.4, describing the full intended pipeline ahead of the build.) Tool surface implemented; the evaluator-optimizer right-half (deploy → run → eval) runs end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. Orchestrator-workers left-half is in prompts only. The committed `models/` SysML v2 model (`rover_generic`) validates clean in Syside (the SysML v2 VSCode tooling), but is not yet validated through the in-pipeline grammar loop; the worked `wall_run_model` instantiation is produced per test under `latest/`. The structured-vs-freestyle comparison that frames the project is specified in [`docs/evaluation.md`](docs/evaluation.md); the structured arm's left half — requirements derivation, effector selection, generic-template composition, and the calibration stage — is the next build.
 
 ### Known issues
 

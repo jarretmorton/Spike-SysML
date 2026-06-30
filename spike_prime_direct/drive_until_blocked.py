@@ -1,4 +1,4 @@
-# examples/drive_until_blocked.py
+# spike_prime_direct/drive_until_blocked.py
 #
 # Worked example for the traceability spine. Implements R-COL-1 (forward
 # collision avoidance) and R-PERF-1 (drive at the max speed for which R-COL-1
