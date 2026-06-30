@@ -183,13 +183,28 @@ def _validate_or_die(model: dict) -> None:
         sys.exit(2)
 
 
+# Telemetry logs land here when --log is given a bare filename, so runs stay
+# out of the source tree. An explicit path with its own directory is honored
+# as-is. Either way, the parent directory is created (JsonlLogger opens the
+# path directly and won't make it for us).
+RUNS_DIR = "runs"
+
+
+def _resolve_log_path(log: str) -> str:
+    path = log if os.path.dirname(log) else os.path.join(RUNS_DIR, log)
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    return path
+
+
 def _build_pipeline(model: dict, args):
     bus = TelemetryBus()
     framer = StdoutFramer(bus)
     bus.add(ConsoleSink())
     bus.add(CaptureBuffer())
     if getattr(args, "log", None):
-        bus.add(JsonlLogger(args.log))
+        bus.add(JsonlLogger(_resolve_log_path(args.log)))
     plot = None
     if not getattr(args, "no_plot", False):
         plot = LivePlot(model)
