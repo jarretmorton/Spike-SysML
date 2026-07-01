@@ -170,9 +170,12 @@ runs at a single operating point, where there is no range to extrapolate across
 and so no form error for calibration to expose; it therefore *selects* the
 validated stop template and calibrates its stopping distance directly at v_max.
 The develop branch — and its cost, moving verification integrity off "safe by
-construction" and onto "safe if the calibration design and the human gate catch
-a structurally-wrong relation," a backstop that is partial — is the principle's
-other half, demonstrable on a speed-spanning variant rather than exercised here.
+construction" and onto "safe if the calibration design surfaces a structurally-wrong
+relation and the review gate stops on the artifact that reveals it," a backstop that
+is partial — is the principle's other half, demonstrable on a speed-spanning variant
+rather than exercised here. The division matters: the detector is the calibration
+*design*, not the gate; the gate delivers that artifact and decides continue-or-stop
+on the evidence it carries, never reaching into the test.
 
 **Graded assurance.** This is where the assurance line moves with consequence.
 For the LEGO demonstration, develop-with-calibration-backstop is the right call.
