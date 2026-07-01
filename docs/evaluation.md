@@ -1,11 +1,12 @@
 # Evaluation: structured vs. freestyle
 
-> **Status:** experiment design, locked. The freestyle (control) arm has been
-> piloted on hardware; the scored comparison is pending. This document is the
-> reference for the comparison; the README's *Evaluation* section is a summary
-> that points here. The runnable instruments live in [`../prompts/`](../prompts):
-> `Task_core.md` (the shared apparatus — the source of truth for the task, packet,
-> and scoring restated below), `Freestyle_arm_prompt.md`, and `Se_arm_prompt.md`.
+> **Status:** experiment design, locked. This document is the reference for the
+> comparison — the claim, the two arms, the information diet, the two-phase protocol,
+> and the metrics; the README's *Evaluation* section is a summary that points here.
+> Results for a given instance live with that instance, not here. The runnable
+> instruments live in [`../prompts/`](../prompts): `Task_core.md` (the shared apparatus —
+> the source of truth for the task, packet, and scoring restated below),
+> `Freestyle_arm_prompt.md`, and `Se_arm_prompt.md`.
 
 ## The claim under test
 
@@ -60,9 +61,7 @@ the structured scaffolding earns its place more clearly as capability drops.
 are held constant across both arms (and ideally across models), because
 "only governance varies" includes the config. Thinking is left on — a weaker
 model in particular does its discovery and physics reasoning there. The
-initial Opus Max-effort + thinking run is treated as a **pilot** (it validated
-the task and produced rich qualitative data); the scored runs use one
-sustainable config (moderate effort, thinking on) on both arms.
+scored runs use one sustainable config (moderate effort, thinking on) on both arms.
 
 
 ## The task
@@ -98,7 +97,7 @@ fiction, and the result would not transfer. Handling these realities is part of
 what the structured arm is meant to demonstrate: validating an instrument against
 ground truth before trusting it, characterizing the blind-out, accounting for
 drift. The freestyle arm being *fooled* by them — trusting the faulty sensor and
-reporting a confidently wrong gap (see the second pilot) — is a legitimate result,
+reporting a confidently wrong gap — is a legitimate result,
 not noise to scrub.
 
 One distinction matters, because it draws the line between what we keep and what
@@ -257,57 +256,3 @@ the measured parameters with residuals, and the test behind each number. It is
 the difference between test-to-success (light it and see) and analysis-backed
 qualification (anchor a model with component tests; the model gives margin before
 the test confirms it).
-
-## Pilot result — freestyle, Opus 4.8 (Max effort + thinking)
-
-A pilot freestyle run validated the task and produced the freestyle-arm signature
-in detail. Summary (full report in the run artifacts):
-
-- It reached a no-contact stop, eventually closing to ~35–60 mm, but only after
-~8 programs (port discovery, drive-sign calibration, sensor identification,
-several max-speed attempts, one contact).
-- The obvious sensor-based stop is **unsafe** for this task: a smooth wall is a
-near-specular reflector, so a few degrees of yaw under a fast launch steers the
-ultrasonic echo away and the forward sensors go blind exactly through the stop
-zone. The robust answer it found was **wheel odometry**, independent of what
-the sensors can see.
-- One forward sensor was **faulty** (read short, froze) — caught only by checking
-a reading against a physical ruler.
-- Odometry needed **slip calibration** (effective wheel circumference varies with
-the acceleration profile), biased conservatively to keep stops on the safe side.
-- The close stop was reached by empirical tuning with roughly ±30 mm variance and
-growing skew; the report's own words — it "cleared the wall by luck of timing,
-not by control" — and the fact that it **could not tell when it had contacted** are the absence of a predictive argument, in plain view.
-
-
-This is a pilot (Max effort + thinking, no fixed run budget, no two-phase
-structure), not a scored result. The scored comparison uses the protocol above.
-
-## A second pilot — freestyle, Opus 4.8 (High effort + thinking)
-
-A second freestyle pilot ran the full two-phase protocol: 5 characterization
-programs, 1 outside-input request, and **5/5 no-contact** in operation. It is
-the sharpest single illustration of why outcome is not the metric that matters.
-
-- The model's **performance self-assessment was confidently wrong**. It reported a
-mean final gap of ~112 mm with "true gap ≤ this under conservative model," while
-the externally measured gaps were 273, 283, 315, 322, 365 mm — more than double,
-and the error model was *sign-reversed*: it stopped on a sensor that reads
-*short*, so the true gap is *greater* than the reading, not less. It trusted a
-faulty instrument it never validated against ground truth, and was precisely,
-confidently wrong about how close it got.
-- The three metrics it could *count* — program count, input count, no-contact rate
-— were all correct. The one metric requiring it to know its own true state
-(closeness) was the one it got wrong. This is the case for measuring performance
-**externally**, never from the model's self-report.
-- The operation also exposed a **hub-drift confound**: across the five runs the true
-gap climbed (273 → 365) while the sensor reading stayed flat (~110), reset by a
-power cycle (252 mm on a cycled run). The protocol now power-cycles the hub
-between every run; the systematic ~160 mm under-read is a separate faulty-sensor
-issue (the sensor is kept deliberately — see *Hardware realism*), not the drift.
-
-
-Both pilots are freestyle. Neither is a scored result; together they fix the
-protocol (two phases, hub-cycling, external measurement) and preview the freestyle
-arm's signature — a working result with no trustworthy account of how well it
-worked.

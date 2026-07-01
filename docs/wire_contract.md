@@ -1,14 +1,20 @@
 # Wire Contract
 
 > **Status:** v0.1 — first canonical interface document. Pinned by the v0.1
-> tool implementations and the example artifacts in `spike_prime_direct/`.
+> tool implementations and the example artifacts in `spike_prime_direct/`. The
+> **telemetry wire format** (§1) and the parts of the **requirements schema** the
+> built tools consume — `sysml_validate`, `check_trace_complete`, `test_eval` — are
+> live. The schema fields those tools *read* are defined here in full even where the
+> producer is not yet built: the requirements model is currently authored in-context
+> under [`../prompts/Se_arm_prompt.md`](../prompts/Se_arm_prompt.md), not emitted by an
+> automated pipeline, and the `verified`-stage checks (§2.3, §3) are deferred.
 
-This doc defines two contracts the orchestrator, draft agent, and tools all
+This doc defines two contracts the pipeline, draft step, and tools all
 build against:
 
 1. The **hub-to-host telemetry wire format**, emitted by deployed programs
    and consumed by `spike_run`.
-2. The **requirements model schema**, produced by the orchestrator-workers
+2. The **requirements model schema**, produced by the requirements
    pipeline, validated by `sysml_validate`, and read by `test_eval`.
 
 A future open question — the **signal-name agreement** between a deployed
@@ -57,7 +63,7 @@ that threshold.
 
 ## 2. Requirements model schema
 
-The merged output of the orchestrator-workers pipeline is a single JSON
+The merged output of the requirements pipeline is a single JSON
 document of this shape:
 
 ```json
@@ -84,8 +90,8 @@ Every requirement has three required fields, plus a verifiability rule:
 - `type` (str): one of `functional`, `behavioral`, `interface`,
   `constraint`. This field is the sole source of a requirement's type; it is
   not encoded in the id.
-- `text` (str): the requirement, written in the form the relevant worker
-  produces (see `docs/system_prompts.md`).
+- `text` (str): the requirement, written in the form the relevant
+  decomposition step produces (see `docs/system_prompts.md`).
 
 A requirement must also be **verifiable**: it carries either a `pass_criteria`
 object (§2.1) or a `verified_by` (§2.3) naming the requirement that grades it.
@@ -123,10 +129,10 @@ Optional `unit` field is informational; it propagates to the live plot but
 is not used by `test_eval`. The channel's canonical unit (§2.2), not this
 field, is what `value` is interpreted in.
 
-**Written at composition, not by the workers.** `pass_criteria` binds to a
+**Written at composition, not at decomposition.** `pass_criteria` binds to a
 `sensor` channel that exists only once unit models are selected and parts are
-wired, so it is authored at the composition stage — not by the extracting
-worker, which emits only requirement semantics (`text`, `type`, `source`). A
+wired, so it is authored at the composition stage — not by the decomposition
+step, which emits only requirement semantics (`text`, `type`, `source`). A
 freshly-merged requirements model therefore carries no `pass_criteria`; it
 appears by the composed stage, which is why the pass_criteria-or-`verified_by`
 rule (§2) is a composed-stage check rather than a decomposition one. Constraint

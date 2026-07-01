@@ -11,7 +11,7 @@ the input/output of the v0.1 prototype.
   requirements (R-DIST-1, R-DIST-2, R-EDGE-1) from a fictional rover spec
   (`rover_test_v1.txt`): stay clear of obstacles on the right and left
   (distance > 50 mm) and stop at a table edge (reflection > 20%). This
-  is the shape the orchestrator-workers pipeline merges to and that
+  is the shape the requirements pipeline merges to and that
   `sysml_validate` checks. It carries no traceability-spine fields, which
   makes it the contrast case for the two verdicts: `sysml_validate` passes
   it (well-formed), while `check_trace_complete` rejects it (the spine is

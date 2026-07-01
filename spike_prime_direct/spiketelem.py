@@ -5,8 +5,8 @@ Drives the evaluator-optimizer right-half of the architecture by hand: load
 a requirements model, validate it, deploy a hub program, run it with
 live-plotted telemetry, and grade each requirement via ``test_eval``.
 
-This is a developer cockpit, not a tool the orchestrator calls. The
-orchestrator and draft agent call the functions in ``tools/`` directly.
+This is a developer cockpit, not part of the automated pipeline. The
+pipeline's agents call the functions in ``tools/`` directly.
 
 Wire contract and schemas: ``docs/wire_contract.md``.
 """

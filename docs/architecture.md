@@ -1,6 +1,6 @@
 # Architecture
 
-> **Status:** v0.4 — this document describes the full intended pipeline ahead of
+> **Status:** v0.5 — this document describes the full intended pipeline ahead of
 > the build. The evaluator-optimizer right-half (deploy → run → eval) runs
 > end-to-end against real hardware via `spiketelem.py` and via the
 > `spike-prime-mcp` server. The left-half requirements decomposition, model
@@ -9,12 +9,21 @@
 > [`../models/`](../models): `rover_generic` (the rover-agnostic skeleton plus the
 > relation and requirement template catalogs), validated clean in Syside, the SysML v2
 > VSCode tooling, but not yet validated through the in-pipeline grammar loop. The worked
-> `wall_run_model` instantiation built on it is now produced per test under `../latest/`
-> (e.g. `../latest/test 5 AB/SE/02_wall_run_model.sysml`).
+> `wall_run_model` instantiation built on it is now produced per test under `../latest/`.
 > The structured-vs-freestyle comparison this pipeline anchors is specified in
 > [`evaluation.md`](evaluation.md); the A/B's structured arm is the in-context realization
 > of this pipeline, run through the MCP from
-> [`../prompts/Se_arm_prompt.md`](../prompts/Se_arm_prompt.md).
+> [`../prompts/Se_arm_prompt.md`](../prompts/Se_arm_prompt.md) — the discipline performed by
+> hand, not the automated left-half, which is unbuilt.
+>
+> *v0.5 changes: the requirements-and-modeling left-half is prompt-chaining, not
+> orchestrator-workers. The fan-out to parallel per-function-area workers was retired — it
+> is a flexibility/parallelism pattern, counter to the governed-single-thread discipline
+> the SE arm exists to demonstrate: a reviewer needs one inspectable chain, not parallel
+> branches to reconcile. The two spine patterns are now prompt-chaining (left half) +
+> evaluator-optimizer (the two hardware loops), with human review gates between; Iserte's
+> grammar-validation-in-a-loop and Aegis's review-before-proceed are unchanged. Flow
+> diagram and prose updated accordingly.*
 >
 > *v0.4 changes: requirements decomposition specified as top-down STK→SYS→FUN→CMP
 > to the single-effector floor, EARS-authored to INCOSE GtWR / ISO-29148 (the four
@@ -33,17 +42,17 @@
 
 ## Pattern selection
 
-Spike SysML uses two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents):
+Spike SysML uses two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents), with human review gates between them:
 
-1. **Orchestrator-workers** — for requirements decomposition.
-2. **Evaluator-optimizer** — for hardware-in-the-loop code generation.
+1. **Prompt-chaining** — for the requirements-and-modeling left-half.
+2. **Evaluator-optimizer** — for the hardware-in-the-loop stages.
 
 
-Why these two: requirements decomposition fans out — the top-down STK→SYS→FUN split is done once, then each function area decomposes to its single-effector (CMP) leaves in parallel, so orchestrator-workers fits the FUN→CMP step; and the hardware loop has a natural critic — the robot either does the thing or it doesn't. The two other major patterns from the post are less interesting here: prompt chaining is too linear for the parallel leaf-decomposition step, and routing implies a choice between specialists where this system has only one path.
+Why these two: the left-half is a governed linear sequence — spec → requirements (STK→SYS→FUN→CMP) → effector selection → model composition → calibration plan — each step feeding the next and each gated, so prompt-chaining fits it exactly. The alternative, orchestrator-workers, was considered and rejected: fanning the FUN→CMP decomposition out to parallel per-function-area workers is a flexibility/parallelism pattern, and flexibility is the wrong objective here — the SE arm's entire value is a single inspectable chain a reviewer can follow end-to-end, not parallel branches to reconcile. Routing is likewise out (this system has one path, not a choice between specialists). On the hardware side the loop has a natural critic — the robot either does the thing or it doesn't — so evaluator-optimizer fits.
 
 Two published systems ground the harder halves of this pipeline without displacing the two patterns above; they sit underneath them. **Iserte et al.** (*Computers in Industry* 172, 2025) generate valid SysML v2 from natural language by pairing retrieval over a curated example repository with an ANTLR-grammar validation engine in a self-correcting loop; Spike SysML borrows the validation-in-a-loop half and declines the generate-from-scratch half (see *Generation vs. selection* under Resolved decisions). **Aegis** (arXiv 2410.12475) structures functional-safety work as a hierarchical multi-agent team whose progress is gated by a review-before-proceed node — the pattern Spike SysML adopts for its human calibration gate (see *The review gate*).
 
-One refinement to the pattern map: the evaluator-optimizer pattern recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once at the integrated verification run (stage 6, hardware as evaluator for the committed system prediction). Orchestrator-workers applies to requirements derivation (stage 2) — the top-down split, then per-function-area decomposition to the single-effector leaves in parallel; effector selection and model selection-and-composition (stage 3) are selection-and-composition steps rather than worker-parallelism, and are treated as such below. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
+One refinement to the pattern map: the evaluator-optimizer pattern recurs twice — once in the calibration loop (stage 5, hardware as evaluator for unit parameters) and once at the integrated verification run (stage 6, hardware as evaluator for the committed system prediction). The prompt-chaining left-half covers requirements derivation (stage 2), effector selection, and model selection-and-composition (stage 3) as one linear governed sequence. The two patterns from *Building Effective Agents* remain the spine; Iserte and Aegis are domain-specific grounding layered beneath them.
 
 ## Requirements method
 
@@ -59,14 +68,8 @@ Validation note: no local SysML v2 grammar checker is in the loop, so constructs
 
 ```mermaid
 flowchart TD
-    A["free-text spec"] --> B["orchestrator: STK→SYS→FUN decomposition"]
-    B --> W1["worker: FUN-area → CMP leaves"]
-    B --> W2["worker: FUN-area → CMP leaves"]
-    B --> W3["worker: FUN-area → CMP leaves"]
-    W1 --> RQ["merge: leveled requirements to single-effector floor (EARS, TBD register)"]
-    W2 --> RQ
-    W3 --> RQ
-
+    A["free-text spec"] --> B["decompose: STK→SYS→FUN→CMP (EARS, TBD register)"]
+    B --> RQ["leveled requirements to single-effector floor"]
     RQ --> EFF["effector selection from CMP leaves"]
     EFF --> SEL["select + compose from generic template catalog"]
     SEL --> V["sysml_validate"]
@@ -97,7 +100,7 @@ flowchart TD
     OPS --> DONE["done"]
 ```
 
-> Left half (spec → requirements → effectors) is orchestrator-workers over the
+> Left half (spec → requirements → effectors) is a prompt-chaining sequence over the
 > leveled decomposition, with the grammar loop on `sysml_validate` the retained
 > half of Iserte. The two hardware activities (calibration, the integrated
 > verification run) are both evaluator-optimizer, with deterministic fitting
@@ -113,7 +116,7 @@ flowchart TD
 >
 > The select-and-compose step (`SEL`) is also where each requirement's
 > `pass_criteria` and `verified_by` are written: it is the first stage holding the
-> channels and bound parameters those reference, so the upstream workers emit only
+> channels and bound parameters those reference, so the upstream decomposition emits only
 > requirement semantics (`text`, `type`, `source`). See
 > [`wire_contract.md` §2.1](wire_contract.md#21-pass_criteria-operator-grammar-v01).
 
@@ -129,15 +132,15 @@ flowchart TD
 
 > Calibration (stage 5) and the integrated verification run (stage 6) will add tool surface — a calibration-test selector, a deterministic constant-fitter, and a sufficiency-report builder for the human gate. These are unbuilt and deliberately kept out of the table above.
 
-The hub-to-host wire format and the requirements model schema both live in [`wire_contract.md`](wire_contract.md). The orchestrator-workers prompts are in [`system_prompts.md`](system_prompts.md).
+The hub-to-host wire format and the requirements model schema both live in [`wire_contract.md`](wire_contract.md). Draft prompts for the (unbuilt) automated left-half are in [`system_prompts.md`](system_prompts.md).
 
 ## Interactive seam: spike-prime-mcp
 
-The tool surface above is the *in-process* pipeline interface — the orchestrator and `spiketelem.py` call those functions directly. A second, parallel front-end reaches the same hardware: the `spike-prime-mcp` server (see [`../spike_prime_mcp/README.md`](../spike_prime_mcp/README.md)) exposes three tools — `flash_program`, `run_program`, `get_telemetry` — over the Model Context Protocol, so a conversational client such as Claude Desktop can deploy code, run it, and read telemetry directly. Both front-ends sit on the same async runtime (`tools/_runtime.py`) and differ only in caller: in-process Python for the pipeline, stdio MCP for the interactive client.
+The tool surface above is the *in-process* pipeline interface — the automated pipeline and `spiketelem.py` call those functions directly. A second, parallel front-end reaches the same hardware: the `spike-prime-mcp` server (see [`../spike_prime_mcp/README.md`](../spike_prime_mcp/README.md)) exposes three tools — `flash_program`, `run_program`, `get_telemetry` — over the Model Context Protocol, so a conversational client such as Claude Desktop can deploy code, run it, and read telemetry directly. Both front-ends sit on the same async runtime (`tools/_runtime.py`) and differ only in caller: in-process Python for the pipeline, stdio MCP for the interactive client.
 
 This seam is the shared hardware interface for the structured-vs-freestyle comparison (see [`evaluation.md`](evaluation.md)): **both arms drive the hardware through the MCP**, so the comparison varies only the governance layer, not the seam. The freestyle arm is the model over the MCP with no SysML governance in front of it; the structured arm runs its calibration and verifying runs through the same tools. Because the MCP returns a complete trace at end-of-run rather than streaming, the structured arm's calibration reads its decay points from on-hub buffering rather than a live feed; live plotting is preserved on the in-process diagnostic path (`spiketelem.py`) for development use, outside the scored comparison.
 
-The runnable instruments for the comparison live in [`../prompts/`](../prompts): a shared `Task_core.md` (task, primitives, wire format, two-phase protocol, scoring) that both arms prepend, plus the arm-specific deltas `Freestyle_arm_prompt.md` (no method) and `Se_arm_prompt.md` (the requirements method, tenets, model strategy, and develop-model-calibrate-verify-gate mandate). The structured arm of the A/B is this pipeline's discipline performed *in-context* under that prompt and routed through the MCP, rather than the fully automated multi-agent pipeline described here; the pipeline is the broader vision the A/B's structured arm realizes a slice of.
+The runnable instruments for the comparison live in [`../prompts/`](../prompts): a shared `Task_core.md` (task, primitives, wire format, two-phase protocol, scoring) that both arms prepend, plus the arm-specific deltas `Freestyle_arm_prompt.md` (no method) and `Se_arm_prompt.md` (the requirements method, tenets, model strategy, and develop-model-calibrate-verify-gate mandate). The structured arm of the A/B is this pipeline's discipline performed *in-context* under that prompt and routed through the MCP, rather than the fully automated pipeline described here; the pipeline is the broader vision the A/B's structured arm realizes a slice of.
 
 ## Calibration
 
@@ -161,7 +164,7 @@ Division of labor matters here. The agent selects the test and interprets the re
 ## Resolved decisions
 
 - **The review gates (human in the loop).** The pipeline has human touchpoints at five places: authoring the original spec at the front, and four checkpoints on the hardware side arranged as a pre-run gate and a post-run verification around each of the two hardware activities. A *test-design gate* precedes each run — the human approves the calibration test (design + code) before it runs, and the verification-run design before the integrated run — so no hardware actuates on an unreviewed plan. A *results verification* follows each: after calibration, a *sufficiency check* confirms the fit is physical and adequate (fitted values, the residual-curvature flag where a sweep was used, parameter plausibility) before the expensive integrated run is authorized; after the verification run, a *results acceptance* confirms the committed prediction held (evidence sound, pass not spurious, requirements actually exercised) before operation is locked. The calibration-sufficiency check is the V-model integration gate, structurally the review-before-proceed node from **Aegis**, with a human in the seat instead of an expert agent. An Aegis-faithful extension, noted under Open questions, is to have an agent pre-screen sufficiency and present the human a drafted assessment and recommendation: agent drafts, human decides. Everything else is agent-owned.
-- **Generation vs. selection.** The pipeline **composes** a SysML model — it selects from a catalog of *generic, rover-agnostic* relation templates (e.g. speed-from-rotation, stopping-distance = reaction + braking, parameters left free), instantiates them against the requirements it derived, binds calibrated parameters, and grammar-validates the result. It does not synthesize models freely from natural language (the **Iserte et al.** approach), which buys generality the domain doesn't need and adds a failure surface it can't justify. Retained from Iserte is the grammar-validation-in-a-loop: the *composed* model validates against the SysML v2 grammar via `sysml_validate`, because composition — interconnections and bound parameters — is where invalidity enters even when templates are individually valid. The selection/generation line is drawn by **what calibration can verify**: the pipeline may *develop* a relation whose structural error its calibration can independently expose, and must *select* a validated template for any relation the calibration cannot check. The stop relation sits on that boundary, and which side it falls on depends on the task: across a speed range a sweep's residual curvature would expose a dropped quadratic term (develop — a stronger demonstration, the process catching its own error); at a single operating point the calibration cannot expose a form error, so the relation is selected and calibrated directly at the point. The wall-run is single-point and therefore selects; a speed-spanning variant is the case that would demonstrate the develop branch. This is graded by consequence: develop-with-calibration-backstop is appropriate for this LEGO demonstrator; safety-critical hardware would tighten to validated, reviewed relations and not rely on calibration to find model-structure errors. The committed model in [`../models/`](../models) is `rover_generic` — the rover-agnostic skeleton and generic template catalogs the structured arm composes *from*; the worked `wall_run_model` instantiation a correct composition reproduces (the reference the agent's developed composition is checked against) is produced per test under [`../latest/`](../latest) (e.g. `../latest/test 5 AB/SE/02_wall_run_model.sysml`).
+- **Generation vs. selection.** The pipeline **composes** a SysML model — it selects from a catalog of *generic, rover-agnostic* relation templates (e.g. speed-from-rotation, stopping-distance = reaction + braking, parameters left free), instantiates them against the requirements it derived, binds calibrated parameters, and grammar-validates the result. It does not synthesize models freely from natural language (the **Iserte et al.** approach), which buys generality the domain doesn't need and adds a failure surface it can't justify. Retained from Iserte is the grammar-validation-in-a-loop: the *composed* model validates against the SysML v2 grammar via `sysml_validate`, because composition — interconnections and bound parameters — is where invalidity enters even when templates are individually valid. The selection/generation line is drawn by **what calibration can verify**: the pipeline may *develop* a relation whose structural error its calibration can independently expose, and must *select* a validated template for any relation the calibration cannot check. The stop relation sits on that boundary, and which side it falls on depends on the task: across a speed range a sweep's residual curvature would expose a dropped quadratic term (develop — a stronger demonstration, the process catching its own error); at a single operating point the calibration cannot expose a form error, so the relation is selected and calibrated directly at the point. The wall-run is single-point and therefore selects; a speed-spanning variant is the case that would demonstrate the develop branch. This is graded by consequence: develop-with-calibration-backstop is appropriate for this LEGO demonstrator; safety-critical hardware would tighten to validated, reviewed relations and not rely on calibration to find model-structure errors. The committed model in [`../models/`](../models) is `rover_generic` — the rover-agnostic skeleton and generic template catalogs the structured arm composes *from*; the worked `wall_run_model` instantiation a correct composition reproduces (the reference the agent's developed composition is checked against) is produced per test under [`../latest/`](../latest).
 - **Library primitives vs. generated orchestration.** Code is split at the hardware boundary. Primitive operations — commanding a motor to a speed, reading a sensor channel — are templated library blocks: the operation set is closed, and pre-tested code is more trustworthy than generated MicroPython where there is no upside to generating it. Mission orchestration — the control logic that sequences primitives to satisfy a spec — is generated, because it varies per requirement and is where generation earns its place. The split mirrors ordinary software practice: the standard library is not regenerated on every build; the application logic that calls it is. The evaluator-optimizer loop iterates on the orchestration, not on whether the motor API was called correctly.
 - **The SysML layer carries constraints and parameters, not labels.** With the unit relations supplied as generic templates, the SysML v2 layer earns its place through what it holds rather than what it generates: requirement-to-element-to-test traceability, the parametric relations that encode the system physics, and the calibration constants those relations depend on. Two worked examples: *motor turn → rover speed* is a parametric edge whose constant (bundling wheel geometry, gear ratio, and slip) is bound by calibration, not computed; and the stop constraint, `d_measured ≥ v·t_response + v²/(2a) + margin`, encodes reaction distance, braking distance, and a human-set safety margin as a formal relation rather than logic buried in code. This is the distinction between the model and a configuration table, and it is the point at which calibration (stage 5) becomes model anchoring — binding a parametric model's free parameters to physical hardware through designed tests.
 - **SPIKE communication.** Bluetooth via `pybricksdev`. The JSONL framing plus `{"event":"end"}` sentinel is the reliability pattern that closes the gap originally flagged against USB — buffer-drain races at end-of-run are fenced by the sentinel; chunk-boundary line assembly is handled in `tools/_runtime.py`.

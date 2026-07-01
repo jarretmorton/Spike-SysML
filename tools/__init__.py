@@ -1,6 +1,7 @@
 """Spike SysML tool surface.
 
-Five tools across the two architectural patterns:
+Five tools spanning the pipeline's validation and hardware-in-the-loop
+stages:
 
 - ``sysml_validate`` schema-checks the composed SysML v2 model before
   the code step; ``check_trace_complete`` is its companion gate,
