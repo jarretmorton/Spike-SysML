@@ -26,12 +26,6 @@ Run conditions:
   **externally** for scoring — never trust the model's self-reported closeness.
 - Incognito does not persist — capture the transcript and report as you go.
 
-> **As-run pin:** the completed pilots ran against the earlier self-contained (inlined) version of
-> this file, which also requested total thinking time / tokens and is **not** byte-identical to
-> `task_core` + the block below. Pin that version (tag or commit) for pilot traceability. For a
-> clean final A/B, re-run the freestyle arm against this `task_core`-based prompt so both arms share
-> identical apparatus.
-
 ---
 
 ```
