@@ -123,7 +123,6 @@ the approach being tested, not an unfair head start.
 motors, two forward-facing and one rear ultrasonic distance sensor, a downward
 color sensor.
 - Code primitives for each effector (port-parameterized; the device is *not* pre-bound to a port).
-- A bare SysML v2 component model — the parts as blocks, no relations.
 - Both must **discover the port mapping** themselves (told what exists, not
 where it is plugged).
 - Both are **told the metrics** they are scored on.
@@ -136,7 +135,9 @@ the single-effector level, authored in **EARS** to **INCOSE GtWR / ISO-29148**
 quality rules (the familiar functional / behavioral / interface / constraint
 categories survive as requirement *types* on the leaves), with a **TBD register**
 and a **visual requirement tree** as outputs. The method, not rover-specific facts.
-- The SysML v2 specification plus generic (rover-agnostic) examples.
+- **A bare SysML v2 component model** (the parts as blocks, no relations) as the
+composition skeleton, plus the SysML v2 specification and generic (rover-agnostic)
+examples.
 - A generic physics-relation template catalog (e.g. speed-from-rotation,
 stopping-distance = reaction + braking) with parameters left free — engineering
 knowledge, not facts about this rover.
@@ -146,7 +147,9 @@ the model's free parameters and the requirement TBDs), commit the pre-run
 verification argument, confirm with one integrated run, and report.
 
 
-Both arms are handed the bare component model; only the structured arm is *required* to develop it. The freestyle arm will typically ignore it.
+The bare component model is a **method affordance** of the structured approach (like
+the template catalog): it goes to the structured arm to develop, not into the shared
+packet. The freestyle arm starts without one and would ignore it in any case.
 
 ## Generation vs. selection (refined)
 
