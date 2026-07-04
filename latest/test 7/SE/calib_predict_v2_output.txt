@@ -1,0 +1,26 @@
+=== FROZEN PREDICTION v2 (prog_v4 encoder-travel; TARGET_GAP=55, D_stop=58) ===
+  v_max_mm_s                 500.23
+  D_stop_used_mm             58.00
+  sigma_rss_mm               17.23
+  safety_margin_mm           51.70
+  g_target_mm                51.70
+  R_trigger_mm               120.00
+  final_clearance_mm         55.00
+  rest_reading_reported_mm   62.00
+  trigger_above_rmin         True
+
+=== ROLL-UP ===
+  SYS-1   PASS  measured=55.00     target=0.00      hard: no contact
+  SYS-2   PASS  measured=500.00    target=500.23    hard: command at max
+  SYS-3   N/A   measured=55.00     target=None      objective: minimize (graded, not pass/fail)
+  SYS-3b  PASS  measured=55.00     target=51.70     derived margin bridge
+  SYS-4   PASS  measured=7.00      target=10.00     hard: complete stop
+  SYS-5   PASS  measured=5.70      target=10.00     derived: straight
+  CMP-1   PASS  measured=18.19     target=18.19     motor reaches rated max
+  CMP-2   PASS  measured=7.00      target=10.00     motor decelerates to rest
+  CMP-3   PASS  measured=2.00      target=8.00      sensor tracks true within offset
+  CMP-4   PASS  measured=930.00    target=40.00     trigger in valid sensor range
+  CMP-5   PASS  measured=0.03      target=0.10      sense->brake latency bounded
+  CMP-6   PASS  measured=5.70      target=10.00     IMU heading drift bounded
+  CMP-7   PASS  measured=0.01      target=0.05      encoder->ground constant calibrated
+  ROLLUP  PASS  measured=PASS      target=all hard PASS WallRunNeed satisfy/require roll-up

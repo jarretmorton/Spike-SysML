@@ -1,0 +1,53 @@
+============================================================================================
+NOMINAL PREDICT (priors, pre-calibration)
+============================================================================================
+  v_max_mm_s                 = 504.000
+  D_stop_model_mm            = 46.872
+  D_stop_used_mm             = 46.872
+  sigma_rss_mm               = 10.677
+  safety_margin_mm           = 32.031
+  g_target_mm                = 32.031
+  R_trigger_mm               = 78.903
+  final_clearance_mm         = 32.031
+  rest_reading_reported_mm   = 32.031
+  rest_reading_valid         = False
+  trigger_above_rmin         = True
+
+============================================================================================
+SENSITIVITY TABLE  (R_trigger fixed at nominal; ranges = assumed priors)
+  d_objective = change in final gap (mm) as the TRUE value sweeps lo..hi
+  d_margin    = change in required no-contact margin (mm) over the same range
+============================================================================================
+parameter                     range  d_obj(mm) d_margin(mm) tier  priority
+--------------------------------------------------------------------------------------------
+k_speed_m_rad         [0.02, 0.045]      -79.3         +0.0    2  HIGH
+b_mm                      [-20, 30]      -50.0         +0.0    4  HIGH
+a_decel_mm_s2          [2000, 8000]      +47.6         +0.0    3  HIGH
+sigma_stop_mm               [3, 20]       +0.0        +40.6    3  HIGH
+t_response_s           [0.01, 0.06]      -25.2         +0.0    2  MEDIUM
+sigma_pred_mm               [2, 15]       +0.0        +24.2    3  MEDIUM
+omega_max_rad_s        [15.7, 19.5]      -16.3         +0.0    2  MEDIUM
+sigma_b_mm                  [2, 10]       +0.0        +12.3    3  LOW
+alpha                  [0.97, 1.03]       +0.0         +0.0    2  LOW
+r_min_mm                   [30, 60]       +0.0         +0.0    2  LOW
+heading_drift_deg           [0, 10]       +0.0         +0.0    3  LOW
+--------------------------------------------------------------------------------------------
+tiers: 1=well-known  2=modelled/onboard-calibratable  3=unknown-onboard  4=needs external ground truth
+
+============================================================================================
+EVALUATE at nominal operating point (all measured stand-ins nominal)
+============================================================================================
+  SYS-1   PASS        measured=     32.03    > target=      0.00  hard: no contact
+  SYS-2   PASS        measured=    504.00   >= target=    504.00  hard: command at max
+  SYS-3   N/A         measured=     32.03  min target=      None  objective: minimize (graded, not pass/fail)
+  SYS-3b  PASS        measured=     32.03   >= target=     32.03  derived margin bridge
+  SYS-4   PASS        measured=      0.00   <= target=      5.00  hard: complete stop
+  SYS-5   PASS        measured=      2.00   <= target=      5.00  derived: straight
+  CMP-1   PASS        measured=     18.00   >= target=     18.00  motor reaches rated max
+  CMP-2   PASS        measured=      0.00   <= target=      5.00  motor decelerates to rest
+  CMP-3   PASS        measured=      0.00   <= target=      8.00  sensor tracks true within offset
+  CMP-4   PASS        measured=     78.90   >= target=     45.00  trigger in valid sensor range
+  CMP-5   PASS        measured=      0.03   <= target=      0.06  sense->brake latency bounded
+  CMP-6   PASS        measured=      2.00   <= target=      5.00  IMU heading drift bounded
+  CMP-7   PASS        measured=      0.00   <= target=      0.05  encoder->ground constant calibrated
+  ROLLUP  PASS        measured=      PASS satisfy target=all hard PASS  WallRunNeed satisfy/require roll-up
