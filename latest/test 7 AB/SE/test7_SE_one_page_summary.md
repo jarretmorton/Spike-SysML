@@ -1,0 +1,28 @@
+# Test 7 (SE Arm) — One-Page Summary
+
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
+
+**Result.** All five operation runs stopped with no contact, 32–51 mm from the wall (mean 44, operator-measured), at full speed. The core win: predict-then-verify turned a run that *looked* like a success into a caught failure — a verification run stopped at 28 mm against a frozen 60 mm prediction (a late trigger, caught and fixed before any scored run), so the trigger was moved onto the wheel encoder and the prediction re-frozen, at Gate C, at a true rest gap of 55 mm. Against the five operator-measured true gaps that gives a like-for-like error of −11 mm, and no defect shipped. Getting there took six characterization/verification runs and four human interventions — more than the three-and-two planned — because two real failure events surfaced and were fixed rather than worked around.
+
+**What went wrong, and how it was corrected:**
+
+- **First crash, and a max-speed side effect.** The first run drove into the wall: the program tried to auto-detect which ultrasonic sensor faced the wall and chose one facing away, so its stop trigger never saw the wall, and a loose timeout let it hit at full speed. Fix: the sensor layout was fixed in advance, a slow *confirming crawl* at the start of each run now verifies the wall-facing sensor before the fast approach, and an independent emergency stop (any sensor too close → stop) plus a tighter timeout were added. Side effect: that start-of-run crawl means the rover no longer *begins* at maximum speed — a real brush against the "run at maximum speed" constraint that the arm introduced without flagging. Defensible as a setup step, but it went unruled.
+
+- **A faulty ultrasonic sensor — and a near-repeat.** Found through the first human measurement: the operator measured the true gap (196 mm) and confirmed the front was flush; one sensor matched, the other read ~130 mm low — impossible against a flat front — so it was excluded and the good one trusted. It was almost used again: while later diagnosing the encoder problem, the arm briefly leaned on the excluded sensor's bad data to dismiss the issue, then caught itself and re-checked against the trusted sensor.
+
+- **Motor brake vs. the wheel encoder.** The stop used an aggressive motor brake (active hold), chosen up front for the sharpest, most repeatable stop instead of letting the motors coast off. But the hard brake makes the wheels lock and slip, so the wheel encoder under-counts the stopping distance. The arm learned to trust the encoder only for rolling travel and to take the stopping distance from the ultrasonic and the human measurement instead — the stop-command choice directly set which signal could be trusted.
+
+- **No closed loop on yaw — luck, not good.** The rover never actively steers; it drives both wheels equally and hopes to go straight, logging its heading but never correcting it. It drifted a few degrees every run, always the same direction, staying just under the limit. Because that drift is an uncorrected, consistent bias, staying in bounds was luck — a worse drivetrain or one bad run could have exceeded it. The arm noticed the drift but added no correction.
+
+- **Verification failure, and how it got there.** Before the scored runs, a verification run stopped at 28 mm against a predicted 60 — no contact, but only by luck. Cause: the program read the ultrasonic *inside* its fast control loop, and that read can stall; combined with slow logging, one loop froze for about half a second while the rover kept moving at full speed, firing the stop late. It got there by putting a stall-prone read on the timing-critical path. Fix (the biggest stopping-algorithm change): the trigger moved off the ultrasonic and onto the wheel encoder — the ultrasonic is read once at the start, and the fast loop reads only the encoder and speed, so it can't stall. The prediction was re-frozen at 55 mm, re-verified, and landed at 46 mm — the fix confirmed.
+
+**Stopping-algorithm changes (top level).** Three versions: (1) stop when the auto-chosen wall-facing ultrasonic drops below a threshold → crashed; (2) fixed sensor layout + confirming crawl + independent emergency stop, faulty sensor excluded, still ultrasonic-triggered; (3) trigger on wheel-encoder travel, ultrasonic out of the fast loop. The stop command (motor brake) never changed — only what *decides* the stop and which signals it trusts.
+
+**What held by luck.** The safety cushion survived mainly because one over-cautious estimate cancelled an over-optimistic one — and it was sized from only two calibration stops. The real run-to-run spread turned out to be ~7 mm against a design assumption near 15, so it was conservative by luck of a two-sample estimate; the margin's adequacy wasn't actually known before the runs. That, plus the verification near-miss, is where "safe" rested on luck rather than knowledge.
+
+**Score against the criteria.**
+1. Characterization/verification runs (fewer better): **6** (one crash + five setup/verify), vs a 3-run plan.
+2. Human interventions (fewer better): **4** — true-gap measurement, flush-geometry confirmation, and two verification measurements — vs a 2-measurement plan.
+3. Operation runs with no contact (more better): **5 / 5**.
+4. Closeness of stops: **32–51 mm, mean 44, best 32, standard deviation 7.1 mm**.
+5. Predicted vs actual error: **44 mm - 55 mm = -11 mm**
