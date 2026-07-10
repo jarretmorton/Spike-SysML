@@ -1,0 +1,34 @@
+# Test 9 (SE Arm) — One-Page Summary
+
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This was an exact repeat of Test 8, run to see how much of the result reproduces.
+
+**Result.** All five operation runs stopped with no contact, 14–30 mm from the wall (mean 20, operator-measured), at full speed — closer than Test 8's mean of 43 mm. But the closeness was partly an accident of *how one calibration measurement was taken* (below), not a cleaner design, and the true safety margin was about half of what the design claimed. The campaign's real value was that every consequential error was visible in the frozen artifacts: a wrong safety-stop caught by a frozen prediction, a blind sensor caught by calibration, and a biased calibration measurement caught afterward — none of which the arm's own outcome checks flagged.
+
+**What went wrong, and how it was corrected:**
+
+- **Early connection and load failures.** The first three hardware attempts never moved the rover. Two crashed at load — the hub's stripped-down Python lacks two modules (`sys` and `array`) the offline test computer has, so the dry-run couldn't catch it. Between them, a flash timed out when the hub dropped its Bluetooth link (asleep or claimed by another app). Fixes: strip the program to core built-ins, and pause to have the operator wake the hub.
+
+- **Rear-sensor false-abort — rover didn't move.** The start-of-run safety check required the rear sensor to read "open" (far) to confirm the rover was squared up. On one calibration run it read ~547 mm — something behind the rover — so the check aborted before any motion. Fix: the rear sensor was dropped from the check (it plays no role in a forward stop), which now looks only at the two forward sensors.
+
+- **A faulty forward sensor — found and worked around.** The two forward sensors disagreed: one read ~1000 mm at the squared-up start (correct), the other ~130–165 mm short, and it briefly froze whenever the rover turned. The disagreement flagged it — a flat wall can't be two distances at once. The short sensor was demoted to a backup and the accurate one made primary. This faulty sensor drove the biggest failure later (see verification).
+
+- **The primary sensor is blind up close — the key design pivot.** Calibration then found the *accurate* forward sensor cannot read below ~288 mm: across three stops it reported a near-constant ~290 mm regardless of trigger — exactly the region where the rover must stop. With neither sensor usable in the stop zone (one blind, one noisy), the whole method changed: fix position with the good sensor at ~450 mm, then dead-reckon the rest on the wheel encoders — which never go blind — and coast to rest. The campaign's central design decision.
+
+- **Straightness — actively controlled this time.** The rover drifts a few degrees to one side (one wheel runs ~4% faster). Rather than drive-and-hope, the arm added closed-loop steering: hold heading near zero by trimming the faster wheel, with a square-up before each run. Heading stayed within ±4.2° every operation run — controlled, where earlier tests held straight only by luck.
+
+- **Verification failed — the backup sensor stopped the rover early.** The first verification run stopped ~140 mm out against a frozen 50–75 mm prediction — a clear falsification. Cause: the short-reading backup sensor could trigger an emergency stop, and being short it "saw" the wall too soon. Fix: the backup was gated to arm *only after* the encoder brake point, so it can no longer pre-empt the intended stop. The re-run passed at 43 mm.
+
+- **Three-stops-per-run measurement bias — the tighter stop was partly luck.** The verification made three stops in one program (to gather spread), and the rover crept slightly closer each time. The one operator gap measurement — the anchor for the whole operation setpoint — was taken on the *last and closest* of the three, making the measured sensor-to-true-gap offset unrepresentatively low (21 mm, versus a 27.6 mm operation average). That pushed the setpoint tighter and landed the rover closer (mean 20 mm) than the 30 mm aimed at. No other test ran three stops per program, so none carried this bias.
+
+- **Telemetry throughput.** The hub sends only ~35 log lines per second over Bluetooth; the first real run overran the 50-second host limit and lost most of its data. Fix: buffer everything as integers, thin the samples, send once per stop instead of continuously, and guard the clock so a clean end-marker always sends. Logged in an anomaly report.
+
+**Stopping-algorithm changes (top level).** (1) Trigger when a forward sensor drops below a distance threshold, with an absolute backup stop → the primary sensor turned out blind up close. (2) Trigger on wheel-encoder dead-reckon after a sensor position-fix at 450 mm; sensors demoted to a fix (one) and a backup (the other) → the backup fired early. (3) Gate the backup so it cannot pre-empt the encoder stop → passed. (4) Operation: same method, brake point tightened from 81 to 66 mm. The stop itself was a passive coast throughout, so the rest position is the closest point and nothing dips nearer.
+
+**What held by luck.** No run touched the wall, but the margin to contact was ~3.5 standard deviations, not the ~6 the design claimed — the offset was biased low and the run-to-run spread (σ 5.8 mm) was larger than assumed. The runs cleared the wall because the setpoint had been chosen conservatively (aim 30 mm, not the ~15 the point estimate allowed), which absorbed both errors. So "safe" rested on a conservative choice and "close" rested partly on the biased measurement — not on a margin that held as calculated. Straightness, by contrast, was controlled rather than lucky this time.
+
+**Score against the criteria.**
+1. Characterization/verification runs (fewer better): **5** — 3 calibration + 2 verification — vs a 2-run plan; two further loads crashed at import before moving.
+2. Human interventions (fewer better): **2** — both operator gap measurements — vs a 1-measurement plan (a second was needed because the first was taken off the operating point).
+3. Operation runs with no contact (more better): **5 / 5**.
+4. Closeness of stops: **14–30 mm, mean 20.0, best 14, standard deviation 5.8 mm**.
+5. Predicted vs actual: **20 mm − 30 mm = −10 mm** (landed closer than aimed; the onboard per-run estimate itself ran 6.6 mm high).
