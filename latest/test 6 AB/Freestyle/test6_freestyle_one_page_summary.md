@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **1** — a single front-bumper ground-truth measurement during characterization (the five end-of-run measurements are the mandated close-out reconciliation, not mid-task input).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **39 and 49 mm on the two runs with a valid start reading (mean 44, best 39); 239–262 mm on the three corrupted runs (mean ~250); sample standard deviation ≈ 113 mm across all five.** That 113 mm reflects the two-family split from the injected sensor fault, not run-to-run precision.
-5. Predicted vs actual error: **none — no prediction was frozen before the runs** (its onboard estimate, never committed as a prediction, ran ~123 mm low against the five-run average: 44 vs 167 mm, and was found only at close-out).
+5. Predicted vs actual error: **none — no prediction was frozen before the runs**; the uncommitted onboard estimate would have scored **true − estimate = 167 − 44 = +123 mm** against the five-run average (ran low — rover farther than it believed), found only at close-out.

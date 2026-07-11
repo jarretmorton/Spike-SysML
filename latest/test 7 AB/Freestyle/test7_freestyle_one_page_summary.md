@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **0** — the arm took no discretionary measurements during characterization, relying on the 40 mm sensor floor for its no-contact guarantee (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **153–185 mm, mean 175, best 153, sample standard deviation ≈ 13.0 mm**.
-5. Predicted vs actual error: **none — no prediction was frozen and tested before the runs** (its onboard gap estimate, never committed as a verified prediction, ran ~130 mm low: ~45 vs ~175 mm, found only at the close-out).
+5. Predicted vs actual error: **none — no prediction was frozen and tested before the runs**; the uncommitted onboard estimate would have scored **true − estimate ≈ 175 − 45 = +130 mm** (ran low — rover farther than it believed), found only at close-out.

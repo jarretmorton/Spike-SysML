@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **1** — the true-gap measurement at verification, which is what exposed the faulty sensor.
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **62–77 mm, mean 71, best 62; standard deviation ≈ 5.5 mm**.
-5. Predicted vs actual error (operation): **71 mm − 78 mm = −7 mm** — 7 mm closer than the committed ~78 mm prediction (derived at the sensor switch — see the sequence bullet), on the safe side.
+5. Predicted vs actual error (operation): **71 mm − 78 mm = −7 mm** — 7 mm closer than the committed ~78 mm prediction (derived at the sensor switch — see the sequence bullet); the miss is toward the wall, absorbed by the conservative setpoint.

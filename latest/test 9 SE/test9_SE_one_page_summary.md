@@ -31,4 +31,4 @@
 2. Human interventions (fewer better): **2** — both operator gap measurements — vs a 1-measurement plan (a second was needed because the first was taken off the operating point).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **14–30 mm, mean 20.0, best 14, standard deviation 5.8 mm**.
-5. Predicted vs actual: **20 mm − 30 mm = −10 mm** (landed closer than aimed; the onboard per-run estimate itself ran 6.6 mm high).
+5. Predicted vs actual: **20 mm − 30 mm = −10 mm** (10 mm closer than the committed ~30 mm prediction; the onboard per-run estimate itself ran 6.6 mm high).

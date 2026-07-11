@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **3** — the operator's ground-truth gap measurement, a squared-to-the-wall confirmation batched into that same first measurement, and a no-contact confirmation at the verification run — against a one-measurement plan.
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **135–157 mm, mean ~148, best 135, standard deviation ≈ 9 mm**.
-5. Predicted vs actual error: **148 mm - 44 mm = 104 mm**.
+5. Predicted vs actual error: **148 mm − 44 mm = +104 mm** — dominated by the undetected ~97 mm sensor bias; net of it the prediction held to ~7 mm (a measurement-validation miss, not comparable to the other tests — see Result).

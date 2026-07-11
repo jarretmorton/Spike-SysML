@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **0** — no ground-truth measurements were taken during characterization (the choice that kept the sensor offset invisible).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **180–257 mm, mean 214, best 180, standard deviation ≈ 39 mm (sample)** (the three clean runs were tight, ~7 mm; the two outliers drove the spread).
-5. Predicted vs actual error: **none — no prediction was frozen before the runs** (its onboard estimate, a post-stop reading rather than a committed prediction, ran ~155 mm low: 59 vs 214 mm on the clean runs — about **two-thirds of the true gap**, so the rover "believed" it was ~3× closer than it was — and was found only at close-out).
+5. Predicted vs actual error: **none — no prediction was frozen before the runs**; the uncommitted onboard estimate (a post-stop reading) would have scored **true − estimate = 214 − 59 = +155 mm** — ran low, about **two-thirds of the true gap**, so the rover "believed" it was ~3× closer than it was — found only at close-out.

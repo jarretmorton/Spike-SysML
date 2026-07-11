@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **0** — it calibrated by touching the wall instead of asking for a measurement (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **81–99 mm, mean 92, best 81, standard deviation ≈ 7.6 mm**.
-5. Predicted vs actual error: **none — no prediction was frozen before the runs** (its onboard estimate, never committed as a prediction, ran ~26 mm low: 65 vs 92 mm, and was found only at close-out).
+5. Predicted vs actual error: **none — no prediction was frozen before the runs**; the uncommitted onboard estimate would have scored **true − estimate = 92 − 65 = +27 mm** (ran low — rover farther than it believed), found only at close-out.
