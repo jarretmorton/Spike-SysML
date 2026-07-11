@@ -1,0 +1,32 @@
+<div style="display:flex; flex-wrap:wrap; gap:16px; margin:0 0 10px; font-size:12px; color:var(--text-secondary);">
+  <span style="display:flex; align-items:center; gap:5px;"><span style="width:11px; height:11px; border-radius:2px; background:#1baf7a;"></span>Operator true gap</span>
+  <span style="display:flex; align-items:center; gap:5px;"><span style="width:11px; height:11px; border-radius:2px; background:#2a78d6;"></span>Odometry estimate</span>
+  <span style="display:flex; align-items:center; gap:5px;"><span style="width:11px; height:11px; border-radius:2px; background:#eda100;"></span>us0 − 16 estimate</span>
+  <span style="display:flex; align-items:center; gap:5px;"><span style="width:16px; height:0; border-top:2px dashed #e34948;"></span>Wall (contact)</span>
+</div>
+<div style="position:relative; width:100%; height:320px;">
+  <canvas id="opChart" role="img" aria-label="Five operation runs: operator-measured true gaps are 36, 35, 36, 36, 35 mm, all well clear of the wall at zero. Odometry estimates run about 4 mm high, us0 estimates about 1 mm low, bracketing the true value.">Runs 1-5 true gaps: 36, 35, 36, 36, 35 mm; no contact.</canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+new Chart(document.getElementById('opChart'), {
+  data: {
+    labels: ['Run 1','Run 2','Run 3','Run 4','Run 5'],
+    datasets: [
+      { type:'bar', label:'True gap', data:[36,35,36,36,35], backgroundColor:'#1baf7a', borderRadius:4, barPercentage:0.55, order:3 },
+      { type:'line', label:'Odometry', data:[40.9,39.3,40.1,39.3,37.0], borderColor:'#2a78d6', backgroundColor:'#2a78d6', borderDash:[5,4], borderWidth:2, pointRadius:4, pointStyle:'rectRot', showLine:false, order:1 },
+      { type:'line', label:'us0-16', data:[35.0,31.0,35.4,37.6,35.2], borderColor:'#eda100', backgroundColor:'#eda100', borderWidth:2, pointRadius:4, pointStyle:'triangle', showLine:false, order:2 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    scales:{
+      y:{ min:0, max:46, title:{display:true, text:'gap to wall (mm)', color:'#898781', font:{size:12}},
+          ticks:{color:'#898781', font:{size:12}}, grid:{color:'#e1e0d9'} },
+      x:{ ticks:{color:'#898781', font:{size:12}}, grid:{display:false} }
+    },
+    plugins:{ legend:{display:false},
+      tooltip:{ callbacks:{ label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(1) + ' mm' } } }
+  }
+});
+</script>
