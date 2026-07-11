@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **1** — the single operator gap measurement (542 mm) that anchored the sensor-to-front offset — vs a 1-measurement plan. (The five close-out gap measurements are the scoring itself, not inputs the arm requested.)
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **31–50 mm, mean 43.4, best 31, standard deviation 7.7 mm**.
-5. Predicted vs actual error: **45 mm − 43.4 mm = +1.6 mm** (all five within ~1.2 standard deviations of the frozen prediction).
+5. Predicted vs actual error: **43.4 mm − 45 mm = -1.6 mm** (all five within ~1.2 standard deviations of the frozen prediction).
