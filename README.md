@@ -5,7 +5,7 @@
 Spike SysML brings systems-engineering rigor to AI-driven physical engineering, worked on a LEGO SPIKE Prime rover. Two things exist today:
 
 - **A direct-to-hardware harness.** A tool surface and an MCP server that deploy MicroPython to the SPIKE Prime hub, run it, stream back telemetry, validate SysML v2 requirement models, and score a run against the requirement it implements — the substrate all hardware work sits on.
-- **A structured-vs-freestyle comparison.** The same physical task, handed to a model under two regimes — a governed systems-engineering (SE) process and an ungoverned freestyle one — on identical hardware through the same seam. The durable claim is **auditability, not outcome**: only the SE arm produces an inspectable argument, *before the run*, that the requirement holds across the operating envelope. It is run in-context under the prompts in [`prompts/`](prompts), driving the hardware through the MCP.
+- **A structured-vs-freestyle comparison.** The same physical task, handed to a model under two regimes — a governed systems-engineering (SE) process and an ungoverned freestyle one — on identical hardware through the same seam. It is run in-context under the prompts in [`prompts/`](prompts), driving the hardware through the MCP.
 
 The loop closes on a physical robot: code has to make a real motor turn, a real sensor read, and a real stop condition hold. The longer-term direction — a fully automated pipeline that runs the whole requirements → model → calibration → verification loop end-to-end — is described under [Planned](#planned).
 
