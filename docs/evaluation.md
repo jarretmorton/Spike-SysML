@@ -2,8 +2,10 @@
 
 > **Status:** experiment design, locked. This document is the reference for the
 > comparison — the claim, the two arms, the information diet, the two-phase protocol,
-> and the metrics; the README's *Evaluation* section is a summary that points here.
-> Results for a given instance live with that instance, not here. The runnable
+> and the metrics; the README's *Test Architecture* section is a summary that
+> points here. Results for a given campaign live with that campaign under
+> [`../latest/`](../latest), rolled up in `Spike-SysML Summary.xlsx` and the
+> README's *Results* section — not here. The runnable
 > instruments live in [`../prompts/`](../prompts): `Task_core.md` (the shared apparatus —
 > the source of truth for the task, packet, and scoring restated below),
 > `Freestyle_arm_prompt.md`, and `Se_arm_prompt.md`.
@@ -35,10 +37,14 @@ model reasons, writes code, runs it, and iterates.
 - **Structured (treatment).** The requirements → effector-selection → unit-model →
 calibration → verification pipeline: derive and document requirements top-down to
 the single-effector level, select the effectors those leaves call for, compose a
-SysML v2 model from generic templates, calibrate both its free model parameters
-and the requirement TBDs against the hardware with designed tests, commit a
-pre-run verification argument, take one integrated verification run, then lock and
-run the operation.
+SysML v2 model from generic templates, use that model for a sensitivity study
+that ranks which parameters and measurements matter and focuses the calibration
+and any anomaly investigation (v2), calibrate both its free model parameters and
+the requirement TBDs against the hardware with designed tests, commit a pre-run
+verification argument, take an integrated verification run — repeated after any
+falsified prediction is diagnosed and re-derived — then lock and run the
+operation. The SE method document is itself versioned (v0–v2; see *Method
+versions* below); the freestyle instrument is unchanged throughout.
 
 
 **Both arms run through the same MCP seam.** This is settled (it was previously
@@ -50,24 +56,37 @@ buffering with a throttle loop supplies enough decay points for a fit. Live
 plotting is preserved separately on the in-process diagnostic path
 (`spiketelem.py`) for development use; it is not part of the scored comparison.
 
+## Method versions
+
+The experiment design in this document is fixed; the treatment is not. The SE
+method document was revised twice across the campaign: **v0** (campaign 4) is
+the baseline pipeline above; **v1** (campaigns 5–6) revised the characterization
+method; **v2** (campaigns 7–10) added sensor-anomaly handling — a mandatory
+operator ground-truth anchor, cross-channel disagreement checks, and the
+model-driven sensitivity study. The freestyle prompt is unchanged across all
+campaigns. Each campaign's exact instruments are archived with its artifacts
+under [`../latest/`](../latest); because the plant is non-stationary campaign to
+campaign, cross-version comparisons are process-level, not pooled run-level.
+
 ## Model and configuration
 
 - **Primary model: Claude Opus 4.8**, on both arms. The capable-model regime is
 deliberate: Opus will likely *succeed* freestyle on a LEGO-scale task, so the
 separation between the arms is carried by verification, not outcome.
-- **Second capability point: a lower-power model** (freestyle), to probe whether
-the structured scaffolding earns its place more clearly as capability drops.
+- **Further capability points: more and less capable models**, on both arms, to
+probe whether the structured scaffolding earns its place more clearly as
+capability drops — and whether it still pays as capability rises.
 - **Configuration is a controlled variable.** Effort level and extended thinking
 are held constant across both arms (and ideally across models), because
 "only governance varies" includes the config. Thinking is left on — a weaker
 model in particular does its discovery and physics reasoning there. The
-scored runs use one sustainable config (moderate effort, thinking on) on both arms.
+scored runs use one config (max effort, thinking on) on both arms.
 
 
 ## The task
 
-**Drive straight at a wall at maximum speed and stop as close
-to it as possible without touching it.** Hard constraints: maximum speed (no
+**Drive straight at a wall ~1 m away at maximum speed and stop as
+close to it as possible without touching it.** Hard constraints: maximum speed (no
 slowing for margin) and no contact. Objective: minimize the final gap. (The
 canonical statement, with the code primitives and telemetry wire format, is
 [`../prompts/Task_core.md`](../prompts/Task_core.md).)
@@ -87,10 +106,13 @@ and has no such argument.
 
 ## Hardware realism (kept deliberately)
 
-The rig has real defects, and they are kept on purpose. A forward distance sensor
-reads short and intermittently freezes; a smooth wall is a near-specular reflector,
-so a few degrees of yaw blinds the ultrasonics through the stop zone; and over a
-long uncycled session the hub's state drifts. None of this is engineered out.
+The rig has real defects, and they are kept on purpose. A forward distance
+sensor reads short (a fixed erroneous offset) and intermittently freezes; both
+forward sensors are mounted at an angle; the two drive motors have different top
+speeds, so the rover yaws at full throttle; the wheel encoder can slip under
+abrupt starts and stops; a smooth wall is a near-specular reflector, so a few
+degrees of yaw blinds the ultrasonics through the stop zone; and over a long
+uncycled session the hub's state drifts. None of this is engineered out.
 Imperfect, drifting, occasionally-faulty instruments are a permanent feature of
 physical systems — a comparison run on idealized hardware would be testing a
 fiction, and the result would not transfer. Handling these realities is part of
@@ -217,11 +239,12 @@ The operation provides only operational power-cycles and resets between runs.
 
 The same two-phase structure applies to the structured arm: its calibration and
 unit-verification runs are the characterization-program count; after it commits
-the verification artifact it takes **one integrated verification run** (also
-counted as a characterization program) to test the committed prediction; its
+the verification artifact it takes **an integrated verification run** (each
+counted as a characterization program) to test the committed prediction —
+repeated, after diagnosis and re-derivation, if the prediction is falsified; its
 locked program then enters operation, and the prediction is that it goes 5/5 with a
-tight gap spread. The verification run is recorded separately and is **not** counted
-among the five operation runs. On a
+tight gap spread. Verification runs
+are recorded separately and are **not** counted among the five operation runs. On a
 verification run that *falsifies* the prediction, the structured arm diagnoses the
 responsible model parameter and re-derives, rather than empirically tweaking the
 program (the move the freestyle arm makes).
@@ -235,8 +258,14 @@ program (the move the freestyle arm makes).
 | Outside-input count   | human measurements/assists requested during characterization                |
 | Reliability           | # of the 5 operation runs with no contact                                    |
 | Performance           | the gap distribution across the 5 (closeness *and* consistency)             |
+| Prediction error      | realized operation mean − predicted gap (mm), sign preserved: positive = stopped farther than predicted (the safe direction), negative = closer. The structured arm's number is committed before the scored runs; freestyle's is its own uncommitted onboard belief, checked only at close-out — scored like-for-like, but not the same object |
 | Verification artifact | qualitative; present for the structured arm, absent or ad hoc for freestyle |
 
+
+The per-campaign one-page summaries score these as criteria 1–5, in order:
+characterization/verification runs, human interventions, no-contact count over
+the five, closeness of stops, predicted-vs-actual error. Runs-to-first-success
+folds into criterion 1's accounting.
 
 The first metrics are quantitative cost/outcome. The verification artifact is not
 just another number — it is the deliverable only the structured arm produces, and

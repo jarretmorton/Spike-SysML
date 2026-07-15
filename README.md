@@ -1,77 +1,73 @@
-# Spike SysML
+# System Engineering method for self-learning robotics with Claude, Lego Spike Prime and SysML v2
 
-> AI-assisted, requirements-to-hardware test pipeline and feedback loop via SysML v2, demonstrated on LEGO SPIKE Prime.
+## Focus
 
-Spike SysML brings systems-engineering rigor to AI-driven physical engineering, worked on a LEGO SPIKE Prime rover. Two things exist today:
+The focus of this project is to see if the application of a systems engineering approach can help an AI learn to control a physical system in the real world. Each test campaign is run as a clean slate: the AI starts by knowing very little about a robotic rover it must learn to control to do a task with no memory of prior attempts. The non-deterministic nature of AI models, coupled with dispersions in real hardware performance, provides for a wide variety of approaches and outcomes.
 
-- **A direct-to-hardware harness.** A tool surface and an MCP server that deploy MicroPython to the SPIKE Prime hub, run it, stream back telemetry, validate SysML v2 requirement models, and score a run against the requirement it implements — the substrate all hardware work sits on.
-- **A structured-vs-freestyle comparison.** The same physical task, handed to a model under two regimes — a governed systems-engineering (SE) process and an ungoverned freestyle one — on identical hardware through the same seam. It is run in-context under the prompts in [`prompts/`](prompts), driving the hardware through the MCP.
+## Systems Engineering Approach
 
-The loop closes on a physical robot: code has to make a real motor turn, a real sensor read, and a real stop condition hold. The longer-term direction — a fully automated pipeline that runs the whole requirements → model → calibration → verification loop end-to-end — is described under [Planned](#planned).
+The systems engineering approach has been used successfully over time to guide engineers to create order out of chaos to determine and control the performance and outcomes of complex systems. This project explores whether the same discipline can create the same order when the engineer is an AI. A systems engineering (SE) method was developed and refined over the course of this project (v0, v1, v2). It instructs the AI to break the task into requirements, build an engineering model of the system (in SysML v2), perform a sensitivity study using this model to determine which data is most important, use this study to focus data gathering and any anomaly investigation, then provide a performance prediction and finally run a verification test.
 
-The choice of SPIKE Prime is deliberate. It's cheap enough to easily test, and constrained enough that the requirements-to-test loop is interesting rather than overwhelming.
+![Requirement tree and SysML v2 model composed by the SE arm in test 7](docs/test7_requirements_and_models.png)
 
-<img width="2494" height="1871" alt="20260629_232744" src="https://github.com/user-attachments/assets/7a2c5ccf-9191-4968-aefe-998cfd8cab1e" style="width: 50%;"/>
-<br><br>
+*Figure 1: Requirements and SysML v2 models generated in SE test 7*
 
-<img width="2175" height="1632" alt="20260629_232800" src="https://github.com/user-attachments/assets/325ffb34-f684-4fd5-bd47-f23ac0218a11" style="width: 50%;"/>
-<br><br>
+## Test Architecture
+
+This approach is applied over a test architecture consisting of first a characterization phase where the AI develops and tests its approach to the task via an MCP server to the rover hardware. The AI is instructed to do this in as few tries as possible with as few human measurements as possible. Then when the AI thinks it has figured out how to control the system it is instructed to freeze a written prediction for a key performance metric and then run the program for verification. If verification passes, the program is locked and run five times in an operation phase where real world rover performance is compared to the prediction (once all five runs are completed). This method is compared to asking the AI to complete the task any way it sees fit ("freestyle"), using the exact same hardware, AI model settings, characterization phase, operation phase and scoring.
+
+<img width="2175" height="1632" alt="LEGO SPIKE Prime rover, side view" src="https://github.com/user-attachments/assets/325ffb34-f684-4fd5-bd47-f23ac0218a11" style="width: 49%;"/> <img width="2494" height="1871" alt="LEGO SPIKE Prime rover, front view" src="https://github.com/user-attachments/assets/7a2c5ccf-9191-4968-aefe-998cfd8cab1e" style="width: 49%;"/>
+
+*Figure 2: Lego Spike Prime Rover*
+
+## The Task
+
+The task is to drive the rover at full speed towards a wall 1m away and stop as close as possible to the wall without hitting it. The AI is instructed that analysis is free and so is repositioning and rebooting the rover between runs. Each flashing of a new program on the rover and all other requests for human measurement or observational information about the rover will count against its score. The hardware configuration under test is a Lego rover based on the Spike Prime architecture. This hardware includes several realities that must be discovered and overcome such as which sensor and motor are on which port. Also, each differential drive motor has different top speeds (creating rover yaw at full power). One of the two forward facing ultrasonic distance sensors has an erroneous offset (and both are positioned at an angle). The wheel encoder can slip when starting and stopping abruptly. Finally, there is a third ultrasonic sensor pointing aft and a color reflectivity sensor pointing down which are not needed for the task and must be ignored. The AI must decide how to identify, diagnose and overcome real world ambiguous data in each test campaign.
+
+## Results
+
+![Scored operational-run gaps and predicted-vs-actual error, freestyle vs SE by process version](latest/summary_performance.png)
+
+*Figure 3: Freestyle and SE Test Results*
+
+The results of this project are based on testing using Claude Opus 4.8 Max with Thinking on. Because each test campaign learns from scratch, differences in what the AI discovers first compound. For example, four identical SE prompts on the same rover hardware produced four different rover stopping architectures. Despite this, in every test during the operational phase, for both the freestyle and SE campaigns the rover never hit the wall. There was, however, a wide degree of variation in how close it got, how close it was to its prediction, and how repeatable the gap was across the five operational runs. The freestyle runs generally averaged ~100mm to 200mm away from the wall in operation, while the SE runs were able to get much closer. The final version of the SE approach (v2) was used for the last four campaigns and consistently stopped less than 50mm from the wall. The predicted gap as well as the standard deviation across the five operational runs were also consistently much less for the SE campaigns. Interestingly the path to these results involved a similar number of characterization runs, with both the freestyle and SE campaigns generally needing 5-6 runs (each with an outlier to 8 and 9 runs respectively). Also of note is that in the characterization phase the SE campaigns were far more likely to ask for a human measurement, and freestyle campaigns were somewhat more likely to see impacts during characterization.
+
+**The committed numbers behind the figure: the four v2 SE campaigns posted operational means of 44, 43.4, 20 and 35.6 mm against 91.8–213.8 mm across the four freestyle campaigns, with zero wall contacts in all 55 scored operational runs. The sharper separation is in the prediction: over the v2 campaigns the SE arm's committed pre-run predictions held to within −11 to +1.6 mm of the measured means, while the freestyle arm — which commits nothing — believed it had stopped 26 to 155 mm closer to the wall than it actually had, in every campaign, a fact it could only discover at close-out. And in three of the four v2 campaigns the first verification run falsified the committed prediction, each time catching a real defect (a late stop trigger, a backup sensor pre-empting the stop, a 20° full-throttle veer) before any scored run. Per-campaign artifacts — the derived requirements, SysML models, calibration and verification plans and reports, locked programs, and a one-page summary per arm — are committed under [`latest/`](latest); the numbers above are from [`latest/Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx).**
+
+## Next Steps
+
+The next steps of this project will dig deeper into the changes made to the SE approach over the course of this project and evaluate their direct ties to AI behavior and rover performance. Also testing is planned with both more and less capable models for comparison.
 
 ## What this is not
 
-Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE App or Pybricks. It does not generate certifiable artifacts and does not perform V&V — it is a tooling layer that produces inputs to a human-led verification process, with LEGO hardware standing in for a target system. It is a scoped engineering project rather than a research program — though it deliberately measures itself against an unstructured baseline (see [Evaluation](#evaluation-structured-vs-freestyle)).
+Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE App or Pybricks. It does not generate certifiable artifacts and does not perform V&V — it is a scoped engineering project in which LEGO hardware stands in for a target system, producing the kinds of inputs a human-led verification process would consume.
 
-## Architecture
+## Repository guide
 
-Built around two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents), plus human review gates:
+- [`latest/`](latest) — per-campaign artifacts for tests 4–10, plus [`Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx), the campaign summary workbook the results figure is rendered from.
+- [`prompts/`](prompts) — the runnable instruments: the shared `Task_core.md` both arms prepend, plus `Se_arm_prompt.md` and `Freestyle_arm_prompt.md`.
+- [`docs/`](docs) — [`evaluation.md`](docs/evaluation.md) (the locked experiment design: information diet, two-phase protocol, metrics), [`architecture.md`](docs/architecture.md), [`wire_contract.md`](docs/wire_contract.md), and [`system_prompts.md`](docs/system_prompts.md).
+- [`models/`](models) — `rover_generic`, the rover-agnostic SysML v2 starting point the SE arm composes from: a bare component skeleton, a free-parameter physics-relation catalog, and requirement templates. The worked wall-run instantiation is produced per campaign under `latest/`.
+- [`spike_prime_mcp/`](spike_prime_mcp) — the MCP server (`flash_program`, `run_program`, `get_telemetry`): the shared hardware seam both arms drive through. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
+- [`spike_prime_direct/`](spike_prime_direct) and [`tools/`](tools) — the developer cockpit (`spiketelem.py`) and the tool surface beneath it.
 
-- **Prompt-chaining** for the requirements-and-modeling thread. A single governed sequence works the spec top-down — STK→SYS→FUN→CMP, to the single-effector level — authored in EARS to INCOSE GtWR / ISO-29148 (the functional/behavioral/interface/constraint categories become requirement *types*), yielding a TBD register and a visual requirement tree; it then selects effectors and composes a SysML v2 model by binding calibrated parameters into generic relation templates. It is deliberately a linear, gated, single thread rather than a fan-out — the SE discipline's value is one inspectable chain a reviewer can follow, not parallel branches to reconcile.
-- **Evaluator-optimizer** for the hardware-in-the-loop stages, with the hardware as the evaluator. Calibration and the integrated verification run each iterate against real telemetry until the fit is sufficient or the prediction holds; a draft step generates the MicroPython the loop runs.
-- **Human review gates.** The costly hardware steps are gated behind cheap review: a test-design gate before each run, a calibration-sufficiency check before the expensive verification run, and results acceptance before a run is declared done. Between them the structured arm commits a **pre-run verification artifact** — an inspectable argument that the requirement holds with margin, *before* any integrated run — and tests it with a single verification run. In practice the human review gate is there primarily to serve as an artifact delivery point in the workflow and the decision is always either "continue" or "stop" based on artifact review - never to modify or interfere with the test.
+## Architecture and tool surface
 
+The build follows two patterns from [*Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents), plus human review gates. **Prompt-chaining** carries the requirements-and-modeling thread: a single governed sequence works the spec top-down — STK→SYS→FUN→CMP to the single-effector level, authored in EARS to INCOSE GtWR / ISO-29148 — then composes a SysML v2 model by binding calibrated parameters into generic relation templates. **Evaluator-optimizer** carries the hardware-in-the-loop stages, with the hardware as the evaluator: calibration and verification iterate against real telemetry until the fit is sufficient or the prediction holds. **Human review gates** sit before the costly hardware steps; the gate delivers artifacts and decides continue-or-stop on the evidence they carry — it never modifies the test.
 
-Tool surface (v0.1):
-
-- `sysml_validate` — schema-check structured requirements against the `lego` subset of SysML v2.
-- `check_trace_complete` — confirm the traceability spine is present (not just well-formed) at the composed stage.
-- `spike_deploy` — push generated MicroPython to the SPIKE Prime hub over Bluetooth.
-- `spike_run` — execute a deployed program and stream sensor telemetry.
-- `test_eval` — score a run against the requirement it implements.
-
-
-See [`docs/architecture.md`](docs/architecture.md) for the current sketch, and [`docs/wire_contract.md`](docs/wire_contract.md) for the telemetry wire format and requirements model schema.
-
-For interactive, conversational hardware control, the `spike-prime-mcp` server exposes `flash_program`, `run_program`, and `get_telemetry` over MCP — the shared hardware seam both arms of the Evaluation comparison below run through. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).
-
-The generic SysML v2 model lives in [`models/`](models). `rover_generic` is the rover-agnostic starting point the structured arm composes from: a bare component skeleton (`RoverStructure`), a free-parameter physics-relation catalog (`RelationTemplates` — rotation→speed, stopping-distance, max-speed-from-budget), and a catalog of requirement shapes (`RequirementTemplates`), with shared value types and the platform latency in `RoverCommon`. The worked `wall_run_model` instantiation built on it — the templates instantiated against the wall-run requirements and the full STK→SYS→FUN→CMP tree as formal `requirement def`s carrying the satisfy/require roll-up (the pre-run verification artifact) — is now produced per test under [`latest/`](latest). Both validate clean in Syside (the SysML v2 VSCode tooling); neither is yet validated through the in-pipeline grammar loop.
-
-## Evaluation: structured vs. freestyle
-
-The point of the structured pipeline is a claim — that systems-engineering rigor buys you something before you let expensive equipment loose — and a claim like that is worth *demonstrating*, not asserting. So the project is a two-arm comparison on one shared hardware seam, with the same model and configuration on both sides so the only variable is governance:
-
-- **Freestyle (control):** a free-text request handed to the model with only the `spike-prime-mcp` tools (`flash_program` → `run_program` → `get_telemetry`). No model, no gates — it reasons, writes code, runs it, iterates.
-- **Structured (treatment):** the requirements → effector-selection → unit-model → calibration → verification pipeline above.
-
-
-**Both arms run through the same MCP seam** — this is settled — so the comparison isolates the governance layer. The task is a max-speed wall approach (drive straight at maximum speed, stop as close to the wall as possible without contact), chosen because a *calibrated* stopping parameter is the difference between a tight safe stop and a contact, which makes the structured arm's stopping-distance calibration load-bearing. Each arm runs a counted characterization phase, then locks one program and runs it five times. The metrics are characterization cost, runs-to-first-success, no-contact rate over the five, the gap distribution, and outside-input count — plus the one thing only the structured arm produces: an inspectable argument, *before the run*, that the rover will stop within its envelope. (The structured arm commits that argument and tests it with a single verification run before locking the operation.) Better models may close the outcome gap, but that argument doesn't come for free.
-
-The full design — information diet, the two-phase protocol, the generation-vs-selection rule, and the metrics — is in [`docs/evaluation.md`](docs/evaluation.md), and the runnable instruments are in [`prompts/`](prompts): a shared `Task_core.md` both arms prepend, plus the arm-specific `Freestyle_arm_prompt.md` and `Se_arm_prompt.md`. `spike-prime-mcp` is load-bearing rather than a demo: it is the shared seam both arms drive through.
+Tool surface (v0.1): `sysml_validate`, `check_trace_complete`, `spike_deploy`, `spike_run`, `test_eval`. See [`docs/architecture.md`](docs/architecture.md) for the pipeline sketch and [`docs/wire_contract.md`](docs/wire_contract.md) for the telemetry wire format and requirements model schema.
 
 ## Setup
 
-Requires Python 3.10+, and for hardware runs a SPIKE Prime hub on Pybricks
-firmware. Install the dependencies:
+Requires Python 3.10+, and for hardware runs a SPIKE Prime hub on Pybricks firmware. Install the dependencies:
 
 ```
 pip install pybricksdev matplotlib mcp
 ```
 
 - `pybricksdev` — BLE communication with the hub (deploy + run).
-- `matplotlib` — live telemetry plots in `spiketelem.py`. Required unless you
-pass `--no-plot`.
-- `mcp` — only needed for the `spike_prime_mcp` server (see
-[`spike_prime_mcp/README.md`](spike_prime_mcp/README.md)).
-
+- `matplotlib` — live telemetry plots in `spiketelem.py`. Required unless you pass `--no-plot`.
+- `mcp` — only needed for the `spike_prime_mcp` server (see [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md)).
 
 ## Quickstart
 
@@ -88,24 +84,19 @@ python spike_prime_direct/spiketelem.py run spike_prime_direct/hub_program_examp
 python spike_prime_direct/spiketelem.py demo spike_prime_direct/requirements_example.json --seconds 8
 ```
 
-A live plot window opens during `run` and `demo`, one panel per sensor named in
-a requirement, with each requirement's pass band shaded. Add `--no-plot` to skip
-it (no matplotlib needed), or `--snapshot out.png` on `demo` to render headless.
-
-`spiketelem.py` is a developer cockpit on top of the tool surface; the automated pipeline's agents would call the `tools/` functions directly.
+A live plot window opens during `run` and `demo`, one panel per sensor named in a requirement, with each requirement's pass band shaded. Add `--no-plot` to skip it, or `--snapshot out.png` on `demo` to render headless. `spiketelem.py` is a developer cockpit on top of the tool surface; the automated pipeline's agents would call the `tools/` functions directly.
 
 ## Status
 
-Implementation v0.1. (Docs may carry their own version — e.g. `docs/architecture.md` is at doc-v0.5, describing the full intended pipeline ahead of the build.) **Built:** the tool surface, and the evaluator-optimizer right-half (deploy → run → eval) running end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. The committed `models/` SysML v2 model (`rover_generic`) validates clean in Syside (the SysML v2 VSCode tooling), though not yet through the in-pipeline grammar loop; the worked `wall_run_model` instantiation is produced per test under `latest/`. **Run in-context, not yet automated:** the structured-vs-freestyle comparison (specified in [`docs/evaluation.md`](docs/evaluation.md)) is performed by a model under the [`prompts/`](prompts) through the MCP — the SE arm's discipline exercised by hand, not by an automated pipeline. **Not yet built:** the automated requirements-and-modeling left-half — requirements derivation, effector selection, generic-template composition, and the calibration stage, in code — see [Planned](#planned).
+Implementation v0.1. **Built:** the tool surface, and the evaluator-optimizer right-half (deploy → run → eval) running end-to-end against hardware via `spiketelem.py` and via the `spike-prime-mcp` server. The committed `models/` SysML v2 model validates clean in Syside (the SysML v2 VSCode tooling), though not yet through the in-pipeline grammar loop. **Run in-context, not yet automated:** the structured-vs-freestyle comparison itself — seven campaigns complete (tests 4–10), performed by the model under the [`prompts/`](prompts) instruments through the MCP, with artifacts under [`latest/`](latest). **Not yet built:** the automated requirements-and-modeling left-half — see [Planned](#planned).
 
 ### Known issues
 
 - **`reaches` crossing precision.** `test_eval` scores `reaches` by attainment-or-crossing (a sign change in `value - target` between samples), which fixes the prior exact-float-equality bug. Sub-sample crossing time is not interpolated; see the TODO in `tools/test_eval.py`.
 
-
 ## Planned
 
-The direction is a **fully automated pipeline**: a model takes a free-text spec and runs the whole loop — requirements decomposition, effector selection, SysML model composition, calibration, the pre-run verification argument, and the integrated verification run — with the human gates preserved but the requirements-and-modeling left-half executed in code rather than in-context. Today that left-half exists as design ([`docs/architecture.md`](docs/architecture.md)) and draft prompts ([`docs/system_prompts.md`](docs/system_prompts.md)); the [`prompts/`](prompts) instruments run the same discipline by hand. Also planned: the `verified`-stage checks (`sysml_validate`'s signal-name pre-flight and emit coverage — see [`docs/wire_contract.md`](docs/wire_contract.md) §3), the `full` SysML v2 grammar mode, and the calibration/verification tool surface the pipeline's hardware loops will add.
+The direction is a **fully automated pipeline**: a model takes a free-text spec and runs the whole loop — requirements decomposition, effector selection, SysML model composition, calibration, the pre-run verification argument, and the integrated verification run — with the human gates preserved but the requirements-and-modeling left-half executed in code rather than in-context. Today that left-half exists as design ([`docs/architecture.md`](docs/architecture.md)) and draft prompts ([`docs/system_prompts.md`](docs/system_prompts.md)). Also planned: the `verified`-stage checks, the `full` SysML v2 grammar mode, and the calibration/verification tool surface the pipeline's hardware loops will add.
 
 ## License
 
