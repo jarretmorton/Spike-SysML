@@ -17,7 +17,7 @@ as it sees fit.
 Run conditions:
 
 - **Same model and configuration as the structured arm** (config is a controlled variable). Thinking
-  on; moderate effort.
+  on; max effort.
 - Fill in the measured start distance in `task_core` (~1000 mm).
 - The hub is **power-cycled between every run** to clear accumulated gyro/sensor drift, so each run
   starts from a clean hub state.
