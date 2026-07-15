@@ -26,7 +26,7 @@ The task is to drive the rover at full speed towards a wall 1m away and stop as 
 
 ## Results
 
-![Scored operational-run gaps and predicted-vs-actual error, freestyle vs SE by process version](latest/summary_performance.png)
+![Scored operational-run gaps and predicted-vs-actual error, freestyle vs SE by process version](latest/summary_results.png)
 
 *Figure 3: Freestyle and SE Test Results*
 
