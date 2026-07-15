@@ -8,7 +8,7 @@ The focus of this project is to see if the application of a systems engineering 
 
 The systems engineering approach has been used successfully over time to guide engineers to create order out of chaos to determine and control the performance and outcomes of complex systems. This project explores whether the same discipline can create the same order when the engineer is an AI. A systems engineering (SE) method was developed and refined over the course of this project (v0, v1, v2). It instructs the AI to break the task into requirements, build an engineering model of the system (in SysML v2), perform a sensitivity study using this model to determine which data is most important, use this study to focus data gathering and any anomaly investigation, then provide a performance prediction and finally run a verification test.
 
-![Requirement tree and SysML v2 model composed by the SE arm in test 7](docs/test7_requirements_and_models.png)
+![Requirements and SysML v2 models generated in SE test 7](docs/test7_requirements_and_models.png)
 
 *Figure 1: Requirements and SysML v2 models generated in SE test 7*
 
@@ -26,13 +26,13 @@ The task is to drive the rover at full speed towards a wall 1m away and stop as 
 
 ## Results
 
-![Scored operational-run gaps and predicted-vs-actual error, freestyle vs SE by process version](latest/summary_results.png)
+![Freestyle and SE Test Results](latest/summary_results.png)
 
 *Figure 3: Freestyle and SE Test Results*
 
 The results of this project are based on testing using Claude Opus 4.8 Max with Thinking on. Because each test campaign learns from scratch, differences in what the AI discovers first compound. For example, four identical SE prompts on the same rover hardware produced four different rover stopping architectures. Despite this, in every test during the operational phase, for both the freestyle and SE campaigns the rover never hit the wall. There was, however, a wide degree of variation in how close it got, how close it was to its prediction, and how repeatable the gap was across the five operational runs. The freestyle runs generally averaged ~100mm to 200mm away from the wall in operation, while the SE runs were able to get much closer. The final version of the SE approach (v2) was used for the last four campaigns and consistently stopped less than 50mm from the wall. The predicted gap as well as the standard deviation across the five operational runs were also consistently much less for the SE campaigns. Interestingly the path to these results involved a similar number of characterization runs, with both the freestyle and SE campaigns generally needing 5-6 runs (each with an outlier to 8 and 9 runs respectively). Also of note is that in the characterization phase the SE campaigns were far more likely to ask for a human measurement, and freestyle campaigns were somewhat more likely to see impacts during characterization.
 
-Per-campaign artifacts — the derived requirements, SysML models, calibration and verification plans and reports, locked programs, and a one-page summary per arm — are committed under [`latest/`](latest); the numbers above are from [`latest/Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx).**
+Per-campaign artifacts — the derived requirements, SysML models, calibration and verification plans and reports, locked programs, and a one-page summary per arm — are committed under [`latest/`](latest); the numbers above are from [`latest/Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx).
 
 ## Next Steps
 
