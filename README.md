@@ -24,13 +24,13 @@ This approach is applied over a test architecture consisting of first a characte
 
 The task is to drive the rover at full speed towards a wall 1m away and stop as close as possible to the wall without hitting it. The AI is instructed that analysis is free and so is repositioning and rebooting the rover between runs. Each flashing of a new program on the rover and all other requests for human measurement or observational information about the rover will count against its score. The hardware configuration under test is a Lego rover based on the Spike Prime architecture, running the Pybricks firmware. This hardware includes several realities that must be discovered and overcome such as which sensor and motor are on which port. Also, each differential drive motor has different top speeds (creating rover yaw at full power). One of the two forward facing ultrasonic distance sensors has an erroneous offset (and both are positioned at an angle). The wheel encoder can slip when starting and stopping abruptly. Finally, there is a third ultrasonic sensor pointing aft and a color reflectivity sensor pointing down which are not needed for the task and must be ignored. The AI must decide how to identify, diagnose and overcome real world ambiguous data in each test campaign.
 
-![Freestyle and SE Test Results](latest/summary_results.png)
-
-*Figure 3: Freestyle and SE Test Results*
-
 ## Results
 
 The results of this project are based on testing using Claude Opus 4.8, max effort with thinking on, using incognito mode, and web search off. Because each test campaign learns from scratch, differences in what the AI discovers first compound. For example, four identical SE prompts on the same rover hardware produced four different rover stopping architectures. Despite this, in every test during the operational phase, for both the freestyle and SE campaigns the rover never hit the wall. There was, however, a wide degree of variation in how close it got, how close it was to its prediction, and how repeatable the gap was across the five operational runs. The freestyle runs generally averaged ~100mm to 200mm away from the wall in operation, while the SE runs were able to get much closer. The final version of the SE approach (v2) was used for the last four campaigns and consistently stopped less than 50mm from the wall. The predicted gap as well as the standard deviation across the five operational runs were also consistently much less for the SE campaigns. Interestingly the path to these results involved a similar number of characterization runs, with both the freestyle and SE campaigns generally needing 5-6 runs (each with an outlier to 8 and 9 runs respectively). Also of note is that in the characterization phase the SE campaigns were far more likely to ask for a human measurement, and freestyle campaigns were somewhat more likely to see impacts during characterization.
+
+![Freestyle and SE Test Results](latest/summary_results.png)
+
+*Figure 3: Freestyle and SE Test Results*
 
 Per-campaign artifacts — the derived requirements, SysML models, calibration and verification plans and reports, locked programs, and a one-page summary per arm — are committed under [`latest/`](latest); the numbers above are from [`latest/Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx).
 
