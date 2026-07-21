@@ -24,7 +24,7 @@ This approach is applied over a test architecture consisting of first a characte
 
 The task is to drive the rover at full speed towards a wall 1m away and stop as close as possible to the wall without hitting it. The AI is instructed that analysis is free and so is repositioning and rebooting the rover between runs. Each flashing of a new program on the rover and all other requests for human measurement or observational information about the rover will count against its score. The hardware configuration under test is a Lego rover based on the Spike Prime architecture, running the Pybricks firmware. This hardware includes several realities that must be discovered and overcome such as which sensor and motor are on which port. Also, each differential drive motor has different top speeds (creating rover yaw at full power). One of the two forward facing ultrasonic distance sensors has an erroneous offset (and both are positioned at an angle). The wheel encoder can slip when starting and stopping abruptly. Finally, there is a third ultrasonic sensor pointing aft and a color reflectivity sensor pointing down which are not needed for the task and must be ignored. The AI must decide how to identify, diagnose and overcome real world ambiguous data in each test campaign.
 
-https://github.com/user-attachments/assets/31d635f5-f5e7-4064-83bf-7e06b49e1f0f
+https://github.com/user-attachments/assets/d1444142-e2e6-4237-92bc-74951fa99ef1
 
 *Figure 3: Spike-SysML SE test 10 program*
 
