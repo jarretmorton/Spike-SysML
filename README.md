@@ -18,11 +18,15 @@ This approach is applied over a test architecture consisting of first a characte
 
 <img width="2175" height="1632" alt="LEGO SPIKE Prime rover, side view" src="https://github.com/user-attachments/assets/325ffb34-f684-4fd5-bd47-f23ac0218a11" style="width: 49%;"/> <img width="2494" height="1871" alt="LEGO SPIKE Prime rover, front view" src="https://github.com/user-attachments/assets/7a2c5ccf-9191-4968-aefe-998cfd8cab1e" style="width: 49%;"/>
 
-*Figure 2: Lego Spike Prime Rover*
+*Figure 2: Lego Spike Prime rover*
 
 ## The Task
 
 The task is to drive the rover at full speed towards a wall 1m away and stop as close as possible to the wall without hitting it. The AI is instructed that analysis is free and so is repositioning and rebooting the rover between runs. Each flashing of a new program on the rover and all other requests for human measurement or observational information about the rover will count against its score. The hardware configuration under test is a Lego rover based on the Spike Prime architecture, running the Pybricks firmware. This hardware includes several realities that must be discovered and overcome such as which sensor and motor are on which port. Also, each differential drive motor has different top speeds (creating rover yaw at full power). One of the two forward facing ultrasonic distance sensors has an erroneous offset (and both are positioned at an angle). The wheel encoder can slip when starting and stopping abruptly. Finally, there is a third ultrasonic sensor pointing aft and a color reflectivity sensor pointing down which are not needed for the task and must be ignored. The AI must decide how to identify, diagnose and overcome real world ambiguous data in each test campaign.
+
+https://github.com/user-attachments/assets/31d635f5-f5e7-4064-83bf-7e06b49e1f0f
+
+*Figure 3: Spike-SysML SE test 10 program*
 
 ## Results
 
@@ -30,7 +34,7 @@ The results of this project are based on testing using Claude Opus 4.8, max effo
 
 ![Freestyle and SE Test Results](latest/summary_results.png)
 
-*Figure 3: Freestyle and SE Test Results*
+*Figure 4: Spike-SysML freestyle and SE test results*
 
 Per-campaign artifacts — the derived requirements, SysML models, calibration and verification plans and reports, locked programs, and a one-page summary per arm — are committed under [`latest/`](latest); the numbers above are from [`latest/Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx).
 
