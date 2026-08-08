@@ -1,0 +1,6 @@
+run,B_startline_mm,stop_source,est_at_trigger_mm,settled_B_mm,S_mm,encoder_total_mm,heading_at_stop_deg,my_estimate_mm,measured_gap_mm,delta_mm,contact
+1,863,backstop,97.6,147 (rejected),,852.3,-2.2,130,145,-15,no
+2,868,backstop,106.9,151 (rejected),,855.0,-5.0,132,148,-16,no
+3,992,trigger,94.4,40,54.4,956.5,-8.2,29,29,0,no
+4,990,trigger,94.1,40,54.1,953.8,-9.4,29,24,5,no
+5,993,trigger,93.0,40,53.0,953.6,-8.1,29,27,2,no

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="400" font-family="system-ui,sans-serif" font-size="12">
+<rect width="960" height="400" fill="#fbfbf9"/>
+<line x1="78.0" y1="344.0" x2="936.0" y2="344.0" stroke="#dcdcd4"/>
+<text x="71.0" y="348.0" text-anchor="end" fill="#6a6a62" font-size="10">0</text>
+<line x1="78.0" y1="289.8" x2="936.0" y2="289.8" stroke="#dcdcd4"/>
+<text x="71.0" y="293.8" text-anchor="end" fill="#6a6a62" font-size="10">200</text>
+<line x1="78.0" y1="235.6" x2="936.0" y2="235.6" stroke="#dcdcd4"/>
+<text x="71.0" y="239.6" text-anchor="end" fill="#6a6a62" font-size="10">400</text>
+<line x1="78.0" y1="181.5" x2="936.0" y2="181.5" stroke="#dcdcd4"/>
+<text x="71.0" y="185.5" text-anchor="end" fill="#6a6a62" font-size="10">600</text>
+<line x1="78.0" y1="127.3" x2="936.0" y2="127.3" stroke="#dcdcd4"/>
+<text x="71.0" y="131.3" text-anchor="end" fill="#6a6a62" font-size="10">800</text>
+<line x1="78.0" y1="73.1" x2="936.0" y2="73.1" stroke="#dcdcd4"/>
+<text x="71.0" y="77.1" text-anchor="end" fill="#6a6a62" font-size="10">1000</text>
+<line x1="116.1" y1="46.0" x2="116.1" y2="344.0" stroke="#eeeee6"/>
+<text x="116.1" y="360.0" text-anchor="middle" fill="#6a6a62" font-size="10">0.5</text>
+<line x1="306.8" y1="46.0" x2="306.8" y2="344.0" stroke="#eeeee6"/>
+<text x="306.8" y="360.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.0</text>
+<line x1="497.5" y1="46.0" x2="497.5" y2="344.0" stroke="#eeeee6"/>
+<text x="497.5" y="360.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.5</text>
+<line x1="688.1" y1="46.0" x2="688.1" y2="344.0" stroke="#eeeee6"/>
+<text x="688.1" y="360.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.0</text>
+<line x1="878.8" y1="46.0" x2="878.8" y2="344.0" stroke="#eeeee6"/>
+<text x="878.8" y="360.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.5</text>
+<rect x="78.0" y="344.0" width="858.0" height="5" fill="#c0392b"/>
+<text x="78.0" y="20.0" fill="#33332e" font-size="13" font-weight="600">C2 verification run (VP v1.0) - FALSIFIED</text>
+<text x="78.0" y="35.0" fill="#6a6a62" font-size="11">predicted 37 mm, measured 222 mm. The ranger's zero was wrong by ~175 mm all run.</text>
+<text transform="translate(15,200.0) rotate(-90)" text-anchor="middle" fill="#6a6a62" font-size="10">distance to wall (mm)</text>
+<text x="519.0" y="394.0" text-anchor="middle" fill="#6a6a62" font-size="10">hub clock (s)</text>
+<path d="M85.6 73.1 L102.4 73.1 L119.2 74.5 L135.6 76.7 L152.0 80.2 L167.6 84.3 L184.0 89.5 L200.0 95.0 L215.7 100.3 L231.7 105.7 L247.7 111.3 L264.1 116.9 L280.5 122.5 L296.1 128.1 L311.8 133.3 L327.8 138.7 L344.2 144.6 L360.9 150.5 L376.2 155.9 L391.5 161.2 L408.2 166.7 L424.6 172.3 L441.0 177.8 L456.7 183.6 L471.9 188.7 L488.3 194.3 L504.3 199.6 L520.3 205.4 L536.0 210.5 L551.2 215.6 L567.3 220.7 L583.3 226.4 L599.7 231.6 L616.1 237.6 L631.3 243.0 L646.9 248.4 L663.7 254.3 L679.7 259.8 L696.5 265.3 L712.9 270.8 L716.7 272.0 L724.7 274.6 L764.4 276.1 L840.7 276.1 L916.9 276.1" fill="none" stroke="#1f7a3d" stroke-width="2.4"/>
+<path d="M85.6 123.8 L102.4 124.3 L119.2 123.2 L135.6 125.9 L152.0 129.2 L167.6 131.3 L184.0 137.8 L200.0 139.7 L215.7 149.2 L231.7 152.7 L247.7 154.6 L264.1 163.0 L280.5 167.4 L296.1 173.9 L311.8 179.8 L327.8 183.6 L344.2 183.6 L360.9 183.6 L376.2 183.6 L391.5 183.6 L408.2 183.6 L424.6 183.6 L441.0 183.6 L456.7 183.6 L471.9 231.6 L488.3 238.9 L504.3 245.9 L520.3 251.6 L536.0 257.6 L551.2 263.0 L567.3 269.8 L583.3 275.2 L599.7 280.1 L616.1 285.5 L631.3 292.3 L646.9 296.3 L663.7 301.5 L679.7 306.9 L696.5 312.0 L712.9 316.4 L716.7 319.9 L724.7 319.1 L764.4 319.1 L840.7 319.1 L916.9 319.1" fill="none" stroke="#1f4e79" stroke-width="1.6" stroke-dasharray="4,3"/>
+<circle cx="391.5" cy="183.6" r="5" fill="none" stroke="#1f4e79" stroke-width="2"/>
+<text x="399.5" y="173.6" fill="#1f4e79" font-size="10">monitor FROZEN at 592 for ~340 ms while odometry advanced 166 mm</text>
+<circle cx="764.4" cy="319.1" r="5" fill="none" stroke="#c0392b" stroke-width="2"/>
+<text x="464.4" y="337.1" fill="#c0392b" font-size="10">rest reading 92 > trigger 89: IMPOSSIBLE</text>
+<circle cx="716.7" cy="272.0" r="5" fill="none" stroke="#1f7a3d" stroke-width="2"/>
+<text x="526.7" y="294.0" fill="#1f7a3d" font-size="10">true rest 222 mm (measured)</text>
+<line x1="90.0" y1="378.0" x2="114.0" y2="378.0" stroke="#1f7a3d" stroke-width="2"/>
+<text x="120.0" y="382.0" fill="#1f7a3d" font-size="10">gap from odometry</text>
+<line x1="243.0" y1="378.0" x2="267.0" y2="378.0" stroke="#1f4e79" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="273.0" y="382.0" fill="#1f4e79" font-size="10">ranger A</text>
+</svg>

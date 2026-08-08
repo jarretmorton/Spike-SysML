@@ -1,0 +1,6 @@
+run,sensor_at_rest_mm,estimate_mm,measured_mm,delta_mm,v_at_brake_mms,predicted_stop_mm,actual_stop_mm,heading_at_brake_deg,braking_yaw_deg,n_invalid_readings,stale_max_ms
+1,51.0,28,33,-5,423.78,14.84,13.37,0.0,-5.0,48,181
+2,41.0,18,19,-1,446.03,16.3,20.75,0.1,-4.0,170,805
+3,51.0,28,32,-4,456.89,17.04,15.71,0.0,-6.9,46,176
+4,48.0,25,25,0,431.97,15.37,15.81,-0.1,-6.0,101,179
+5,51.0,28,35,-7,457.76,17.1,14.77,0.0,-4.2,27,115

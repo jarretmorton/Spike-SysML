@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" font-family="system-ui,sans-serif" font-size="12">
+<rect width="980" height="430" fill="#fbfbf9"/>
+<line x1="78.0" y1="370.0" x2="956.0" y2="370.0" stroke="#dcdcd4"/>
+<text x="71.0" y="374.0" text-anchor="end" fill="#6a6a62" font-size="10">0</text>
+<line x1="78.0" y1="312.9" x2="956.0" y2="312.9" stroke="#dcdcd4"/>
+<text x="71.0" y="316.9" text-anchor="end" fill="#6a6a62" font-size="10">200</text>
+<line x1="78.0" y1="255.8" x2="956.0" y2="255.8" stroke="#dcdcd4"/>
+<text x="71.0" y="259.8" text-anchor="end" fill="#6a6a62" font-size="10">400</text>
+<line x1="78.0" y1="198.7" x2="956.0" y2="198.7" stroke="#dcdcd4"/>
+<text x="71.0" y="202.7" text-anchor="end" fill="#6a6a62" font-size="10">600</text>
+<line x1="78.0" y1="141.6" x2="956.0" y2="141.6" stroke="#dcdcd4"/>
+<text x="71.0" y="145.6" text-anchor="end" fill="#6a6a62" font-size="10">800</text>
+<line x1="78.0" y1="84.5" x2="956.0" y2="84.5" stroke="#dcdcd4"/>
+<text x="71.0" y="88.5" text-anchor="end" fill="#6a6a62" font-size="10">1000</text>
+<line x1="115.4" y1="56.0" x2="115.4" y2="370.0" stroke="#eeeee6"/>
+<text x="115.4" y="386.0" text-anchor="middle" fill="#6a6a62" font-size="10">0.5</text>
+<line x1="302.2" y1="56.0" x2="302.2" y2="370.0" stroke="#eeeee6"/>
+<text x="302.2" y="386.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.0</text>
+<line x1="489.0" y1="56.0" x2="489.0" y2="370.0" stroke="#eeeee6"/>
+<text x="489.0" y="386.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.5</text>
+<line x1="675.8" y1="56.0" x2="675.8" y2="370.0" stroke="#eeeee6"/>
+<text x="675.8" y="386.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.0</text>
+<line x1="862.6" y1="56.0" x2="862.6" y2="370.0" stroke="#eeeee6"/>
+<text x="862.6" y="386.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.5</text>
+<rect x="78.0" y="370.0" width="878.0" height="5" fill="#c0392b"/>
+<text x="78.0" y="20.0" fill="#33332e" font-size="13" font-weight="600">Operation - all five runs overlaid</text>
+<text x="78.0" y="35.0" fill="#6a6a62" font-size="11">five smooth, near-identical odometry profiles (green); five chaotic monitor traces (blue).</text>
+<text transform="translate(15,215.0) rotate(-90)" text-anchor="middle" fill="#6a6a62" font-size="10">distance to wall (mm)</text>
+<text x="529.0" y="424.0" text-anchor="middle" fill="#6a6a62" font-size="10">hub clock (s)</text>
+<path d="M85.5 78.0 L118.7 79.7 L152.0 83.4 L184.9 92.8 L217.7 102.0 L250.6 115.4 L283.5 126.5 L316.4 53.1 L332.8 114.2 L349.2 -200.9 L366.1 133.6 L398.9 170.5 L431.8 184.2 L464.7 197.9 L481.1 199.6 L497.6 199.6 L530.5 220.7 L563.3 236.1 L596.2 248.4 L629.5 260.4 L662.3 271.8 L695.2 283.5 L728.1 288.1 L761.0 288.1 L777.4 314.6 L810.3 321.5 L843.2 337.5 L859.6 342.3 L897.3 356.3 L934.7 356.3" fill="none" stroke="#1f4e79" stroke-width="1.0" stroke-dasharray="4,3"/>
+<path d="M85.5 79.4 L118.7 80.5 L151.6 86.0 L184.5 95.4 L217.4 106.0 L250.6 114.5 L283.9 129.9 L316.7 141.4 L349.6 153.9 L382.5 163.9 L415.4 174.7 L448.3 189.6 L481.1 201.9 L514.0 212.7 L546.9 225.8 L579.8 238.1 L612.6 254.1 L645.5 265.5 L678.4 276.4 L711.3 287.2 L744.2 287.2 L777.0 312.1 L809.9 322.6 L842.8 335.2 L863.3 344.0 L897.3 351.7" fill="none" stroke="#1f4e79" stroke-width="1.0" stroke-dasharray="4,3"/>
+<path d="M85.1 79.1 L118.4 78.3 L151.2 84.0 L184.1 95.7 L217.0 106.2 L249.9 116.2 L282.7 126.2 L315.6 -200.9 L332.1 146.5 L348.5 -200.9 L364.9 155.1 L397.8 170.2 L430.7 183.6 L463.9 196.2 L496.8 209.3 L530.1 222.7 L563.0 235.8 L595.8 248.1 L628.7 260.1 L661.6 274.1 L694.5 284.4 L727.3 287.2 L760.2 287.2 L776.7 314.1 L809.5 325.5 L842.8 339.7 L859.2 344.9" fill="none" stroke="#1f4e79" stroke-width="1.0" stroke-dasharray="4,3"/>
+<path d="M85.5 135.1 L118.7 136.2 L151.6 141.1 L184.5 150.2 L217.4 161.3 L250.2 174.7 L283.1 186.2 L316.0 195.0 L332.4 200.7 L348.9 147.1 L381.8 147.1 L414.6 147.1 L447.5 147.1 L463.9 248.7 L496.8 262.7 L529.7 276.7 L562.6 291.5 L595.5 304.1 L628.3 315.2 L661.2 326.3 L694.1 334.9 L727.0 339.5 L759.9 307.2 L792.7 319.5 L825.6 331.5 L858.5 344.6 L896.6 356.6" fill="none" stroke="#1f4e79" stroke-width="1.0" stroke-dasharray="4,3"/>
+<path d="M85.1 142.2 L118.4 142.8 L151.2 147.1 L184.5 158.2 L217.7 166.8 L250.6 177.3 L283.9 190.2 L317.1 200.7 L350.4 200.7 L383.6 200.7 L416.5 200.7 L449.4 200.7 L465.8 255.5 L498.7 269.5 L531.6 283.5 L564.8 295.8 L597.7 306.6 L630.6 321.8 L663.5 331.2 L696.3 341.5 L729.2 346.0 L762.1 346.0 L778.5 313.8 L811.4 319.5 L844.3 337.5 L860.7 342.9" fill="none" stroke="#1f4e79" stroke-width="1.0" stroke-dasharray="4,3"/>
+<path d="M85.5 84.5 L118.7 86.0 L152.0 92.5 L184.9 102.6 L217.7 115.2 L250.6 127.1 L283.5 139.4 L316.4 151.8 L332.8 157.9 L349.2 164.1 L366.1 170.2 L398.9 182.4 L431.8 194.6 L464.7 206.4 L481.1 212.5 L497.6 218.8 L530.5 230.5 L563.3 243.1 L596.2 255.0 L629.5 266.8 L662.3 279.0 L695.2 291.6 L728.1 303.4 L761.0 315.8 L777.4 321.9 L810.3 334.0 L843.2 346.2 L859.6 351.7 L897.3 355.9 L934.7 355.8" fill="none" stroke="#1f7a3d" stroke-width="1.8"/>
+<path d="M85.5 84.5 L118.7 85.9 L151.6 92.3 L184.5 102.8 L217.4 115.1 L250.6 126.7 L283.9 139.4 L316.7 151.5 L349.6 164.3 L382.5 176.0 L415.4 188.1 L448.3 199.7 L481.1 211.9 L514.0 223.8 L546.9 236.0 L579.8 247.4 L612.6 260.0 L645.5 272.2 L678.4 284.3 L711.3 296.0 L744.2 308.5 L777.0 320.2 L809.9 332.5 L842.8 344.4 L863.3 351.9 L897.3 356.2" fill="none" stroke="#1f7a3d" stroke-width="1.8"/>
+<path d="M85.1 84.5 L118.4 85.7 L151.2 92.4 L184.1 103.0 L217.0 115.1 L249.9 127.6 L282.7 139.6 L315.6 152.1 L332.1 157.9 L348.5 164.2 L364.9 170.4 L397.8 182.0 L430.7 194.3 L463.9 206.3 L496.8 218.3 L530.1 230.7 L563.0 242.9 L595.8 255.4 L628.7 266.9 L661.6 279.1 L694.5 291.2 L727.3 303.2 L760.2 315.3 L776.7 321.4 L809.5 333.8 L842.8 346.3 L859.2 352.0" fill="none" stroke="#1f7a3d" stroke-width="1.8"/>
+<path d="M85.5 84.5 L118.7 85.8 L151.6 92.6 L184.5 103.0 L217.4 115.6 L250.2 127.5 L283.1 139.9 L316.0 151.5 L332.4 157.8 L348.9 164.2 L381.8 176.1 L414.6 188.1 L447.5 200.0 L463.9 206.2 L496.8 218.8 L529.7 230.7 L562.6 243.1 L595.5 255.0 L628.3 267.1 L661.2 279.0 L694.1 291.1 L727.0 302.5 L759.9 315.0 L792.7 327.4 L825.6 339.6 L858.5 351.5 L896.6 355.9" fill="none" stroke="#1f7a3d" stroke-width="1.8"/>
+<path d="M85.1 84.5 L118.4 86.0 L151.2 92.7 L184.5 103.3 L217.7 115.6 L250.6 127.4 L283.9 139.7 L317.1 152.2 L350.4 164.7 L383.6 176.7 L416.5 189.3 L449.4 200.9 L465.8 207.0 L498.7 219.3 L531.6 230.7 L564.8 243.2 L597.7 255.3 L630.6 267.6 L663.5 279.0 L696.3 291.8 L729.2 297.8 L762.1 315.6 L778.5 321.5 L811.4 333.7 L844.3 345.4 L860.7 351.6" fill="none" stroke="#1f7a3d" stroke-width="1.8"/>
+<circle cx="414.6" cy="147.1" r="5" fill="none" stroke="#1f4e79" stroke-width="2"/>
+<text x="424.6" y="141.1" fill="#1f4e79" font-size="10">freezes, spikes and dropouts on every run</text>
+<circle cx="860.7" cy="351.6" r="5" fill="none" stroke="#1f7a3d" stroke-width="2"/>
+<text x="560.7" y="377.6" fill="#1f7a3d" font-size="10">all five triggers within 4.1 mm of odometry</text>
+<line x1="90.0" y1="408.0" x2="114.0" y2="408.0" stroke="#1f7a3d" stroke-width="2"/>
+<text x="120.0" y="412.0" fill="#1f7a3d" font-size="10">gap from odometry (control)</text>
+<line x1="313.0" y1="408.0" x2="337.0" y2="408.0" stroke="#1f4e79" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="343.0" y="412.0" fill="#1f4e79" font-size="10">ranger A (monitor, withdrawn)</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" font-family="system-ui,sans-serif" font-size="12">
+<rect width="900" height="360" fill="#fbfbf9"/>
+<line x1="78.0" y1="304.0" x2="876.0" y2="304.0" stroke="#dcdcd4"/>
+<text x="71.0" y="308.0" text-anchor="end" fill="#6a6a62" font-size="10">0</text>
+<line x1="78.0" y1="257.1" x2="876.0" y2="257.1" stroke="#dcdcd4"/>
+<text x="71.0" y="261.1" text-anchor="end" fill="#6a6a62" font-size="10">200</text>
+<line x1="78.0" y1="210.2" x2="876.0" y2="210.2" stroke="#dcdcd4"/>
+<text x="71.0" y="214.2" text-anchor="end" fill="#6a6a62" font-size="10">400</text>
+<line x1="78.0" y1="163.3" x2="876.0" y2="163.3" stroke="#dcdcd4"/>
+<text x="71.0" y="167.3" text-anchor="end" fill="#6a6a62" font-size="10">600</text>
+<line x1="78.0" y1="116.4" x2="876.0" y2="116.4" stroke="#dcdcd4"/>
+<text x="71.0" y="120.4" text-anchor="end" fill="#6a6a62" font-size="10">800</text>
+<line x1="78.0" y1="69.5" x2="876.0" y2="69.5" stroke="#dcdcd4"/>
+<text x="71.0" y="73.5" text-anchor="end" fill="#6a6a62" font-size="10">1000</text>
+<line x1="112.0" y1="46.0" x2="112.0" y2="304.0" stroke="#eeeee6"/>
+<text x="112.0" y="320.0" text-anchor="middle" fill="#6a6a62" font-size="10">0.5</text>
+<line x1="281.7" y1="46.0" x2="281.7" y2="304.0" stroke="#eeeee6"/>
+<text x="281.7" y="320.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.0</text>
+<line x1="451.5" y1="46.0" x2="451.5" y2="304.0" stroke="#eeeee6"/>
+<text x="451.5" y="320.0" text-anchor="middle" fill="#6a6a62" font-size="10">1.5</text>
+<line x1="621.3" y1="46.0" x2="621.3" y2="304.0" stroke="#eeeee6"/>
+<text x="621.3" y="320.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.0</text>
+<line x1="791.1" y1="46.0" x2="791.1" y2="304.0" stroke="#eeeee6"/>
+<text x="791.1" y="320.0" text-anchor="middle" fill="#6a6a62" font-size="10">2.5</text>
+<rect x="78.0" y="304.0" width="798.0" height="5" fill="#c0392b"/>
+<text x="78.0" y="20.0" fill="#33332e" font-size="13" font-weight="600">Operation run 5 - measured 27 mm, no contact</text>
+<text x="78.0" y="35.0" fill="#6a6a62" font-size="11">control channel is odometry; ranger A is a monitor and gates nothing.</text>
+<text transform="translate(15,180.0) rotate(-90)" text-anchor="middle" fill="#6a6a62" font-size="10">distance to wall (mm)</text>
+<text x="489.0" y="354.0" text-anchor="middle" fill="#6a6a62" font-size="10">hub clock (s)</text>
+<path d="M84.5 69.5 L114.7 70.7 L144.6 76.1 L174.8 84.9 L205.0 94.9 L234.9 104.7 L265.1 114.8 L295.3 125.0 L325.5 135.3 L355.8 145.2 L385.7 155.5 L415.5 165.0 L430.5 170.1 L460.4 180.1 L490.2 189.5 L520.5 199.8 L550.3 209.8 L580.2 219.9 L610.1 229.2 L640.0 239.7 L669.9 244.7 L699.8 259.3 L714.7 264.1 L744.6 274.1 L774.5 283.8 L789.4 288.9" fill="none" stroke="#1f7a3d" stroke-width="2.4"/>
+<path d="M84.5 116.8 L114.7 117.3 L144.6 120.8 L174.8 130.0 L205.0 137.0 L234.9 145.7 L265.1 156.2 L295.3 164.9 L325.5 164.9 L355.8 164.9 L385.7 164.9 L415.5 164.9 L430.5 209.9 L460.4 221.4 L490.2 232.9 L520.5 243.0 L550.3 251.9 L580.2 264.4 L610.1 272.1 L640.0 280.5 L669.9 284.3 L699.8 284.3 L714.7 257.8 L744.6 262.5 L774.5 277.3 L789.4 281.7" fill="none" stroke="#1f4e79" stroke-width="1.5" stroke-dasharray="4,3"/>
+<line x1="90.0" y1="338.0" x2="114.0" y2="338.0" stroke="#1f7a3d" stroke-width="2"/>
+<text x="120.0" y="342.0" fill="#1f7a3d" font-size="10">gap from odometry (control)</text>
+<line x1="313.0" y1="338.0" x2="337.0" y2="338.0" stroke="#1f4e79" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="343.0" y="342.0" fill="#1f4e79" font-size="10">ranger A (monitor)</text>
+</svg>

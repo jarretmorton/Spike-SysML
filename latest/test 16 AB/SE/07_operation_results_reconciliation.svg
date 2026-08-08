@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="400" font-family="system-ui,sans-serif" font-size="12">
+<rect width="980" height="400" fill="#fbfbf9"/>
+<rect x="80.0" y="66.3" width="870.0" height="260.7" fill="#e6eef7"/>
+<rect x="80.0" y="153.2" width="870.0" height="86.9" fill="#cfe0f0"/>
+<line x1="80.0" y1="196.6" x2="950.0" y2="196.6" stroke="#1f4e79" stroke-width="2" stroke-dasharray="6,4"/>
+<text x="86.0" y="190.6" fill="#1f4e79" font-size="11">frozen prediction 23.0 mm - shaded 1 sigma / 3 sigma - ALL FIVE INSIDE 1 SIGMA</text>
+<rect x="80.0" y="330.0" width="870.0" height="6" fill="#c0392b"/>
+<text x="86.0" y="350.0" fill="#c0392b" font-size="11" font-weight="600">WALL - contact plane (0 mm).  No run touched it.</text>
+<line x1="80.0" y1="330.0" x2="950.0" y2="330.0" stroke="#dcdcd4"/>
+<text x="72.0" y="334.0" text-anchor="end" fill="#6a6a62">0</text>
+<line x1="80.0" y1="272.0" x2="950.0" y2="272.0" stroke="#dcdcd4"/>
+<text x="72.0" y="276.0" text-anchor="end" fill="#6a6a62">10</text>
+<line x1="80.0" y1="214.0" x2="950.0" y2="214.0" stroke="#dcdcd4"/>
+<text x="72.0" y="218.0" text-anchor="end" fill="#6a6a62">20</text>
+<line x1="80.0" y1="156.0" x2="950.0" y2="156.0" stroke="#dcdcd4"/>
+<text x="72.0" y="160.0" text-anchor="end" fill="#6a6a62">30</text>
+<line x1="80.0" y1="98.0" x2="950.0" y2="98.0" stroke="#dcdcd4"/>
+<text x="72.0" y="102.0" text-anchor="end" fill="#6a6a62">40</text>
+<line x1="80.0" y1="40.0" x2="950.0" y2="40.0" stroke="#dcdcd4"/>
+<text x="72.0" y="44.0" text-anchor="end" fill="#6a6a62">50</text>
+<line x1="167.0" y1="219.8" x2="167.0" y2="190.8" stroke="#9a9a90" stroke-width="1.5"/>
+<circle cx="167.0" cy="219.8" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<circle cx="167.0" cy="190.8" r="7" fill="#1f7a3d"/>
+<text x="167.0" y="176.8" text-anchor="middle" fill="#1f7a3d" font-size="13" font-weight="600">24</text>
+<text x="167.0" y="352.0" text-anchor="middle" fill="#6a6a62">run 1</text>
+<line x1="341.0" y1="208.8" x2="341.0" y2="161.8" stroke="#9a9a90" stroke-width="1.5"/>
+<circle cx="341.0" cy="208.8" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<circle cx="341.0" cy="161.8" r="7" fill="#1f7a3d"/>
+<text x="341.0" y="147.8" text-anchor="middle" fill="#1f7a3d" font-size="13" font-weight="600">29</text>
+<text x="341.0" y="352.0" text-anchor="middle" fill="#6a6a62">run 2</text>
+<line x1="515.0" y1="202.4" x2="515.0" y2="156.0" stroke="#9a9a90" stroke-width="1.5"/>
+<circle cx="515.0" cy="202.4" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<circle cx="515.0" cy="156.0" r="7" fill="#1f7a3d"/>
+<text x="515.0" y="142.0" text-anchor="middle" fill="#1f7a3d" font-size="13" font-weight="600">30</text>
+<text x="515.0" y="352.0" text-anchor="middle" fill="#6a6a62">run 3</text>
+<line x1="689.0" y1="208.2" x2="689.0" y2="196.6" stroke="#9a9a90" stroke-width="1.5"/>
+<circle cx="689.0" cy="208.2" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<circle cx="689.0" cy="196.6" r="7" fill="#1f7a3d"/>
+<text x="689.0" y="182.6" text-anchor="middle" fill="#1f7a3d" font-size="13" font-weight="600">23</text>
+<text x="689.0" y="352.0" text-anchor="middle" fill="#6a6a62">run 4</text>
+<line x1="863.0" y1="215.2" x2="863.0" y2="173.4" stroke="#9a9a90" stroke-width="1.5"/>
+<circle cx="863.0" cy="215.2" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<circle cx="863.0" cy="173.4" r="7" fill="#1f7a3d"/>
+<text x="863.0" y="159.4" text-anchor="middle" fill="#1f7a3d" font-size="13" font-weight="600">27</text>
+<text x="863.0" y="352.0" text-anchor="middle" fill="#6a6a62">run 5</text>
+<circle cx="220.0" cy="378.0" r="5" fill="none" stroke="#7a7a70" stroke-width="2"/>
+<text x="232.0" y="382.0" fill="#6a6a62">onboard estimate (frozen)</text>
+<circle cx="440.0" cy="378.0" r="7" fill="#1f7a3d"/>
+<text x="454.0" y="382.0" fill="#1f7a3d">operator measurement</text>
+<text x="80.0" y="24.0" fill="#33332e" font-size="14" font-weight="600">Operation - 5 runs, 5 clean stops.  mean 26.6 mm, sd 3.05 (predicted 23.0)</text>
+<text transform="translate(18,200.0) rotate(-90)" text-anchor="middle" fill="#6a6a62">final gap (mm)</text>
+</svg>

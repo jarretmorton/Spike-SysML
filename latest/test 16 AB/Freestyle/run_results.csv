@@ -1,0 +1,11 @@
+run,phase,program,seed_A_mm,final_A_mm,my_estimate_mm,operator_measured_mm,delta_mm,brake_reason,max_stale_ms,gate_rejects,S_measured_mm
+char-1,characterization,01_characterization_discovery,1017,333,,447*,,threshold 400,,,65.2
+char-2,characterization,02_characterization_rehearsal,1020,93,89,,,1 normal,,0,46.0
+char-3,characterization,03_operation_v1_locked,1017,70,66,,,1 normal,,0,48.4
+char-4,characterization,03_operation_v1_locked,815,78,74,,,1 normal,,0,41.4
+char-5,characterization,03_operation_v1_locked,784,147,143,,,2 blind brake,,15,n/a
+op-1,operation,04_operation_final_LOCKED,788,84,80,284,+204,1 normal,417,1,35.1
+op-2,operation,04_operation_final_LOCKED,800,84,80,271,+191,1 normal,353,3,34.4
+op-3,operation,04_operation_final_LOCKED,811,84,80,256,+176,1 normal,351,2,35.8
+op-4,operation,04_operation_final_LOCKED,1018,67,63,52,-11,1 normal,165,0,52.2
+op-5,operation,04_operation_final_LOCKED,803,87,83,275,+192,1 normal,418,1,31.8
