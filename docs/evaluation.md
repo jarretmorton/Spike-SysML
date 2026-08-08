@@ -8,7 +8,7 @@
 > README's *Results* section — not here. The runnable
 > instruments live in [`../prompts/`](../prompts): `Task_core.md` (the shared apparatus —
 > the source of truth for the task, packet, and scoring restated below),
-> `Freestyle_arm_prompt.md`, and `Se_arm_prompt.md`.
+> `Freestyle_arm_prompt.md`, and `Se_arm_prompt_v2.md`.
 
 ## The claim under test
 

@@ -17,7 +17,7 @@ as it sees fit.
 Run conditions:
 
 - **Same model and configuration as the structured arm** (config is a controlled variable). Thinking
-  on; moderate effort.
+  on; max effort.
 - Fill in the measured start distance in `task_core` (~1000 mm).
 - The hub is **power-cycled between every run** to clear accumulated gyro/sensor drift, so each run
   starts from a clean hub state.
@@ -26,11 +26,12 @@ Run conditions:
   **externally** for scoring — never trust the model's self-reported closeness.
 - Incognito does not persist — capture the transcript and report as you go.
 
-> **As-run pin:** the completed pilots ran against the earlier self-contained (inlined) version of
-> this file, which also requested total thinking time / tokens and is **not** byte-identical to
-> `task_core` + the block below. Pin that version (tag or commit) for pilot traceability. For a
-> clean final A/B, re-run the freestyle arm against this `task_core`-based prompt so both arms share
-> identical apparatus.
+> **Provenance note — added 2026-08-08, after the campaign concluded.** The run conditions above
+> record **max effort**, which the operator's per-test working notes confirm for every campaign in
+> this repository. Some committed copies of this file previously read `moderate effort`; that was a
+> stale preamble and has been corrected. This annotation and that correction touch the
+> operator-facing preamble only — **the fenced block below, which is the text delivered to the
+> model, is unchanged and byte-identical to what ran.**
 
 ---
 

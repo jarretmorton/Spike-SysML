@@ -1,4 +1,4 @@
-# se_arm_prompt.md — structured (SE) arm  ·  method v2
+# se_arm_prompt_v2.md — structured (SE) arm  ·  method v2
 
 Runnable instrument for the **structured arm** of the structured-vs-freestyle comparison
 (see [`../docs/evaluation.md`](../docs/evaluation.md)). Handed to the model in a fresh,
@@ -10,7 +10,7 @@ block below, ending at `Begin.`. The model receives full text, never a link.
 Run conditions:
 
 - **Same model and configuration as the freestyle arm** (config is a controlled variable — thinking
-  on, moderate effort). Only governance differs between the two arms.
+  on, max effort). Only governance differs between the two arms.
 - The hub is **power-cycled between every run** (as in `task_core.md`).
 - Operator policy: provide ground-truth measurements *on request* during Phase 1 (counted as
   outside input); provide no input during operation; record the scored outcome **externally** —
@@ -41,6 +41,13 @@ Run conditions:
 7. Unscored-vs-costed statement added (SE-side restatement of task_core's scoring).
 8. Redundant statements consolidated (frozen prediction, cross-sourcing, source-of-truth,
    program-count) to one canonical location each. SysML notation notes kept in full.
+
+> **Provenance note — added 2026-08-08, after the campaign concluded.** The run conditions above
+> record **max effort**, which the operator's per-test working notes confirm for every campaign in
+> this repository. Some committed copies of this file previously read `moderate effort`; that was a
+> stale preamble and has been corrected. This annotation and that correction touch the
+> operator-facing preamble only — **the fenced block below, which is the text delivered to the
+> model, is unchanged and byte-identical to what ran.**
 
 ---
 

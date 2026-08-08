@@ -49,7 +49,7 @@ Spike SysML is not a SPIKE programming environment and not a competitor to SPIKE
 ## Repository guide
 
 - [`latest/`](latest) — per-campaign artifacts for tests 4–10, plus [`Spike-SysML Summary.xlsx`](latest/Spike-SysML%20Summary.xlsx), the campaign summary workbook the results figure is rendered from.
-- [`prompts/`](prompts) — the runnable instruments: the shared `Task_core.md` both arms prepend, plus `Se_arm_prompt.md` and `Freestyle_arm_prompt.md`.
+- [`prompts/`](prompts) — the runnable instruments: the shared `Task_core.md` both arms prepend, plus `Se_arm_prompt_v2.md` and `Freestyle_arm_prompt.md`.
 - [`docs/`](docs) — [`evaluation.md`](docs/evaluation.md) (the locked experiment design: information diet, two-phase protocol, metrics), [`architecture.md`](docs/architecture.md), [`wire_contract.md`](docs/wire_contract.md), and [`system_prompts.md`](docs/system_prompts.md).
 - [`models/`](models) — `rover_generic`, the rover-agnostic SysML v2 starting point the SE arm composes from: a bare component skeleton, a free-parameter physics-relation catalog, and requirement templates. The worked wall-run instantiation is produced per campaign under `latest/`.
 - [`spike_prime_mcp/`](spike_prime_mcp) — the MCP server (`flash_program`, `run_program`, `get_telemetry`): the shared hardware seam both arms drive through. See [`spike_prime_mcp/README.md`](spike_prime_mcp/README.md).

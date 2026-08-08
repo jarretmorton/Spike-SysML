@@ -6,7 +6,7 @@
 > built tools consume — `sysml_validate`, `check_trace_complete`, `test_eval` — are
 > live. The schema fields those tools *read* are defined here in full even where the
 > producer is not yet built: the requirements model is currently authored in-context
-> under [`../prompts/Se_arm_prompt.md`](../prompts/Se_arm_prompt.md), not emitted by an
+> under [`../prompts/Se_arm_prompt_v2.md`](../prompts/Se_arm_prompt_v2.md), not emitted by an
 > automated pipeline, and the `verified`-stage checks (§2.3, §3) are deferred.
 
 This doc defines two contracts the pipeline, draft step, and tools all
