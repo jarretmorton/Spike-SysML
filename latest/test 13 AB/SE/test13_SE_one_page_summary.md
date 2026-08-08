@@ -1,6 +1,6 @@
 # Test 13 (SE Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — requirements, model, calibration, verification against predictions frozen in advance, then five scored runs — touching hardware only after the analysis was done.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
 
 **Result.** All five operation runs stopped with no contact, **19–27 mm** from the wall (mean **22.4 mm**, operator-measured), at full speed. The core win: predict-then-verify caught three defects before any scored run, two of them contact — one by checking its own paperwork before the first flash, two by verification runs that falsified written predictions. The arm's own estimates ran 2.8 mm high on every run, a bias toward the wall whose direction it committed to in writing beforehand.
 

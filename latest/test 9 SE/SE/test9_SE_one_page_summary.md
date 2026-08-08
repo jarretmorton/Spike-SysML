@@ -1,6 +1,6 @@
 # Test 9 (SE Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This was an exact repeat of Test 8, run to see how much of the result reproduces.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
 
 **Result.** All five operation runs stopped with no contact, 14–30 mm from the wall (mean 20, operator-measured), at full speed — closer than Test 8's mean of 43 mm. But the closeness was partly an accident of *how one calibration measurement was taken* (below), not a cleaner design, and the true safety margin was about half of what the design claimed. The campaign's real value was that every consequential error was visible in the frozen artifacts: a wrong safety-stop caught by a frozen prediction, a blind sensor caught by calibration, and a biased calibration measurement caught afterward — none of which the arm's own outcome checks flagged.
 

@@ -1,6 +1,6 @@
 # Test 16 (Freestyle Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. This arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times.
 
 **Result.** All five operation runs stopped with no contact, **52–284 mm** from the wall (mean **228 mm**) at full speed, and nothing touched the wall at any point. It got there in **five characterization runs** — two planned, plus three operation attempts reclassified when the arm fixed a bug and restarted — and **one operator measurement**. It predicted a **70 mm** gap before operation and held that target through the restart; the measured mean was 228, a like-for-like error of **+158 mm**. One run landed at **52 mm**; the other four were pushed ~190 mm out by an intermittent sensor fault a single calibration point could not detect, yet spread only **11.7 mm** among themselves. The control system was precise and aimed at the wrong place.
 

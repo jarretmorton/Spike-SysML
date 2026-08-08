@@ -1,6 +1,6 @@
 # Test 4 (SE Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done, and freezing its predictions before the verification run.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
 
 **Result.** All five operation runs stopped with no contact, 171–200 mm from the wall (mean 192), at full speed. Before any close-range run the arm froze, at Gate B, a predicted true rest gap of 189 mm; the verification run then measured 173 mm, confirming the prediction held close to the wall. The five scored runs averaged a true gap of 192 mm — the operator-measured ground truth at close-out — so on a like-for-like true-gap basis the frozen prediction held to 3 mm. Getting there took eight characterization runs plus one verification run, more than the two-run plan, because several real hardware problems surfaced and were fixed rather than worked around. The prediction was earned; the large stopping distance was a deliberate safety choice.
 
