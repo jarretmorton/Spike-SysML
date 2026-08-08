@@ -1,6 +1,6 @@
 # Test 11 (SE Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This campaign ran on Claude Fable 5 under SE framework v2 — incognito session, web search off, maximum effort, thinking on auto.
 
 **Result.** All five operation runs stopped with **no contact**, but far from the wall: **143–176 mm, mean 160 (operator-measured)**, against a frozen prediction of about **41 mm**. The stops were safe but not close. The real story is what the process caught and what it didn't: predict-then-verify exposed a hidden steering fault at a gate check that the arm's own numbers had missed, and after the runs it explained a large closeness miss down to the millimetre. The durable win was **auditability, not closeness** — every stop landed where the (flawed) calibration said it would, and the flaw was traceable rather than mysterious.
 

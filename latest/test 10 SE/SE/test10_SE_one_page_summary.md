@@ -1,6 +1,6 @@
 # Test 10 (SE Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This campaign ran on Claude Opus 4.8 under SE framework v2 — incognito session, web search off, maximum effort, thinking on.
 
 **Result.** All five operation runs stopped with no contact, **35–36 mm from the wall (mean 35.6, operator-measured), spread ~1 mm** — square, and repeatable to about half a millimeter. The core win was again predict-then-verify: three separate real defects — a wrong drive direction, a 20° veer at full speed, and a badly wrong sensor — were each caught and fixed before any scored run, not by crashing. The cost was six characterization/verification runs (two calibration, four verification) and one operator measurement — more runs than the two-to-three planned, but the measurement held to plan.
 

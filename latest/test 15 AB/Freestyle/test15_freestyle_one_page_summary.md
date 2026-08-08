@@ -1,6 +1,6 @@
 # Test 15 (Freestyle Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times. This campaign ran on Claude Opus 5 under the freestyle prompt — incognito session, web search off, maximum effort, thinking on auto.
 
 **Result.** All five operation runs stopped with no contact, off **three characterization runs** and **one operator measurement**. Three landed in a 5 mm band at **24–29 mm**; the other two were degraded by an intermittent sensor fault and stopped far short, at **145 and 148 mm**.
 

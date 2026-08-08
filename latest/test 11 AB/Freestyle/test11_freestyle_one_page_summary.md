@@ -1,6 +1,6 @@
 # Test 11 (Freestyle Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times. This campaign ran on Claude Fable 5 under the freestyle prompt — incognito session, web search off, maximum effort, thinking on auto.
 
 **Result.** All five operation runs stopped with **no contact**, but the stops split sharply in two: **28 mm on one run and 131–140 mm on the other four** (operator-measured). It got there in **seven characterization runs** — three of which deliberately drove into the wall to find the sensor offset — with **no discretionary operator measurements**. The 28 mm run shows the control law can stop close; the wide spread on the other four was the primary sensor feeding false readings, not the control law and not anything in the lane.
 

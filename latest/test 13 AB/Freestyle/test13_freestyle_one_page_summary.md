@@ -1,6 +1,6 @@
 # Test 13 (Freestyle Arm) — One-Page Summary
 
-**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times.
+**Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times. This campaign ran on Claude Opus 5 under the freestyle prompt — incognito session, web search off, maximum effort, thinking on auto.
 
 **Result.** All five operation runs stopped with no contact, **1.0–9.0 mm** from the wall (mean **5.2 mm**) at full speed — by a wide margin the closest and most repeatable stopping performance recorded on this rover (sample standard deviation 3.35 mm). It reached that in **four characterization runs**, two of which aborted, and took **no operator measurements** during characterization. The arm froze two predictions before the gaps were measured and both were wrong: it expected to stop about 21 mm out with wide headroom, and its prediction of which run would be tightest came back nearly reversed. Run 5 finished **1 mm** from the wall.
 
