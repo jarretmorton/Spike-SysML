@@ -1,0 +1,23 @@
+# Line-ending policy for this repository.
+#
+# Without this file, line endings are governed by each machine's local
+# core.autocrlf setting, which is not versioned and does not travel with the
+# repo. That produced a mixed working tree — some files CRLF, some LF — which
+# makes byte-level comparison (hashing, diffing, byte-identity checks)
+# unreliable, since identical content in the two conventions hashes
+# differently.
+#
+# Pin it here instead: LF in the index and LF in the working tree, on every
+# machine, regardless of local git config.
+
+* text=auto eol=lf
+
+# Binary formats. Git's text/binary auto-detection would classify these
+# correctly today, but pinning them removes the dependency on that heuristic —
+# a file wrongly treated as text gets its bytes rewritten and silently
+# corrupted.
+
+*.png   binary
+*.pdf   binary
+*.xlsx  binary
+*.uf2   binary
