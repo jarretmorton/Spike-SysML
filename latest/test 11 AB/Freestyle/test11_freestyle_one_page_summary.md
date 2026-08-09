@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **0** — no discretionary measurements during characterization; the arm relied on the wall-stall contacts and the sensor floor instead (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5** (the primary sensor misread on four of them; the safety cutoff caught it).
 4. Closeness of stops: **28 mm on the clean run, 131–140 mm on the other four; mean 114, best 28.** The spread is bimodal — the primary sensor misreading, not control-law scatter.
-5. Predicted vs actual error: **no advance prediction was frozen and tested** (no predict-then-verify). Onboard gap estimate committed before ground truth: **measured mean 114 − estimate mean 128 = −14.8 mm** (per-run −6.5 to −27.5) — the estimate ran high, i.e. the rover judged itself ~15 mm farther out than it was.
+5. Predicted vs actual error: The average actual gap - the pre operation estimate: **measured mean 113.6 − estimate 30 = 83.6 mm** — the estimate ran high, i.e. the rover judged itself farther out than it was.

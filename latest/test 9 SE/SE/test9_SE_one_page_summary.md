@@ -24,11 +24,11 @@
 
 **Stopping-algorithm changes (top level).** (1) Trigger when a forward sensor drops below a distance threshold, with an absolute backup stop → the primary sensor turned out blind up close. (2) Trigger on wheel-encoder dead-reckon after a sensor position-fix at 450 mm; sensors demoted to a fix (one) and a backup (the other) → the backup fired early. (3) Gate the backup so it cannot pre-empt the encoder stop → passed. (4) Operation: same method, brake point tightened from 81 to 66 mm. The stop itself was a passive coast throughout, so the rest position is the closest point and nothing dips nearer.
 
-**What held by luck.** No run touched the wall, but the margin to contact was ~3.5 standard deviations, not the ~6 the design claimed — the offset was biased low and the run-to-run spread (σ 5.8 mm) was larger than assumed. The runs cleared the wall because the setpoint had been chosen conservatively (aim 30 mm, not the ~15 the point estimate allowed), which absorbed both errors. So "safe" rested on a conservative choice and "close" rested partly on the biased measurement — not on a margin that held as calculated. Straightness, by contrast, was controlled rather than lucky this time.
+**What held by luck.** No run touched the wall, but the margin to contact was ~3.1 standard deviations, not the ~6 the design claimed — the offset was biased low and the run-to-run spread (sample σ 6.44 mm) was larger than assumed. The runs cleared the wall because the setpoint had been chosen conservatively (aim 30 mm, not the ~15 the point estimate allowed), which absorbed both errors. So "safe" rested on a conservative choice and "close" rested partly on the biased measurement — not on a margin that held as calculated. Straightness, by contrast, was controlled rather than lucky this time.
 
 **Score against the criteria.**
 1. Characterization/verification runs (fewer better): **5** — 3 calibration + 2 verification — vs a 2-run plan; two further loads crashed at import before moving.
 2. Human interventions (fewer better): **2** — both operator gap measurements — vs a 1-measurement plan (a second was needed because the first was taken off the operating point).
 3. Operation runs with no contact (more better): **5 / 5**.
-4. Closeness of stops: **14–30 mm, mean 20.0, best 14, standard deviation 5.8 mm**.
+4. Closeness of stops: **14–30 mm, mean 20.0, best 14, sample standard deviation 6.44 mm**. *(The campaign's final engineering report gives σ 5.8 mm — that is the population (n) figure; 6.44 mm is the sample (n−1) value used throughout this comparison. The artifact is left as written.)*
 5. Predicted vs actual: **20 mm − 30 mm = −10 mm** (10 mm closer than the committed ~30 mm prediction; the onboard per-run estimate itself ran 6.6 mm high).

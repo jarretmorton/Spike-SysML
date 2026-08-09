@@ -31,4 +31,4 @@
 2. Human interventions (fewer better): **0** — no operator measurements during characterization; operation gaps measured at close-out, for scoring only.
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **1.0–9.0 mm, mean 5.2, best 1.0, sample standard deviation 3.35 mm**.
-5. Predicted vs actual error: **5.2 mm − 21 mm = −15.8 mm** against the committed ~21 mm pre-run prediction; the onboard per-run estimate separately ran **8.1 mm high** (13.3 against 5.2 measured, sd 7.6 against a 3.4 mm true spread).
+5. Predicted vs actual error: **5.2 mm − 21 mm = −15.8 mm** against the committed ~21 mm pre-run prediction.

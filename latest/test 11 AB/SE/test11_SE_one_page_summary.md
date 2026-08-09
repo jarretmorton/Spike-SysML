@@ -24,5 +24,5 @@
 1. Characterization/verification runs (fewer better): **4** — 2 calibration flights (one a safe abort) + 2 verification flights (one gate rejection) — vs a 2-run plan.
 2. Human interventions (fewer better): **2** — the M1 tape measurement (taken at calibration run 2) and the operator's gate-check rejection on steering — vs a 1-measurement plan.
 3. Operation runs with no contact (more better): **5 / 5** (zero contact, ground-truth confirmed).
-4. Closeness of stops: **143–176 mm, mean 160, best 143, standard deviation 14.6 mm**.
-5. Predicted vs actual: **160 mm − 41 mm = +119 mm** — stops landed ~120 mm farther than predicted; the run-to-run spread, though, was predicted almost exactly (14.6 mm measured vs ~13 mm predicted).
+4. Closeness of stops: **143–176 mm, mean 160.4, best 143, standard deviation 14.6 mm** — per-run 147 / 170 / 176 / 166 / 143. *(Note, on the arm's own reporting: the final report's closing scorecard, `22_final_report_v1.0.md` line 105, lists these as "143 / 170 / 176 / 166 / 143" — run 1 transcribed as 143, duplicating run 5. That list averages 159.6 mm, not the 160.4 mm printed on the same line; the report's own per-run table at lines 16–20 carries 147 mm and is correct, as is the mean. A transcription defect in the summary line only. The artifact is left as written.)*
+5. Predicted vs actual: **160.4 mm − 41 mm = +119.4 mm** — stops landed ~120 mm farther than predicted; the run-to-run spread, though, was predicted almost exactly (14.6 mm measured vs ~13 mm predicted).

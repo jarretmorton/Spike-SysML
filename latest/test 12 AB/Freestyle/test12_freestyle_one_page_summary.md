@@ -2,7 +2,7 @@
 
 **Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times. This campaign ran on Claude Sonnet 4.6 under the freestyle prompt — incognito session, web search off, maximum effort, thinking on.
 
-**Result.** All five operation runs stopped with no contact, **113–129 mm** from the wall (mean **124 mm**, sample standard deviation **5.8 mm**) at full speed — the tightest run-to-run spread any freestyle arm has produced. It got there in **seven calibration runs and one verification run**, with **no discretionary operator measurements** and **no wall contacts** at any point. It also held heading inside ±5° through every operation run. Against that, its onboard gap estimate read 40 mm on all five runs while the true gap averaged 124 mm — an **84 mm error** it discovered at close-out and then explained incorrectly, in a written report whose polish made the error harder, not easier, to see.
+**Result.** All five operation runs stopped with no contact, **113–129 mm** from the wall (mean **124.2 mm**, sample standard deviation **6.5 mm**) at full speed. It got there in **seven calibration runs and one verification run**, with **no discretionary operator measurements** and **no wall contacts** at any point. It also held heading inside ±5° through every operation run. Against that, its onboard gap estimate read 40 mm on all five runs while the true gap averaged 124.2 mm — an **84.2 mm error** it discovered at close-out and then explained incorrectly, in a written report whose polish made the error harder, not easier, to see.
 
 **What went wrong, and how it was corrected:**
 
@@ -26,5 +26,5 @@
 1. Calibration and verification runs (fewer better): **7 calibration, 1 verification** — no run budget set in advance; two calibration runs lost to spins, one to a program that failed before driving.
 2. Human interventions (fewer better): **0** — no discretionary measurements were taken during calibration (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5**. Impacts across the whole test: **0**.
-4. Closeness of stops: **113–129 mm, mean 124, best 113, sample standard deviation ≈ 5.8 mm**.
-5. Predicted vs actual error: **none — no prediction was frozen and tested before the runs**; the uncommitted onboard estimate would have scored **true − estimate ≈ 124 − 40 = +84 mm** (ran low — rover farther than it believed), found only at close-out and then attributed to the wrong cause.
+4. Closeness of stops: **113–129 mm, mean 124.2, best 113, sample standard deviation ≈ 6.5 mm**. *(The arm's own report gives 5.8 mm — the population (n) figure. The artifact is left as written.)*
+5. Predicted vs actual error: The average actual gap - the pre operation estimate: **true − estimate ≈ 124.2 − 40 = +84.2 mm** (ran low — rover farther than it believed), found only at close-out and then attributed to the wrong cause.

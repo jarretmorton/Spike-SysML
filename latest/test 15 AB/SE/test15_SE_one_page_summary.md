@@ -2,7 +2,7 @@
 
 **Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This campaign ran on Claude Opus 5 under SE framework v2 — incognito session, web search off, maximum effort, thinking on auto.
 
-**Result.** All five operation runs stopped with no contact, **25–35 mm** from the wall (mean **29.8**, operator-measured), at full speed. The prediction was frozen at **30.0 mm** before the final verification run and never edited; the achieved mean missed it by **0.2 mm**. It took **four calibration and four verification runs** against a plan of two, and **five human interventions** against a plan of one or two — four programs lost to the arm's own defects, two to real falsifications. Two of the four measurements killed a design.
+**Result.** All five operation runs stopped with no contact, **25–35 mm** from the wall (mean **29.8**, operator-measured), at full speed. The prediction was frozen at **29.5 mm** before the final verification run and never edited; the achieved mean missed it by **0.3 mm**. It took **four calibration and four verification runs** against a plan of two, and **five human interventions** against a plan of one or two — four programs lost to the arm's own defects, two to real falsifications. Two of the four measurements killed a design.
 
 **What went wrong, and how it was corrected:**
 
@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **5** — four operator gap measurements plus one diagnostic question — against a 1–2 plan. Operation gaps were measured at close-out, for scoring only.
 3. Operation runs with no contact (more better): **5 / 5**. Zero contacts across all 13 programs.
 4. Closeness of stops: **25–35 mm, mean 29.8, best 25, sample standard deviation 4.21 mm**.
-5. Predicted vs actual error: **29.8 mm − 30.0 mm = −0.2 mm** on the mean.
+5. Predicted vs actual error: **29.8 mm − 29.5 mm = 0.3 mm** on the mean.

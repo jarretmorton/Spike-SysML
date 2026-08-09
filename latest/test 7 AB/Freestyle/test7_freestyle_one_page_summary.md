@@ -2,7 +2,7 @@
 
 **Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. Unlike the systems-engineering arm, this arm was given no prescribed method — free to develop and calibrate however it judged best, then lock one program and run it five times. This campaign ran on Claude Opus 4.8 under the freestyle prompt — incognito session, web search off, maximum effort, thinking on.
 
-**Result.** All five operation runs stopped with no contact, **153–185 mm** from the wall (mean **175 mm**) at full speed. It got there in **five characterization runs** — one of which contacted the wall, and one of which it aborted through its own telemetry bug — with **no discretionary operator measurements**, relying on the sensor's physical floor to guarantee no-contact. The runs were real and highly repeatable, but the arm committed **no prediction it tested in advance**, and its onboard gap estimate averaged ~45 mm against the measured ~175 mm — a ~130 mm error it discovered only at the close-out.
+**Result.** All five operation runs stopped with no contact, **153–185 mm** from the wall (mean **175 mm**) at full speed. It got there in **five characterization runs** — one of which contacted the wall, and one of which it aborted through its own telemetry bug — with **no discretionary operator measurements**, relying on the sensor's physical floor to guarantee no-contact. The runs were real and highly repeatable, but the arm committed **no prediction it tested in advance**: the gap it reported going into operation was **~42 mm** against a measured mean of 175.4 mm — a **+133.4 mm** error it discovered only at the close-out. (Its per-run onboard estimates averaged ~45 mm, the same miss to within 3 mm.)
 
 **What went wrong, and how it was corrected:**
 
@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **0** — the arm took no discretionary measurements during characterization, relying on the 40 mm sensor floor for its no-contact guarantee (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **153–185 mm, mean 175, best 153, sample standard deviation ≈ 13.0 mm**.
-5. Predicted vs actual error: **none — no prediction was frozen and tested before the runs**; the uncommitted onboard estimate would have scored **true − estimate ≈ 175 − 45 = +130 mm** (ran low — rover farther than it believed), found only at close-out.
+5. Predicted vs actual error: The average actual gap - the pre operation estimate: **true − estimate ≈ 175.4 − 42 = +133.4 mm** (ran low — rover farther than it believed), found only at close-out.

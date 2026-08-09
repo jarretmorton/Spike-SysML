@@ -23,4 +23,4 @@
 2. Human interventions (fewer better): **1** — a single operator gap measurement during characterization (operation gaps were measured at close-out, for scoring only).
 3. Operation runs with no contact (more better): **5 / 5**; wall contacts across the whole test, characterization included: **0**.
 4. Closeness of stops: **19–35 mm, mean 28.8, best 19, sample standard deviation ≈6.6 mm**.
-5. Predicted vs actual error: **28.8 mm − 23 mm = +5.8 mm** — 5.8 mm farther out than the 23 mm true gap verified on run 4, the last run before the program was locked without further edits (a single sample, which the arm flagged as thin). Separately, the five onboard estimates, frozen before ground truth, ran low by 3.4 mm.
+5. Predicted vs actual error: **28.8 mm − 23 mm = +5.8 mm** — 5.8 mm farther out than the 23 mm true gap verified on run 4, the last run before the program was locked without further edits (a single sample, which the arm flagged as thin).

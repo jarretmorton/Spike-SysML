@@ -2,7 +2,7 @@
 
 **Task.** Drive the rover straight at a wall (~1 m away) at maximum speed and stop as close as possible without touching it. Two hard constraints: *run at maximum speed* and *no contact*. The arm followed a gated systems-engineering process — analyze, model, calibrate, verify, then five scored operation runs — touching hardware only after the analysis was done. This campaign ran on Claude Opus 4.8 under SE framework v2 — incognito session, web search off, maximum effort, thinking on.
 
-**Result.** All five operation runs stopped with no contact, 32–51 mm from the wall (mean 44, operator-measured), at full speed. The core win: predict-then-verify turned a run that *looked* like a success into a caught failure — a verification run stopped at 28 mm against a frozen 60 mm prediction (a late trigger, caught and fixed before any scored run), so the trigger was moved onto the wheel encoder and the prediction re-frozen, at Gate C, at a true rest gap of 55 mm. Against the five operator-measured true gaps that gives a like-for-like error of −11 mm, and no defect shipped. Getting there took six characterization/verification runs and four human interventions — more than the three-and-two planned — because two real failure events surfaced and were fixed rather than worked around.
+**Result.** All five operation runs stopped with no contact, 32–51 mm from the wall (mean 44, operator-measured), at full speed. The core win: predict-then-verify turned a run that *looked* like a success into a caught failure — a verification run stopped at 28 mm against a frozen 60 mm prediction (a late trigger, caught and fixed before any scored run), so the trigger was moved onto the wheel encoder and the prediction re-frozen, at Gate C, at an expected operation gap of **~40–55 mm** — midpoint **47.5 mm**, the figure the verification report carries into operation. Against the five operator-measured true gaps (mean 44.0 mm) that gives a like-for-like error of **−3.5 mm**; against the top of that band, 55 mm, it would have been −11 mm. No defect shipped. Getting there took six characterization/verification runs and four human interventions — more than the three-and-two planned — because two real failure events surfaced and were fixed rather than worked around.
 
 **What went wrong, and how it was corrected:**
 
@@ -25,4 +25,4 @@
 2. Human interventions (fewer better): **4** — true-gap measurement, flush-geometry confirmation, and two verification measurements — vs a 2-measurement plan.
 3. Operation runs with no contact (more better): **5 / 5**.
 4. Closeness of stops: **32–51 mm, mean 44, best 32, standard deviation 7.1 mm**.
-5. Predicted vs actual error: **44 mm - 55 mm = -11 mm**
+5. Predicted vs actual error: **44 mm - 47.5 mm = -3.5 mm**
