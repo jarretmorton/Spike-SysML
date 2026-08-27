@@ -2,10 +2,9 @@
 
 > **Status:** experiment design, locked. This document is the reference for the
 > comparison — the claim, the two arms, the information diet, the two-phase protocol,
-> and the metrics; the README's *Test Architecture* section is a summary that
-> points here. Results for a given campaign live with that campaign under
-> [`../latest/`](../latest), rolled up in `Spike-SysML Summary.xlsx` and the
-> README's *Results* section — not here. The runnable
+> and the metrics. Results for a given campaign live with that campaign under
+> [`../latest/`](../latest), rolled up in `Spike-SysML Summary Rev A.xlsx` and
+> the README's *Results* section — not here. The runnable
 > instruments live in [`../prompts/`](../prompts): `Task_core.md` (the shared apparatus —
 > the source of truth for the task, packet, and scoring restated below),
 > `Freestyle_arm_prompt.md`, and `Se_arm_prompt_v2.md`.
@@ -61,7 +60,7 @@ plotting is preserved separately on the in-process diagnostic path
 The experiment design in this document is fixed; the treatment is not. The SE
 method document was revised twice across the campaign: **v0** (campaign 4) is
 the baseline pipeline above; **v1** (campaigns 5–6) revised the characterization
-method; **v2** (campaigns 7–10) added sensor-anomaly handling — a mandatory
+method; **v2** (campaigns 7–16) added sensor-anomaly handling — a mandatory
 operator ground-truth anchor, cross-channel disagreement checks, and the
 model-driven sensitivity study. The freestyle prompt is unchanged across all
 campaigns. Each campaign's exact instruments are archived with its artifacts
@@ -107,7 +106,9 @@ and has no such argument.
 ## Hardware realism (kept deliberately)
 
 The rig has real defects, and they are kept on purpose. A forward distance
-sensor reads short (a fixed erroneous offset) and intermittently freezes; both
+sensor reads short (an erroneous offset set at power-on, which varies between
+sessions and on some runs is absent entirely) and intermittently freezes; the
+two forward sensors can also hear each other's pings; both
 forward sensors are mounted at an angle; the two drive motors have different top
 speeds, so the rover yaws at full throttle; the wheel encoder can slip under
 abrupt starts and stops; a smooth wall is a near-specular reflector, so a few
@@ -127,10 +128,13 @@ we control. The sensor fault and the specular blind-out are *within-run* realiti
 they bear on whether a solution works at all, so each arm should have to face them.
 The hub's *cross-run* drift is different — it accumulates across the five operation
 runs and makes them non-comparable, so it corrupts the **repeatability metric** rather than testing the solution. We therefore reset it (power-cycle the hub
-between runs) while keeping the genuine hardware faults. Cycling also makes the
-sensor fault *consistent* run-to-run (a steady short read instead of a drifting
-one), so the solution faces a real but repeatable defect and the five-run measure
-isolates the solution's own consistency.
+between runs) while keeping the genuine hardware faults. Cycling does not tame
+the sensor fault: the offset is re-rolled at each power-on, so it can differ
+between the five operation runs and is sometimes absent entirely. That is kept
+rather than controlled, and it is what the repeatability metric is most
+sensitive to — an intermittent fault splits the five runs into two populations
+rather than shifting them together, which is exactly the failure the metric
+exists to catch.
 
 ## Information diet: symmetric information, asymmetric mandate
 
